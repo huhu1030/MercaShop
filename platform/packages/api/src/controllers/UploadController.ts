@@ -1,7 +1,7 @@
 import { Controller, Patch, Get, Route, Path, Query, Security, Request, UploadedFile } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import { ProductModel } from '../models';
-import { cloudStorage } from '../config/firebase';
+import { getBucket } from '../config/gcp';
 
 @Route('api')
 export class UploadController extends Controller {
@@ -14,7 +14,7 @@ export class UploadController extends Controller {
   ): Promise<{ url: string }> {
     const tenantId = req.tenantId!;
     const filePath = `tenants/${tenantId}/products/${productId}/${file.originalname}`;
-    const bucket = cloudStorage.bucket();
+    const bucket = getBucket();
     const blob = bucket.file(filePath);
 
     await blob.save(file.buffer, {
@@ -43,7 +43,7 @@ export class UploadController extends Controller {
       ? `tenants/${tenantId}/${prefix}`
       : `tenants/${tenantId}/`;
 
-    const bucket = cloudStorage.bucket();
+    const bucket = getBucket();
     const [files] = await bucket.getFiles({ prefix: searchPrefix });
     return { files: files.map((f) => f.name) };
   }
