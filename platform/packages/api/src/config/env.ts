@@ -21,3 +21,7 @@ export const env = {
   },
   apiUrl: process.env.API_URL ?? 'http://localhost:3030',
 } as const;
+
+if (env.nodeEnv === 'production' && !env.apiUrl.startsWith('https://')) {
+  throw new Error('API_URL must use HTTPS in production');
+}
