@@ -5,7 +5,7 @@ const tenantCache = new Map<string, { tenant: any; expiresAt: number }>();
 const CACHE_TTL = 5 * 60 * 1000;
 
 export async function tenantResolver(req: Request, res: Response, next: NextFunction): Promise<void> {
-  let tenantId = req.headers['x-tenant-id'] as string | undefined;
+  const tenantId = req.headers['x-tenant-id'] as string | undefined;
 
   if (!tenantId) {
     const origin = req.headers.origin || req.headers.referer;

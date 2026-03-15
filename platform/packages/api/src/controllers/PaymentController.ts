@@ -2,6 +2,7 @@ import { Controller, Post, Get, Route, Path, Body, Security, Request } from 'tso
 import type { Request as ExpressRequest } from 'express';
 import { OrderModel, UserModel } from '../models';
 import { handleCardPayment, handleCashPayment, handleWebhook } from '../services/paymentService';
+import type { Order } from '../types/order';
 
 @Route('api/payments')
 export class PaymentController extends Controller {
@@ -26,11 +27,13 @@ export class PaymentController extends Controller {
     });
     const email = user?.email ?? req.firebaseUser!.email;
 
+    const plainOrder = { ...order.toObject(), _id: order._id.toString() } as Order;
+
     if (body.paymentMethod === 'CARD') {
-      return handleCardPayment(email, order);
+      return handleCardPayment(email, plainOrder);
     }
 
-    await handleCashPayment(req.tenantId!, email, order);
+    await handleCashPayment(req.tenantId!, email, plainOrder);
     return { message: 'Cash order placed' };
   }
 
