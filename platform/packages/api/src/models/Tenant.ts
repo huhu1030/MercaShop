@@ -26,7 +26,7 @@ const tenantSchema = new Schema<TenantDocument>(
     },
     contactEmail: { type: String, required: true },
     isActive: { type: Boolean, default: true },
-    identityPlatformTenantId: { type: String, default: '' },
+    identityPlatformTenantId: { type: String, required: true },
   },
   { timestamps: true },
 );
