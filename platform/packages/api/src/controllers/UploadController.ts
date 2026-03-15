@@ -1,5 +1,5 @@
-import { Controller, Patch, Get, Route, Path, Query, Security, Request as TsoaRequest, UploadedFile } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Patch, Get, Route, Path, Query, Security, Request, UploadedFile } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { ProductModel } from '../models';
 import { cloudStorage } from '../config/firebase';
 
@@ -8,7 +8,7 @@ export class UploadController extends Controller {
   @Patch('products/{productId}/image')
   @Security('BearerAuth')
   public async uploadProductImage(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() productId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ url: string }> {
@@ -35,7 +35,7 @@ export class UploadController extends Controller {
   @Get('images')
   @Security('BearerAuth')
   public async listImages(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Query() prefix?: string,
   ): Promise<{ files: string[] }> {
     const tenantId = req.tenantId!;

@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Route, Body, Security, Request as TsoaRequest } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Get, Post, Put, Delete, Route, Body, Security, Request } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { UserModel } from '../models';
 import { firebaseAuth } from '../config/firebase';
 
@@ -20,7 +20,7 @@ export class UserController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createUser(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: CreateUserBody,
   ): Promise<{ user: any }> {
     const { uid, email, tenantId } = req.firebaseUser!;
@@ -48,7 +48,7 @@ export class UserController extends Controller {
 
   @Get('me')
   @Security('BearerAuth')
-  public async getMe(@TsoaRequest() req: Request): Promise<{ user: any }> {
+  public async getMe(@Request() req: ExpressRequest): Promise<{ user: any }> {
     const user = await UserModel.findOne({
       tenantId: req.tenantId,
       firebaseUid: req.firebaseUser!.uid,
@@ -63,7 +63,7 @@ export class UserController extends Controller {
   @Put('me')
   @Security('BearerAuth')
   public async updateMe(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: UpdateUserBody,
   ): Promise<{ user: any }> {
     const user = await UserModel.findOneAndUpdate(
@@ -80,7 +80,7 @@ export class UserController extends Controller {
 
   @Delete('me')
   @Security('BearerAuth')
-  public async deleteMe(@TsoaRequest() req: Request): Promise<{ message: string }> {
+  public async deleteMe(@Request() req: ExpressRequest): Promise<{ message: string }> {
     const { uid } = req.firebaseUser!;
     await UserModel.findOneAndDelete({ tenantId: req.tenantId, firebaseUid: uid });
     await firebaseAuth.deleteUser(uid);

@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Delete, Patch, Route, Path, Body, Security, Request as TsoaRequest } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Get, Post, Delete, Patch, Route, Path, Body, Security, Request } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { ProductModel } from '../models';
 
 interface CreateProductBody {
@@ -18,7 +18,7 @@ export class ProductController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createProduct(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: CreateProductBody,
   ): Promise<{ product: any }> {
     const product = await ProductModel.create({ tenantId: req.tenantId, ...body });
@@ -29,7 +29,7 @@ export class ProductController extends Controller {
   @Get('{id}')
   @Security('BearerAuth')
   public async getProduct(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ product: any }> {
     const product = await ProductModel.findOne({ _id: id, tenantId: req.tenantId });
@@ -43,7 +43,7 @@ export class ProductController extends Controller {
   @Get('establishment/{establishmentId}')
   @Security('BearerAuth')
   public async getProductsByEstablishment(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() establishmentId: string,
   ): Promise<{ products: any[] }> {
     const products = await ProductModel.find({
@@ -56,7 +56,7 @@ export class ProductController extends Controller {
   @Delete('{id}')
   @Security('BearerAuth')
   public async deleteProduct(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ message: string }> {
     await ProductModel.findOneAndDelete({ _id: id, tenantId: req.tenantId });
@@ -66,7 +66,7 @@ export class ProductController extends Controller {
   @Patch('{id}/quantity')
   @Security('BearerAuth')
   public async updateQuantity(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
     @Body() body: { quantity: number },
   ): Promise<{ product: any }> {

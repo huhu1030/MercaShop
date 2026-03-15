@@ -1,5 +1,5 @@
-import { Controller, Post, Get, Route, Path, Body, Security, Request as TsoaRequest } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Post, Get, Route, Path, Body, Security, Request } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { OrderModel, UserModel } from '../models';
 import { handleCardPayment, handleCashPayment, handleWebhook } from '../services/paymentService';
 
@@ -8,7 +8,7 @@ export class PaymentController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async processPayment(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: { orderId: string; paymentMethod: string },
   ): Promise<{ checkoutUrl?: string; message?: string }> {
     const order = await OrderModel.findOne({
@@ -37,7 +37,7 @@ export class PaymentController extends Controller {
   @Get('{id}')
   @Security('BearerAuth')
   public async getPaymentStatus(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ order: any }> {
     const order = await OrderModel.findOne({ _id: id, tenantId: req.tenantId });

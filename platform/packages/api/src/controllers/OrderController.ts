@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Patch, Delete, Route, Path, Body, Security, Request as TsoaRequest } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Get, Post, Patch, Delete, Route, Path, Body, Security, Request } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { OrderModel } from '../models';
 
 interface CreateOrderBody {
@@ -17,7 +17,7 @@ export class OrderController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createOrder(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: CreateOrderBody,
   ): Promise<{ order: any }> {
     const order = await OrderModel.create({
@@ -32,7 +32,7 @@ export class OrderController extends Controller {
   @Get('{id}')
   @Security('BearerAuth')
   public async getOrder(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ order: any }> {
     const order = await OrderModel.findOne({ _id: id, tenantId: req.tenantId });
@@ -46,7 +46,7 @@ export class OrderController extends Controller {
   @Get('establishment/{establishmentId}')
   @Security('BearerAuth')
   public async getOrdersByEstablishment(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() establishmentId: string,
   ): Promise<{ orders: any[] }> {
     const orders = await OrderModel.find({
@@ -59,7 +59,7 @@ export class OrderController extends Controller {
   @Get('user/{userId}')
   @Security('BearerAuth')
   public async getOrdersByUser(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() userId: string,
   ): Promise<{ orders: any[] }> {
     const orders = await OrderModel.find({
@@ -72,7 +72,7 @@ export class OrderController extends Controller {
   @Patch('{id}/status')
   @Security('BearerAuth')
   public async updateOrderStatus(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
     @Body() body: { status: string },
   ): Promise<{ order: any }> {
@@ -91,7 +91,7 @@ export class OrderController extends Controller {
   @Delete('{id}')
   @Security('BearerAuth')
   public async deleteOrder(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ message: string }> {
     await OrderModel.findOneAndDelete({ _id: id, tenantId: req.tenantId });

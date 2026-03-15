@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env';
+import { RegisterRoutes } from './generated/routes';
+import { tenantResolver } from './middleware/tenantResolver';
 import { errorHandler } from './middleware/errorHandler';
 
 export const app = express();
@@ -21,9 +23,13 @@ try {
   // Swagger not generated yet
 }
 
-// Tsoa generated routes registered after middleware/controllers are created (Task 9)
-// import { RegisterRoutes } from './generated/routes';
-// RegisterRoutes(app);
+// Tenant resolution for all /api routes except tenant config
+app.use('/api', (req, res, next) => {
+  if (req.path === '/tenants/config') return next();
+  return tenantResolver(req, res, next);
+});
+
+RegisterRoutes(app);
 
 app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });

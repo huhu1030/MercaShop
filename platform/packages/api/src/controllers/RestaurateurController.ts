@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Route, Body, Security, Request as TsoaRequest } from 'tsoa';
-import { Request } from 'express';
+import { Controller, Get, Post, Route, Body, Security, Request } from 'tsoa';
+import type { Request as ExpressRequest } from 'express';
 import { RestaurateurModel } from '../models';
 
 interface CreateRestaurateurBody {
@@ -14,7 +14,7 @@ export class RestaurateurController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createRestaurateur(
-    @TsoaRequest() req: Request,
+    @Request() req: ExpressRequest,
     @Body() body: CreateRestaurateurBody,
   ): Promise<{ restaurateur: any }> {
     const restaurateur = await RestaurateurModel.create({
@@ -28,7 +28,7 @@ export class RestaurateurController extends Controller {
 
   @Get('me')
   @Security('BearerAuth')
-  public async getMe(@TsoaRequest() req: Request): Promise<{ restaurateur: any }> {
+  public async getMe(@Request() req: ExpressRequest): Promise<{ restaurateur: any }> {
     const restaurateur = await RestaurateurModel.findOne({
       tenantId: req.tenantId,
       firebaseUid: req.firebaseUser!.uid,

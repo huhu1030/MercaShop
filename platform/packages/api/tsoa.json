@@ -15,6 +15,7 @@
   },
   "routes": {
     "routesDir": "src/generated",
-    "middleware": "express"
+    "middleware": "express",
+    "authenticationModule": "src/auth/authentication.ts"
   }
 }
