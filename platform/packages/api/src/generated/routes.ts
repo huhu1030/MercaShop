@@ -67,6 +67,7 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"string","required":true},
             "name": {"dataType":"string","required":true},
             "branding": {"ref":"ITenantBranding","required":true},
+            "identityPlatformTenantId": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
