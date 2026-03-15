@@ -1,17 +1,5 @@
 import { handleCardPayment, handleCashPayment, handleWebhook } from '../../src/services/paymentService';
 
-const mockSessionObj = {
-  withTransaction: jest.fn(async (fn: () => Promise<void>) => fn()),
-  endSession: jest.fn(),
-};
-
-jest.mock('mongoose', () => ({
-  __esModule: true,
-  default: {
-    startSession: jest.fn(),
-  },
-}));
-
 jest.mock('../../src/services/mollieService', () => ({
   createPayment: jest.fn().mockResolvedValue({
     id: 'tr_mock123',
@@ -20,30 +8,23 @@ jest.mock('../../src/services/mollieService', () => ({
   fetchPaymentById: jest.fn(),
 }));
 
-jest.mock('../../src/services/mailService', () => ({
-  sendEmail: jest.fn().mockResolvedValue(undefined),
-  mailTemplates: { orderConfirmation: 'orderConfirmation' },
+jest.mock('../../src/services/orderService', () => ({
+  linkMolliePayment: jest.fn().mockResolvedValue(undefined),
+  markPaidAndDecrementStock: jest.fn().mockResolvedValue(undefined),
+  markUnpaidAndDecrementStock: jest.fn().mockResolvedValue(undefined),
+  findByMolliePaymentId: jest.fn(),
+  notifyEstablishment: jest.fn().mockResolvedValue(undefined),
+  notifyRealtime: jest.fn(),
 }));
 
-jest.mock('../../src/services/socketServer', () => ({
-  __esModule: true,
-  default: { getInstance: () => ({ sendOrders: jest.fn() }) },
+jest.mock('../../src/services/notificationService', () => ({
+  sendOrderConfirmation: jest.fn().mockResolvedValue(undefined),
+  sendOrderConfirmationToUser: jest.fn().mockResolvedValue(undefined),
 }));
 
-jest.mock('../../src/models', () => ({
-  OrderModel: {
-    findByIdAndUpdate: jest.fn().mockResolvedValue({}),
-    findOne: jest.fn(),
-  },
-  UserModel: { findById: jest.fn() },
-  ProductModel: { findByIdAndUpdate: jest.fn().mockResolvedValue({}) },
-  EstablishmentModel: { findOne: jest.fn().mockResolvedValue({ _id: 'est-1' }) },
-}));
-
-import mongoose from 'mongoose';
 import * as mollieService from '../../src/services/mollieService';
-import { sendEmail } from '../../src/services/mailService';
-import { OrderModel, UserModel } from '../../src/models';
+import * as orderService from '../../src/services/orderService';
+import * as notificationService from '../../src/services/notificationService';
 
 const mockOrder = {
   _id: '507f1f77bcf86cd799439011',
@@ -56,12 +37,7 @@ const mockOrder = {
 };
 
 describe('paymentService', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    (mongoose.startSession as jest.Mock).mockResolvedValue(mockSessionObj);
-    mockSessionObj.withTransaction.mockImplementation(async (fn: () => Promise<void>) => fn());
-    mockSessionObj.endSession.mockResolvedValue(undefined);
-  });
+  beforeEach(() => jest.clearAllMocks());
 
   describe('handleCardPayment', () => {
     it('creates Mollie payment and returns checkout URL', async () => {
@@ -69,47 +45,55 @@ describe('paymentService', () => {
       expect(result.checkoutUrl).toBe('https://checkout.mollie.com/mock');
     });
 
-    it('does not send a confirmation email (sent on webhook instead)', async () => {
+    it('links mollie payment to order', async () => {
       await handleCardPayment('user@test.com', mockOrder);
-      expect(sendEmail).not.toHaveBeenCalled();
+      expect(orderService.linkMolliePayment).toHaveBeenCalledWith(mockOrder._id, 'tr_mock123');
+    });
+
+    it('does not send a confirmation email', async () => {
+      await handleCardPayment('user@test.com', mockOrder);
+      expect(notificationService.sendOrderConfirmation).not.toHaveBeenCalled();
+      expect(notificationService.sendOrderConfirmationToUser).not.toHaveBeenCalled();
     });
   });
 
   describe('handleCashPayment', () => {
-    it('marks order as unpaid and decrements product quantities in a transaction', async () => {
+    it('marks order unpaid, decrements stock, notifies and sends email', async () => {
       await handleCashPayment('tenant-1', 'user@test.com', mockOrder);
-      expect(OrderModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        mockOrder._id,
-        { isPaid: false },
-        { session: mockSessionObj },
-      );
-      expect(mockSessionObj.endSession).toHaveBeenCalled();
+
+      expect(orderService.markUnpaidAndDecrementStock).toHaveBeenCalledWith(mockOrder);
+      expect(orderService.notifyEstablishment).toHaveBeenCalledWith('tenant-1', 'est-1', mockOrder);
+      expect(notificationService.sendOrderConfirmation).toHaveBeenCalledWith('user@test.com', mockOrder);
     });
   });
 
   describe('handleWebhook', () => {
-    it('marks order as paid when Mollie status is paid', async () => {
+    it('marks order as paid and notifies when Mollie status is paid', async () => {
       (mollieService.fetchPaymentById as jest.Mock).mockResolvedValue({ status: 'paid' });
-      (OrderModel.findOne as jest.Mock).mockResolvedValue({ ...mockOrder, _id: { toString: () => mockOrder._id } });
-      (UserModel.findById as jest.Mock).mockResolvedValue({ email: 'user@test.com' });
+      (orderService.findByMolliePaymentId as jest.Mock).mockResolvedValue(mockOrder);
 
       const result = await handleWebhook('tr_mock123');
+
       expect(result.status).toBe('paid');
-      expect(OrderModel.findByIdAndUpdate).toHaveBeenCalled();
+      expect(orderService.markPaidAndDecrementStock).toHaveBeenCalledWith(mockOrder);
+      expect(orderService.notifyRealtime).toHaveBeenCalledWith(mockOrder);
+      expect(notificationService.sendOrderConfirmationToUser).toHaveBeenCalledWith('user-1', mockOrder);
     });
 
-    it('sends confirmation email only on paid webhook', async () => {
-      (mollieService.fetchPaymentById as jest.Mock).mockResolvedValue({ status: 'paid' });
-      (OrderModel.findOne as jest.Mock).mockResolvedValue({ ...mockOrder, _id: { toString: () => mockOrder._id } });
-      (UserModel.findById as jest.Mock).mockResolvedValue({ email: 'user@test.com' });
+    it('does nothing extra for non-paid status', async () => {
+      (mollieService.fetchPaymentById as jest.Mock).mockResolvedValue({ status: 'open' });
+      (orderService.findByMolliePaymentId as jest.Mock).mockResolvedValue(mockOrder);
 
-      await handleWebhook('tr_mock123');
-      expect(sendEmail).toHaveBeenCalledTimes(1);
+      const result = await handleWebhook('tr_mock123');
+
+      expect(result.status).toBe('open');
+      expect(orderService.markPaidAndDecrementStock).not.toHaveBeenCalled();
+      expect(notificationService.sendOrderConfirmationToUser).not.toHaveBeenCalled();
     });
 
     it('throws when order not found for payment', async () => {
       (mollieService.fetchPaymentById as jest.Mock).mockResolvedValue({ status: 'paid' });
-      (OrderModel.findOne as jest.Mock).mockResolvedValue(null);
+      (orderService.findByMolliePaymentId as jest.Mock).mockResolvedValue(null);
 
       await expect(handleWebhook('tr_unknown')).rejects.toThrow('Order not found for payment');
     });

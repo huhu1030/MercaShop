@@ -15,10 +15,10 @@ interface MailData {
   firstName?: string;
   lastName?: string;
   url?: string;
-  orderItems?: Array<{ name: string; quantity: number; price: number }>;
-  orderAmount?: number;
-  orderDate?: string;
-  orderNumber?: string;
+  items?: Array<{ name: string; quantity: number; price: number }>;
+  amount?: number;
+  date?: string;
+  number?: string;
 }
 
 function createTransporter() {
