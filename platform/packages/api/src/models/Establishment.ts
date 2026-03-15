@@ -15,7 +15,7 @@ export interface EstablishmentDocument extends Document {
     city: string;
     country: string;
   };
-  restaurateurId: string;
+  ownerId: string;
   products: string[];
   description?: string;
   path?: string;
@@ -54,7 +54,7 @@ const establishmentSchema = new Schema<EstablishmentDocument>(
     logo: { type: String, default: '' },
     banner: { type: String, default: '' },
     address: { type: addressSchema, required: true },
-    restaurateurId: { type: String, required: true },
+    ownerId: { type: String, required: true },
     products: [{ type: String }],
     description: { type: String, default: '' },
     path: { type: String, default: '' },
@@ -66,6 +66,6 @@ const establishmentSchema = new Schema<EstablishmentDocument>(
   { timestamps: true },
 );
 
-establishmentSchema.index({ tenantId: 1, restaurateurId: 1 });
+establishmentSchema.index({ tenantId: 1, ownerId: 1 });
 
 export const EstablishmentModel = model<EstablishmentDocument>('Establishment', establishmentSchema);

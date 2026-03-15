@@ -8,6 +8,8 @@ export interface UserDocument extends Document {
   email: string;
   phone: string;
   avatar: string;
+  role: string;
+  vatNumber?: string;
   isVerified: boolean;
 }
 
@@ -20,6 +22,8 @@ const userSchema = new Schema<UserDocument>(
     email: { type: String, required: true },
     phone: { type: String, default: '' },
     avatar: { type: String, default: 'uploads/avatar_default.png' },
+    role: { type: String, default: 'USER' },
+    vatNumber: { type: String, default: '' },
     isVerified: { type: Boolean, default: false },
   },
   { timestamps: true },

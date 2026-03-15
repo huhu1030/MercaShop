@@ -18,7 +18,13 @@ export enum DeliveryMethod {
   DELIVERY = 'DELIVERY',
 }
 
-export enum RestaurantStatus {
+export enum UserRole {
+  USER = 'USER',
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+}
+
+export enum EstablishmentStatus {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
 }

@@ -10,8 +10,6 @@ import { UploadController } from './../controllers/UploadController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TenantController } from './../controllers/TenantController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { RestaurateurController } from './../controllers/RestaurateurController';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductController } from './../controllers/ProductController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PaymentController } from './../controllers/PaymentController';
@@ -88,17 +86,6 @@ const models: TsoaRoute.Models = {
     "Partial_CreateTenantBody_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contactEmail":{"dataType":"string"}},"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateRestaurateurBody": {
-        "dataType": "refObject",
-        "properties": {
-            "email": {"dataType":"string","required":true},
-            "firstName": {"dataType":"string","required":true},
-            "lastName": {"dataType":"string","required":true},
-            "vatNumber": {"dataType":"string"},
-        },
-        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateProductBody": {
@@ -432,69 +419,6 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateTenant',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsRestaurateurController_createRestaurateur: Record<string, TsoaRoute.ParameterSchema> = {
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"ref":"CreateRestaurateurBody"},
-        };
-        app.post('/api/restaurateurs',
-            authenticateMiddleware([{"BearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(RestaurateurController)),
-            ...(fetchMiddlewares<RequestHandler>(RestaurateurController.prototype.createRestaurateur)),
-
-            async function RestaurateurController_createRestaurateur(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsRestaurateurController_createRestaurateur, request, response });
-
-                const controller = new RestaurateurController();
-
-              await templateService.apiHandler({
-                methodName: 'createRestaurateur',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsRestaurateurController_getMe: Record<string, TsoaRoute.ParameterSchema> = {
-                req: {"in":"request","name":"req","required":true,"dataType":"object"},
-        };
-        app.get('/api/restaurateurs/me',
-            authenticateMiddleware([{"BearerAuth":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(RestaurateurController)),
-            ...(fetchMiddlewares<RequestHandler>(RestaurateurController.prototype.getMe)),
-
-            async function RestaurateurController_getMe(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsRestaurateurController_getMe, request, response });
-
-                const controller = new RestaurateurController();
-
-              await templateService.apiHandler({
-                methodName: 'getMe',
                 controller,
                 response,
                 next,
