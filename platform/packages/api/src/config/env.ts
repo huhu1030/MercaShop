@@ -11,7 +11,21 @@ export const env = {
     projectId: process.env.FIREBASE_PROJECT_ID ?? '',
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n') ?? '',
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL ?? '',
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET ?? '',
+  },
+  gcsBucketName: process.env.GCS_BUCKET_NAME ?? '',
+  oauth: {
+    google: {
+      clientId: process.env.OAUTH_GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.OAUTH_GOOGLE_CLIENT_SECRET ?? '',
+    },
+    apple: {
+      clientId: process.env.OAUTH_APPLE_CLIENT_ID ?? '',
+      clientSecret: process.env.OAUTH_APPLE_CLIENT_SECRET ?? '',
+    },
+    facebook: {
+      clientId: process.env.OAUTH_FACEBOOK_CLIENT_ID ?? '',
+      clientSecret: process.env.OAUTH_FACEBOOK_CLIENT_SECRET ?? '',
+    },
   },
   mollieKey: process.env.MOLLIE_KEY ?? '',
   mail: {
