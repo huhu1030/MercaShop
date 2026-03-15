@@ -1,0 +1,89 @@
+import { Controller, Get, Post, Put, Delete, Route, Body, Security, Request as TsoaRequest } from 'tsoa';
+import { Request } from 'express';
+import { UserModel } from '../models';
+import { firebaseAuth } from '../config/firebase';
+
+interface CreateUserBody {
+  firstName: string;
+  lastName: string;
+  phone?: string;
+}
+
+interface UpdateUserBody {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}
+
+@Route('api/users')
+export class UserController extends Controller {
+  @Post('')
+  @Security('BearerAuth')
+  public async createUser(
+    @TsoaRequest() req: Request,
+    @Body() body: CreateUserBody,
+  ): Promise<{ user: any }> {
+    const { uid, email, tenantId } = req.firebaseUser!;
+
+    const existing = await UserModel.findOne({ tenantId, firebaseUid: uid });
+    if (existing) {
+      this.setStatus(409);
+      return { user: existing };
+    }
+
+    await firebaseAuth.setCustomUserClaims(uid, { tenantId });
+
+    const user = await UserModel.create({
+      tenantId,
+      firebaseUid: uid,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: email.toLowerCase(),
+      phone: body.phone ?? '',
+    });
+
+    this.setStatus(201);
+    return { user };
+  }
+
+  @Get('me')
+  @Security('BearerAuth')
+  public async getMe(@TsoaRequest() req: Request): Promise<{ user: any }> {
+    const user = await UserModel.findOne({
+      tenantId: req.tenantId,
+      firebaseUid: req.firebaseUser!.uid,
+    });
+    if (!user) {
+      this.setStatus(404);
+      throw new Error('User not found');
+    }
+    return { user };
+  }
+
+  @Put('me')
+  @Security('BearerAuth')
+  public async updateMe(
+    @TsoaRequest() req: Request,
+    @Body() body: UpdateUserBody,
+  ): Promise<{ user: any }> {
+    const user = await UserModel.findOneAndUpdate(
+      { tenantId: req.tenantId, firebaseUid: req.firebaseUser!.uid },
+      body,
+      { new: true },
+    );
+    if (!user) {
+      this.setStatus(404);
+      throw new Error('User not found');
+    }
+    return { user };
+  }
+
+  @Delete('me')
+  @Security('BearerAuth')
+  public async deleteMe(@TsoaRequest() req: Request): Promise<{ message: string }> {
+    const { uid } = req.firebaseUser!;
+    await UserModel.findOneAndDelete({ tenantId: req.tenantId, firebaseUid: uid });
+    await firebaseAuth.deleteUser(uid);
+    return { message: 'Account deleted' };
+  }
+}
