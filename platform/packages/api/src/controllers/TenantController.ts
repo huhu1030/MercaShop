@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Route, Query, Body, Path, Security } from 'tsoa';
 import { TenantModel } from '../models';
 import { ITenantConfig } from '@mercashop/shared';
-import { createIdentityPlatformTenant } from '../services/identityPlatformService';
+import { createIdentityPlatformTenant, deleteIdentityPlatformTenant } from '../services/identityPlatformService';
 
 interface CreateTenantBody {
   name: string;
@@ -31,15 +31,23 @@ export class TenantController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createTenant(@Body() body: CreateTenantBody): Promise<{ tenant: any }> {
-    const ipTenantId = await createIdentityPlatformTenant(body.name);
+    let ipTenantId: string | undefined;
+    try {
+      ipTenantId = await createIdentityPlatformTenant(body.name);
 
-    const tenant = await TenantModel.create({
-      ...body,
-      identityPlatformTenantId: ipTenantId,
-    });
+      const tenant = await TenantModel.create({
+        ...body,
+        identityPlatformTenantId: ipTenantId,
+      });
 
-    this.setStatus(201);
-    return { tenant };
+      this.setStatus(201);
+      return { tenant };
+    } catch (error) {
+      if (ipTenantId) {
+        await deleteIdentityPlatformTenant(ipTenantId).catch(() => {});
+      }
+      throw error;
+    }
   }
 
   @Put('{id}')

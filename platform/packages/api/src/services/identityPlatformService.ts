@@ -50,7 +50,12 @@ export async function createIdentityPlatformTenant(displayName: string): Promise
     emailSignInConfig: { enabled: true, passwordRequired: true },
   });
 
-  await configureOAuthProviders(tenant.tenantId);
+  try {
+    await configureOAuthProviders(tenant.tenantId);
+  } catch (error) {
+    await firebaseAuth.tenantManager().deleteTenant(tenant.tenantId).catch(() => {});
+    throw error;
+  }
 
   return tenant.tenantId;
 }

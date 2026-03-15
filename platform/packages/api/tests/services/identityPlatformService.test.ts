@@ -58,6 +58,21 @@ describe('identityPlatformService', () => {
       await expect(createIdentityPlatformTenant('Bad Tenant')).rejects.toThrow('quota exceeded');
       expect(global.fetch).not.toHaveBeenCalled();
     });
+
+    it('cleans up IP tenant if OAuth provider configuration fails', async () => {
+      mockCreateTenant.mockResolvedValue({ tenantId: 'ip-tenant-456' });
+      mockGetAccessToken.mockResolvedValue('mock-token');
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'bad config' }),
+      });
+      mockDeleteTenant.mockResolvedValue(undefined);
+
+      await expect(createIdentityPlatformTenant('Fail OAuth')).rejects.toThrow(
+        'Failed to configure google.com',
+      );
+      expect(mockDeleteTenant).toHaveBeenCalledWith('ip-tenant-456');
+    });
   });
 
   describe('deleteIdentityPlatformTenant', () => {
