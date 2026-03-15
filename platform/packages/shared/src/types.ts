@@ -18,21 +18,20 @@ export interface IDeliveryAddress {
   zipCode?: string;
   city?: string;
   municipality?: string;
-  deliveryMethod?: string;
   comment?: string;
 }
 
 export interface IBillingInformation {
   name?: string;
   email?: string;
-  phoneNumber?: string;
+  phone?: string;
 }
 
 export interface IOrderLine {
   item: {
     _id: string;
     name: string;
-    amount: number;
+    quantity: number;
     price?: number;
   };
 }

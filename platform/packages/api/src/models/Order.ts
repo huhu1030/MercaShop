@@ -2,13 +2,13 @@ import { Schema, model, Document } from 'mongoose';
 
 export interface OrderDocument extends Document {
   tenantId: string;
-  clientId: string;
+  userId: string;
   orderDate: number;
   status: string;
   orderLines: Array<{
-    item: { _id: string; name: string; amount: number; price?: number };
+    item: { _id: string; name: string; quantity: number; price?: number };
   }>;
-  restaurantId: string;
+  establishmentId: string;
   total: number;
   deliveryAddress: Record<string, unknown>;
   billingInformation: Record<string, unknown>;
@@ -23,7 +23,7 @@ const orderLineSchema = new Schema(
     item: {
       _id: { type: String, required: true },
       name: { type: String, required: true },
-      amount: { type: Number, required: true },
+      quantity: { type: Number, required: true },
       price: { type: Number },
     },
   },
@@ -33,11 +33,11 @@ const orderLineSchema = new Schema(
 const orderSchema = new Schema<OrderDocument>(
   {
     tenantId: { type: String, required: true, index: true },
-    clientId: { type: String, required: true },
+    userId: { type: String, required: true },
     orderDate: { type: Number, default: () => Date.now() },
     status: { type: String, default: 'PENDING' },
     orderLines: [orderLineSchema],
-    restaurantId: { type: String, required: true },
+    establishmentId: { type: String, required: true },
     total: { type: Number, required: true },
     deliveryAddress: { type: Schema.Types.Mixed, default: {} },
     billingInformation: { type: Schema.Types.Mixed, default: {} },
@@ -49,7 +49,7 @@ const orderSchema = new Schema<OrderDocument>(
   { timestamps: true },
 );
 
-orderSchema.index({ tenantId: 1, restaurantId: 1 });
-orderSchema.index({ tenantId: 1, clientId: 1 });
+orderSchema.index({ tenantId: 1, establishmentId: 1 });
+orderSchema.index({ tenantId: 1, userId: 1 });
 
 export const OrderModel = model<OrderDocument>('Order', orderSchema);

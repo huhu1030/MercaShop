@@ -3,7 +3,7 @@ import { Schema, model, Document } from 'mongoose';
 export interface ProductDocument extends Document {
   tenantId: string;
   name: string;
-  restaurantId: string;
+  establishmentId: string;
   description?: string;
   category: string;
   price: number;
@@ -17,7 +17,7 @@ const productSchema = new Schema<ProductDocument>(
   {
     tenantId: { type: String, required: true, index: true },
     name: { type: String, required: true },
-    restaurantId: { type: String, required: true },
+    establishmentId: { type: String, required: true },
     description: { type: String, default: '' },
     category: { type: String, required: true },
     price: { type: Number, required: true },
@@ -29,6 +29,6 @@ const productSchema = new Schema<ProductDocument>(
   { timestamps: true },
 );
 
-productSchema.index({ tenantId: 1, restaurantId: 1 });
+productSchema.index({ tenantId: 1, establishmentId: 1 });
 
 export const ProductModel = model<ProductDocument>('Product', productSchema);
