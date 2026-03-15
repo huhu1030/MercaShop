@@ -4,4 +4,7 @@ dist/
 .env.local
 *.log
 .DS_Store
+.idea/
+*.tsbuildinfo
 platform/packages/shared/src/generated/
+docs/*
