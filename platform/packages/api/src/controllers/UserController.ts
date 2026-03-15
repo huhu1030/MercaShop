@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Route, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { UserModel } from '../models';
-import { firebaseAuth } from '../config/firebase';
+import * as userService from '../services/userService';
 
 interface CreateUserBody {
   firstName: string;
@@ -25,14 +24,14 @@ export class UserController extends Controller {
   ): Promise<{ user: any }> {
     const { uid, email, tenantId } = req.firebaseUser!;
 
-    const existing = await UserModel.findOne({ tenantId, firebaseUid: uid });
+    const existing = await userService.findUserByFirebaseUid(tenantId!, uid);
     if (existing) {
       this.setStatus(409);
       return { user: existing };
     }
 
-    const user = await UserModel.create({
-      tenantId,
+    const user = await userService.createUser({
+      tenantId: tenantId!,
       firebaseUid: uid,
       firstName: body.firstName,
       lastName: body.lastName,
@@ -47,10 +46,7 @@ export class UserController extends Controller {
   @Get('me')
   @Security('BearerAuth')
   public async getMe(@Request() req: ExpressRequest): Promise<{ user: any }> {
-    const user = await UserModel.findOne({
-      tenantId: req.tenantId,
-      firebaseUid: req.firebaseUser!.uid,
-    });
+    const user = await userService.findUserByFirebaseUid(req.tenantId!, req.firebaseUser!.uid);
     if (!user) {
       this.setStatus(404);
       throw new Error('User not found');
@@ -64,11 +60,7 @@ export class UserController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: UpdateUserBody,
   ): Promise<{ user: any }> {
-    const user = await UserModel.findOneAndUpdate(
-      { tenantId: req.tenantId, firebaseUid: req.firebaseUser!.uid },
-      body,
-      { new: true },
-    );
+    const user = await userService.updateUser(req.tenantId!, req.firebaseUser!.uid, body);
     if (!user) {
       this.setStatus(404);
       throw new Error('User not found');
@@ -81,9 +73,7 @@ export class UserController extends Controller {
   public async deleteMe(@Request() req: ExpressRequest): Promise<{ message: string }> {
     const { uid } = req.firebaseUser!;
     const ipTenantId = req.tenant!.identityPlatformTenantId;
-
-    await UserModel.findOneAndDelete({ tenantId: req.tenantId, firebaseUid: uid });
-    await firebaseAuth.tenantManager().authForTenant(ipTenantId).deleteUser(uid);
+    await userService.deleteUser(req.tenantId!, uid, ipTenantId);
     return { message: 'Account deleted' };
   }
 }

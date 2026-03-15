@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import { PaymentMethod } from '../types/order';
 
 export interface OrderDocument extends Document {
   tenantId: string;
@@ -12,7 +13,7 @@ export interface OrderDocument extends Document {
   total: number;
   deliveryAddress: Record<string, unknown>;
   billingInformation: Record<string, unknown>;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   isPaid: boolean;
   deliveryMethod: string;
   mollieOrderId?: string;
@@ -41,7 +42,7 @@ const orderSchema = new Schema<OrderDocument>(
     total: { type: Number, required: true },
     deliveryAddress: { type: Schema.Types.Mixed, default: {} },
     billingInformation: { type: Schema.Types.Mixed, default: {} },
-    paymentMethod: { type: String, required: true },
+    paymentMethod: { type: String, enum: Object.values(PaymentMethod), required: true },
     isPaid: { type: Boolean, default: false },
     deliveryMethod: { type: String, default: '' },
     mollieOrderId: { type: String, default: '' },

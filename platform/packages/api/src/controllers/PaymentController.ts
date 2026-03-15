@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Route, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { OrderModel, UserModel } from '../models';
-import { handleCardPayment, handleCashPayment, handleWebhook } from '../services/paymentService';
-import type { Order } from '../types/order';
+import { PaymentMethod } from '../types/order';
+import * as paymentService from '../services/paymentService';
+import * as orderService from '../services/orderService';
 
 @Route('api/payments')
 export class PaymentController extends Controller {
@@ -10,31 +10,22 @@ export class PaymentController extends Controller {
   @Security('BearerAuth')
   public async processPayment(
     @Request() req: ExpressRequest,
-    @Body() body: { orderId: string; paymentMethod: string },
+    @Body() body: { orderId: string; paymentMethod: PaymentMethod },
   ): Promise<{ checkoutUrl?: string; message?: string }> {
-    const order = await OrderModel.findOne({
-      _id: body.orderId,
-      tenantId: req.tenantId,
-    });
-    if (!order) {
-      this.setStatus(404);
-      throw new Error('Order not found');
+    try {
+      return await paymentService.processPayment(
+        req.tenantId!,
+        req.firebaseUser!.uid,
+        req.firebaseUser!.email,
+        body.orderId,
+        body.paymentMethod,
+      );
+    } catch (error: any) {
+      if (error.message === 'Order not found') {
+        this.setStatus(404);
+      }
+      throw error;
     }
-
-    const user = await UserModel.findOne({
-      tenantId: req.tenantId,
-      firebaseUid: req.firebaseUser!.uid,
-    });
-    const email = user?.email ?? req.firebaseUser!.email;
-
-    const plainOrder = { ...order.toObject(), _id: order._id.toString() } as Order;
-
-    if (body.paymentMethod === 'CARD') {
-      return handleCardPayment(email, plainOrder);
-    }
-
-    await handleCashPayment(req.tenantId!, email, plainOrder);
-    return { message: 'Cash order placed' };
   }
 
   @Get('{id}')
@@ -43,7 +34,7 @@ export class PaymentController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ order: any }> {
-    const order = await OrderModel.findOne({ _id: id, tenantId: req.tenantId });
+    const order = await orderService.findOrderById(id, req.tenantId!);
     if (!order) {
       this.setStatus(404);
       throw new Error('Order not found');
@@ -56,6 +47,6 @@ export class PaymentController extends Controller {
 export class WebhookController extends Controller {
   @Post('')
   public async mollieWebhook(@Body() body: { id: string }): Promise<{ status: string }> {
-    return handleWebhook(body.id);
+    return paymentService.handleWebhook(body.id);
   }
 }

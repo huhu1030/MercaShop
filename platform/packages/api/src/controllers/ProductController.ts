@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Patch, Route, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { ProductModel } from '../models';
+import * as productService from '../services/productService';
 
 interface CreateProductBody {
   name: string;
@@ -21,7 +21,7 @@ export class ProductController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: CreateProductBody,
   ): Promise<{ product: any }> {
-    const product = await ProductModel.create({ tenantId: req.tenantId, ...body });
+    const product = await productService.createProduct({ tenantId: req.tenantId!, ...body });
     this.setStatus(201);
     return { product };
   }
@@ -32,7 +32,7 @@ export class ProductController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ product: any }> {
-    const product = await ProductModel.findOne({ _id: id, tenantId: req.tenantId });
+    const product = await productService.findProductById(id, req.tenantId!);
     if (!product) {
       this.setStatus(404);
       throw new Error('Product not found');
@@ -46,10 +46,7 @@ export class ProductController extends Controller {
     @Request() req: ExpressRequest,
     @Path() establishmentId: string,
   ): Promise<{ products: any[] }> {
-    const products = await ProductModel.find({
-      tenantId: req.tenantId,
-      establishmentId,
-    });
+    const products = await productService.findProductsByEstablishment(req.tenantId!, establishmentId);
     return { products };
   }
 
@@ -59,7 +56,7 @@ export class ProductController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ message: string }> {
-    await ProductModel.findOneAndDelete({ _id: id, tenantId: req.tenantId });
+    await productService.deleteProduct(id, req.tenantId!);
     return { message: 'Product deleted' };
   }
 
@@ -70,11 +67,7 @@ export class ProductController extends Controller {
     @Path() id: string,
     @Body() body: { quantity: number },
   ): Promise<{ product: any }> {
-    const product = await ProductModel.findOneAndUpdate(
-      { _id: id, tenantId: req.tenantId },
-      { quantity: body.quantity },
-      { new: true },
-    );
+    const product = await productService.updateProductQuantity(id, req.tenantId!, body.quantity);
     if (!product) {
       this.setStatus(404);
       throw new Error('Product not found');

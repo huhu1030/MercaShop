@@ -1,8 +1,34 @@
 import * as mollieService from './mollieService';
 import * as orderService from './orderService';
+import * as userService from './userService';
 import * as notificationService from './notificationService';
 import { getCurrentDateTimeEuro } from '../utils/date';
+import { PaymentMethod } from '../types/order';
 import type { Order } from '../types/order';
+
+export async function processPayment(
+  tenantId: string,
+  firebaseUid: string,
+  firebaseEmail: string,
+  orderId: string,
+  paymentMethod: PaymentMethod,
+): Promise<{ checkoutUrl?: string; message?: string }> {
+  const order = await orderService.findOrderById(orderId, tenantId);
+  if (!order) {
+    throw new Error('Order not found');
+  }
+
+  const user = await userService.findUserByFirebaseUid(tenantId, firebaseUid);
+  const email = user?.email ?? firebaseEmail;
+  const plainOrder = { ...order.toObject(), _id: order._id.toString() } as Order;
+
+  if (paymentMethod === PaymentMethod.CARD) {
+    return handleCardPayment(email, plainOrder);
+  }
+
+  await handleCashPayment(tenantId, email, plainOrder);
+  return { message: 'Cash order placed' };
+}
 
 export async function handleCardPayment(
   _userEmail: string,

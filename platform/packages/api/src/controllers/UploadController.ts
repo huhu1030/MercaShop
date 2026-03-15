@@ -1,7 +1,6 @@
 import { Controller, Patch, Get, Route, Path, Query, Security, Request, UploadedFile } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { ProductModel } from '../models';
-import { getBucket } from '../config/gcp';
+import * as uploadService from '../services/uploadService';
 
 @Route('api')
 export class UploadController extends Controller {
@@ -12,23 +11,7 @@ export class UploadController extends Controller {
     @Path() productId: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<{ url: string }> {
-    const tenantId = req.tenantId!;
-    const filePath = `tenants/${tenantId}/products/${productId}/${file.originalname}`;
-    const bucket = getBucket();
-    const blob = bucket.file(filePath);
-
-    await blob.save(file.buffer, {
-      metadata: { contentType: file.mimetype },
-    });
-
-    await blob.makePublic();
-    const url = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
-
-    await ProductModel.findOneAndUpdate(
-      { _id: productId, tenantId },
-      { photo: url },
-    );
-
+    const url = await uploadService.uploadProductImage(req.tenantId!, productId, file);
     return { url };
   }
 
@@ -38,13 +21,7 @@ export class UploadController extends Controller {
     @Request() req: ExpressRequest,
     @Query() prefix?: string,
   ): Promise<{ files: string[] }> {
-    const tenantId = req.tenantId!;
-    const searchPrefix = prefix
-      ? `tenants/${tenantId}/${prefix}`
-      : `tenants/${tenantId}/`;
-
-    const bucket = getBucket();
-    const [files] = await bucket.getFiles({ prefix: searchPrefix });
-    return { files: files.map((f) => f.name) };
+    const files = await uploadService.listImages(req.tenantId!, prefix);
+    return { files };
   }
 }

@@ -1,13 +1,13 @@
 import { Controller, Get, Patch, Route, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { EstablishmentModel } from '../models';
+import * as establishmentService from '../services/establishmentService';
 
 @Route('api/establishments')
 export class EstablishmentController extends Controller {
   @Get('')
   @Security('BearerAuth')
   public async getEstablishments(@Request() req: ExpressRequest): Promise<{ establishments: any[] }> {
-    const establishments = await EstablishmentModel.find({ tenantId: req.tenantId });
+    const establishments = await establishmentService.findEstablishments(req.tenantId!);
     return { establishments };
   }
 
@@ -17,7 +17,7 @@ export class EstablishmentController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ establishment: any }> {
-    const establishment = await EstablishmentModel.findOne({ _id: id, tenantId: req.tenantId });
+    const establishment = await establishmentService.findEstablishmentById(id, req.tenantId!);
     if (!establishment) {
       this.setStatus(404);
       throw new Error('Establishment not found');
@@ -31,10 +31,10 @@ export class EstablishmentController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: { establishmentId: string; status: string },
   ): Promise<{ establishment: any }> {
-    const establishment = await EstablishmentModel.findOneAndUpdate(
-      { _id: body.establishmentId, tenantId: req.tenantId },
-      { status: body.status },
-      { new: true },
+    const establishment = await establishmentService.updateEstablishmentStatus(
+      body.establishmentId,
+      req.tenantId!,
+      body.status,
     );
     if (!establishment) {
       this.setStatus(404);

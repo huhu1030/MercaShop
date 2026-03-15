@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Put, Route, Query, Body, Path, Security } from 'tsoa';
-import { TenantModel } from '../models';
 import { ITenantConfig } from '@mercashop/shared';
-import { createIdentityPlatformTenant, deleteIdentityPlatformTenant } from '../services/identityPlatformService';
+import * as tenantService from '../services/tenantService';
 
 interface CreateTenantBody {
   name: string;
@@ -15,45 +14,26 @@ interface CreateTenantBody {
 export class TenantController extends Controller {
   @Get('config')
   public async getTenantConfig(@Query() domain: string): Promise<ITenantConfig> {
-    const tenant = await TenantModel.findOne({ domains: domain, isActive: true });
-    if (!tenant) {
+    const config = await tenantService.getTenantConfig(domain);
+    if (!config) {
       this.setStatus(404);
       throw new Error('Tenant not found');
     }
-    return {
-      id: tenant._id.toString(),
-      name: tenant.name,
-      branding: tenant.branding,
-      identityPlatformTenantId: tenant.identityPlatformTenantId,
-    };
+    return config;
   }
 
   @Post('')
   @Security('BearerAuth')
   public async createTenant(@Body() body: CreateTenantBody): Promise<{ tenant: any }> {
-    let ipTenantId: string | undefined;
-    try {
-      ipTenantId = await createIdentityPlatformTenant(body.name);
-
-      const tenant = await TenantModel.create({
-        ...body,
-        identityPlatformTenantId: ipTenantId,
-      });
-
-      this.setStatus(201);
-      return { tenant };
-    } catch (error) {
-      if (ipTenantId) {
-        await deleteIdentityPlatformTenant(ipTenantId).catch(() => {});
-      }
-      throw error;
-    }
+    const tenant = await tenantService.createTenant(body);
+    this.setStatus(201);
+    return { tenant };
   }
 
   @Put('{id}')
   @Security('BearerAuth')
   public async updateTenant(@Path() id: string, @Body() body: Partial<CreateTenantBody>): Promise<{ tenant: any }> {
-    const tenant = await TenantModel.findByIdAndUpdate(id, body, { new: true });
+    const tenant = await tenantService.updateTenant(id, body);
     if (!tenant) {
       this.setStatus(404);
       throw new Error('Tenant not found');

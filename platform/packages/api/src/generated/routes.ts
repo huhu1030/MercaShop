@@ -104,6 +104,11 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaymentMethod": {
+        "dataType": "refEnum",
+        "enums": ["CARD","CASH"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Record_string.unknown_": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"validators":{}},
@@ -117,7 +122,7 @@ const models: TsoaRoute.Models = {
             "total": {"dataType":"double","required":true},
             "deliveryAddress": {"ref":"Record_string.unknown_"},
             "billingInformation": {"ref":"Record_string.unknown_"},
-            "paymentMethod": {"dataType":"string","required":true},
+            "paymentMethod": {"ref":"PaymentMethod","required":true},
             "deliveryMethod": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -594,7 +599,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPaymentController_processPayment: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"paymentMethod":{"dataType":"string","required":true},"orderId":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"paymentMethod":{"ref":"PaymentMethod","required":true},"orderId":{"dataType":"string","required":true}}},
         };
         app.post('/api/payments',
             authenticateMiddleware([{"BearerAuth":[]}]),

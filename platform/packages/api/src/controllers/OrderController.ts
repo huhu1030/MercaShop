@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Route, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { OrderModel } from '../models';
+import { PaymentMethod } from '../types/order';
+import * as orderService from '../services/orderService';
 
 interface CreateOrderBody {
   establishmentId: string;
@@ -8,7 +9,7 @@ interface CreateOrderBody {
   total: number;
   deliveryAddress?: Record<string, unknown>;
   billingInformation?: Record<string, unknown>;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   deliveryMethod?: string;
 }
 
@@ -20,8 +21,8 @@ export class OrderController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: CreateOrderBody,
   ): Promise<{ order: any }> {
-    const order = await OrderModel.create({
-      tenantId: req.tenantId,
+    const order = await orderService.createOrder({
+      tenantId: req.tenantId!,
       userId: req.firebaseUser!.uid,
       ...body,
     });
@@ -35,7 +36,7 @@ export class OrderController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ order: any }> {
-    const order = await OrderModel.findOne({ _id: id, tenantId: req.tenantId });
+    const order = await orderService.findOrderById(id, req.tenantId!);
     if (!order) {
       this.setStatus(404);
       throw new Error('Order not found');
@@ -49,10 +50,7 @@ export class OrderController extends Controller {
     @Request() req: ExpressRequest,
     @Path() establishmentId: string,
   ): Promise<{ orders: any[] }> {
-    const orders = await OrderModel.find({
-      tenantId: req.tenantId,
-      establishmentId,
-    });
+    const orders = await orderService.findOrdersByEstablishment(req.tenantId!, establishmentId);
     return { orders };
   }
 
@@ -62,10 +60,7 @@ export class OrderController extends Controller {
     @Request() req: ExpressRequest,
     @Path() userId: string,
   ): Promise<{ orders: any[] }> {
-    const orders = await OrderModel.find({
-      tenantId: req.tenantId,
-      userId,
-    });
+    const orders = await orderService.findOrdersByUser(req.tenantId!, userId);
     return { orders };
   }
 
@@ -76,11 +71,7 @@ export class OrderController extends Controller {
     @Path() id: string,
     @Body() body: { status: string },
   ): Promise<{ order: any }> {
-    const order = await OrderModel.findOneAndUpdate(
-      { _id: id, tenantId: req.tenantId },
-      { status: body.status },
-      { new: true },
-    );
+    const order = await orderService.updateOrderStatus(id, req.tenantId!, body.status);
     if (!order) {
       this.setStatus(404);
       throw new Error('Order not found');
@@ -94,7 +85,7 @@ export class OrderController extends Controller {
     @Request() req: ExpressRequest,
     @Path() id: string,
   ): Promise<{ message: string }> {
-    await OrderModel.findOneAndDelete({ _id: id, tenantId: req.tenantId });
+    await orderService.deleteOrder(id, req.tenantId!);
     return { message: 'Order deleted' };
   }
 }

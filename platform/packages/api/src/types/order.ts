@@ -1,3 +1,8 @@
+export enum PaymentMethod {
+  CARD = 'CARD',
+  CASH = 'CASH',
+}
+
 export interface OrderLineItem {
   _id: string;
   name: string;
