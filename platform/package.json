@@ -1,0 +1,18 @@
+{
+  "name": "mercashop-saas",
+  "private": true,
+  "scripts": {
+    "dev:api": "pnpm --filter @mercashop/api dev",
+    "dev:web": "pnpm --filter @mercashop/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "generate:api-spec": "pnpm --filter @mercashop/api generate:spec",
+    "generate:api-client": "pnpm run generate:api-spec && pnpm --filter @mercashop/shared generate:client"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  }
+}
