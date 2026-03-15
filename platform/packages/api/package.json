@@ -2,6 +2,9 @@
   "name": "@mercashop/api",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "concurrently \"tsoa spec-and-routes\" \"tsx watch src/index.ts\"",
     "build": "tsoa spec-and-routes && tsc",
