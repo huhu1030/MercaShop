@@ -9,7 +9,7 @@
     "generate:spec": "tsoa spec",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
-    "test": "jest --config jest.config.ts"
+    "test": "jest"
   },
   "dependencies": {
     "express": "^4.18.0",
