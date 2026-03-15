@@ -15,16 +15,22 @@ export async function expressAuthentication(
     throw new Error('Missing or invalid authorization header');
   }
 
-  const token = authHeader.split(' ')[1];
-  const decoded = await firebaseAuth.verifyIdToken(token);
-
-  if (request.tenantId && decoded.tenantId && decoded.tenantId !== request.tenantId) {
-    throw new Error('Tenant mismatch');
+  if (!request.tenant) {
+    throw new Error('Tenant not resolved');
   }
+
+  const ipTenantId = request.tenant.identityPlatformTenantId;
+  if (!ipTenantId) {
+    throw new Error('Tenant not configured for Identity Platform');
+  }
+
+  const token = authHeader.split(' ')[1];
+  const tenantAuth = firebaseAuth.tenantManager().authForTenant(ipTenantId);
+  const decoded = await tenantAuth.verifyIdToken(token);
 
   return {
     uid: decoded.uid,
     email: decoded.email ?? '',
-    tenantId: (decoded.tenantId as string) ?? request.tenantId ?? '',
+    tenantId: request.tenantId ?? '',
   };
 }

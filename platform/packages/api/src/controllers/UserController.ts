@@ -31,8 +31,6 @@ export class UserController extends Controller {
       return { user: existing };
     }
 
-    await firebaseAuth.setCustomUserClaims(uid, { tenantId });
-
     const user = await UserModel.create({
       tenantId,
       firebaseUid: uid,
@@ -82,8 +80,10 @@ export class UserController extends Controller {
   @Security('BearerAuth')
   public async deleteMe(@Request() req: ExpressRequest): Promise<{ message: string }> {
     const { uid } = req.firebaseUser!;
+    const ipTenantId = req.tenant!.identityPlatformTenantId;
+
     await UserModel.findOneAndDelete({ tenantId: req.tenantId, firebaseUid: uid });
-    await firebaseAuth.deleteUser(uid);
+    await firebaseAuth.tenantManager().authForTenant(ipTenantId).deleteUser(uid);
     return { message: 'Account deleted' };
   }
 }

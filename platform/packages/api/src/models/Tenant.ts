@@ -11,6 +11,7 @@ export interface TenantDocument extends Document {
   };
   contactEmail: string;
   isActive: boolean;
+  identityPlatformTenantId: string;
 }
 
 const tenantSchema = new Schema<TenantDocument>(
@@ -25,6 +26,7 @@ const tenantSchema = new Schema<TenantDocument>(
     },
     contactEmail: { type: String, required: true },
     isActive: { type: Boolean, default: true },
+    identityPlatformTenantId: { type: String, required: true },
   },
   { timestamps: true },
 );

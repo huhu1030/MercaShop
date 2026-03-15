@@ -23,7 +23,7 @@ describe('tenantResolver', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('resolves tenant from x-tenant-id header', async () => {
-    const mockTenant = { _id: 'tenant-123', isActive: true };
+    const mockTenant = { _id: 'tenant-123', isActive: true, identityPlatformTenantId: 'ip-abc' };
     (TenantModel.findById as jest.Mock).mockResolvedValue(mockTenant);
 
     const { req, res, next } = createMockReqRes({ 'x-tenant-id': 'tenant-123' });
@@ -35,7 +35,7 @@ describe('tenantResolver', () => {
   });
 
   it('resolves tenant from Origin header domain lookup', async () => {
-    const mockTenant = { _id: { toString: () => 'tenant-456' }, isActive: true };
+    const mockTenant = { _id: { toString: () => 'tenant-456' }, isActive: true, identityPlatformTenantId: 'ip-def' };
     (TenantModel.findOne as jest.Mock).mockResolvedValue(mockTenant);
 
     const { req, res, next } = createMockReqRes({ origin: 'https://lebon.mercashop.be' });
@@ -71,7 +71,7 @@ describe('tenantResolver', () => {
   });
 
   it('uses cache on second call for same domain', async () => {
-    const mockTenant = { _id: { toString: () => 'tenant-789' }, isActive: true };
+    const mockTenant = { _id: { toString: () => 'tenant-789' }, isActive: true, identityPlatformTenantId: 'ip-ghi' };
     (TenantModel.findOne as jest.Mock).mockResolvedValue(mockTenant);
 
     const { req: req1, res: res1, next: next1 } = createMockReqRes({ origin: 'https://cached.test' });

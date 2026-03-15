@@ -7,8 +7,6 @@ export const firebaseAdmin = admin.initializeApp({
     privateKey: env.firebase.privateKey,
     clientEmail: env.firebase.clientEmail,
   }),
-  storageBucket: env.firebase.storageBucket,
 });
 
-export const cloudStorage = admin.storage();
 export const firebaseAuth = admin.auth();
