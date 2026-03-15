@@ -1,32 +1,30 @@
 export enum OrderStatus {
-  EN_COURS = 'EN_COURS',
-  ACCEPTE = 'ACCEPTE',
-  EN_PREPARATION = 'EN_PREPARATION',
-  PRET = 'PRET',
-  EN_LIVRAISON = 'EN_LIVRAISON',
-  LIVRE = 'LIVRE',
-  LIVRER = 'LIVRER',
-  ANNULE = 'ANNULE',
-  ANNULER = 'ANNULER',
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  PREPARING = 'PREPARING',
+  READY = 'READY',
+  OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
 }
 
 export enum PaymentMethod {
   CASH = 'CASH',
-  CARTE = 'CARTE',
+  CARD = 'CARD',
 }
 
 export enum DeliveryMethod {
-  PICKUP = 'Afhalen',
-  DELIVERY = 'Bezorging',
+  PICKUP = 'PICKUP',
+  DELIVERY = 'DELIVERY',
 }
 
 export enum RestaurantStatus {
-  OUVERT = 'OUVERT',
-  FERMER = 'FERMER',
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
 }
 
 export enum PictureType {
-  BANNIER = 'bannier',
-  LOGO = 'logo',
-  PRODUCT = 'product',
+  BANNER = 'BANNER',
+  LOGO = 'LOGO',
+  PRODUCT = 'PRODUCT',
 }

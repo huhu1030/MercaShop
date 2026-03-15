@@ -3,13 +3,13 @@ export interface ILocation {
   longitude: number;
 }
 
-export interface IAdresse {
-  rue: string;
-  numero: string;
-  codePostal: string;
-  commune: string;
-  ville: string;
-  pays: string;
+export interface IAddress {
+  street: string;
+  number: string;
+  zipCode: string;
+  municipality: string;
+  city: string;
+  country: string;
 }
 
 export interface IDeliveryAddress {
@@ -17,7 +17,7 @@ export interface IDeliveryAddress {
   number?: string;
   zipCode?: string;
   city?: string;
-  commune?: string;
+  municipality?: string;
   deliveryMethod?: string;
   comment?: string;
 }
@@ -28,7 +28,7 @@ export interface IBillingInformation {
   phoneNumber?: string;
 }
 
-export interface ILigneDeCommande {
+export interface IOrderLine {
   item: {
     _id: string;
     name: string;
