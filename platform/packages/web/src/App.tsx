@@ -1,7 +1,31 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthGuard } from './components/layout/AuthGuard';
+import { DashboardLayout } from './components/layout/DashboardLayout';
+import { LoginPage } from './pages/LoginPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { ProductCreatePage } from './pages/ProductCreatePage';
+import { ProductListPage } from './pages/ProductListPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+
+function DashboardRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthGuard>
+      <DashboardLayout>{children}</DashboardLayout>
+    </AuthGuard>
+  );
+}
+
 export default function App() {
   return (
-    <div>
-      <h1>MercaShop Admin Dashboard</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/orders" element={<DashboardRoute><OrdersPage /></DashboardRoute>} />
+        <Route path="/products" element={<DashboardRoute><ProductListPage /></DashboardRoute>} />
+        <Route path="/products/new" element={<DashboardRoute><ProductCreatePage /></DashboardRoute>} />
+        <Route path="/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />
+        <Route path="*" element={<Navigate to="/orders" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
