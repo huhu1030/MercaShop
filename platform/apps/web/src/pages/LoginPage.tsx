@@ -1,16 +1,8 @@
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Center,
-  VStack,
-  Heading,
-  Input,
-  Button,
-  Text,
-  Field,
-} from '@chakra-ui/react';
-import { useAuth } from '../hooks/useAuth';
+import {type FormEvent, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Box, Button, Center, Field, Heading, Input, Text, VStack,} from '@chakra-ui/react';
+import {useAuth} from '../hooks/useAuth';
+import {Colors} from '../constants/colors';
 
 export function LoginPage() {
   const { signIn } = useAuth();
@@ -35,24 +27,24 @@ export function LoginPage() {
   };
 
   return (
-    <Center minH="100vh" bg="gray.50">
+    <Center minH="100vh" bg={Colors.surface.background}>
       <Box
         as="form"
         onSubmit={handleSubmit}
-        bg="white"
-        p={8}
+        bg={Colors.surface.card}
+        p="2rem"
         borderRadius="lg"
         shadow="md"
         w="full"
-        maxW="400px"
+        maxW="25rem"
       >
-        <VStack gap={5}>
-          <Heading size="xl" color="purple.600">MercaShop</Heading>
-          <Heading size="md" color="gray.700">Sign in to your account</Heading>
+        <VStack gap="1.25rem">
+          <Heading size="xl" color={Colors.brand.primary}>MercaShop</Heading>
+          <Heading size="md" color={Colors.text.primary}>Sign in to your account</Heading>
 
           {error && (
-            <Box w="full" p={3} bg="red.50" borderRadius="md" borderLeft="4px solid" borderColor="red.500">
-              <Text color="red.700" fontSize="sm">{error}</Text>
+            <Box w="full" p="0.75rem" bg={Colors.feedback.errorBg} borderRadius="md" borderLeft="0.25rem solid" borderColor={Colors.feedback.errorBorder}>
+              <Text color={Colors.feedback.errorText} fontSize="sm">{error}</Text>
             </Box>
           )}
 

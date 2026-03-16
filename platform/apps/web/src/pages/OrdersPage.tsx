@@ -1,18 +1,12 @@
-import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import {
-  VStack,
-  Heading,
-  Card,
-  Text,
-  HStack,
-  Badge,
-} from '@chakra-ui/react';
-import { ShoppingCart } from 'lucide-react';
-import { useWebSocket } from '../hooks/useWebSocket';
-import { LoadingScreen } from '../components/ui/LoadingScreen';
-import { EmptyState } from '../components/ui/EmptyState';
-import { orderApi } from '../services/apiClientSetup';
+import {useEffect} from 'react';
+import {useQuery} from '@tanstack/react-query';
+import {Badge, Card, Heading, HStack, Text, VStack,} from '@chakra-ui/react';
+import {ShoppingCart} from 'lucide-react';
+import {useWebSocket} from '../hooks/useWebSocket';
+import {LoadingScreen} from '../components/ui/LoadingScreen';
+import {EmptyState} from '../components/ui/EmptyState';
+import {orderApi} from '../services/apiClientSetup';
+import {Colors} from '../constants/colors';
 
 const statusColorMap: Record<string, string> = {
   pending: 'yellow',
@@ -48,30 +42,30 @@ export function OrdersPage() {
   }>;
 
   return (
-    <VStack gap={5} align="stretch">
+    <VStack gap="1.25rem" align="stretch">
       <Heading size="lg">Orders</Heading>
 
       {orders.length === 0 ? (
         <EmptyState
-          icon={<ShoppingCart size={40} />}
+          icon={<ShoppingCart size="2.5rem" />}
           title="No orders yet"
           description="Orders will appear here when customers place them."
         />
       ) : (
-        <VStack gap={3} align="stretch">
+        <VStack gap="0.75rem" align="stretch">
           {orders.map((order) => (
             <Card.Root key={order._id} variant="outline">
               <Card.Body>
                 <HStack justify="space-between">
-                  <VStack align="start" gap={1}>
+                  <VStack align="start" gap="0.25rem">
                     <Text fontWeight="semibold">
                       Order #{order._id.slice(-6).toUpperCase()}
                     </Text>
-                    <Text fontSize="sm" color="gray.500">
+                    <Text fontSize="sm" color={Colors.text.muted}>
                       {new Date(order.createdAt).toLocaleDateString()}
                     </Text>
                   </VStack>
-                  <VStack align="end" gap={1}>
+                  <VStack align="end" gap="0.25rem">
                     <Badge colorPalette={statusColorMap[order.status] ?? 'gray'}>
                       {order.status}
                     </Badge>

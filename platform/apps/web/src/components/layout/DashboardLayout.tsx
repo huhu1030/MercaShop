@@ -11,9 +11,10 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { enableNotification, disableNotification } from '../../store/slices/generalSettingsSlice';
+import { Colors } from '../../constants/colors';
 import type { ReactNode } from 'react';
 
-const SIDEBAR_WIDTH = 260;
+const SIDEBAR_WIDTH = '16.25rem';
 
 interface NavItem {
   path: string;
@@ -22,10 +23,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { path: '/orders', label: 'Orders', icon: <ShoppingCart size={20} /> },
-  { path: '/products', label: 'Products', icon: <Package size={20} /> },
-  { path: '/products/new', label: 'Add Product', icon: <PackagePlus size={20} /> },
-  { path: '/analytics', label: 'Analytics', icon: <BarChart3 size={20} /> },
+  { path: '/orders', label: 'Orders', icon: <ShoppingCart size="1.25rem" /> },
+  { path: '/products', label: 'Products', icon: <Package size="1.25rem" /> },
+  { path: '/products/new', label: 'Add Product', icon: <PackagePlus size="1.25rem" /> },
+  { path: '/analytics', label: 'Analytics', icon: <BarChart3 size="1.25rem" /> },
 ];
 
 interface DashboardLayoutProps {
@@ -47,10 +48,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <Flex minH="100vh">
       <Box
         as="nav"
-        w={`${SIDEBAR_WIDTH}px`}
-        bg="gray.50"
+        w={SIDEBAR_WIDTH}
+        bg={Colors.surface.background}
         borderRight="1px solid"
-        borderColor="gray.200"
+        borderColor={Colors.surface.sidebarBorder}
         position="fixed"
         top={0}
         left={0}
@@ -58,27 +59,27 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         display="flex"
         flexDirection="column"
       >
-        <Box p={5}>
-          <Heading size="lg" color="purple.600">MercaShop</Heading>
+        <Box p="1.25rem">
+          <Heading size="lg" color={Colors.brand.primary}>MercaShop</Heading>
         </Box>
 
         <Separator />
 
-        <VStack gap={1} p={3} flex={1} align="stretch">
+        <VStack gap="0.25rem" p="0.75rem" flex={1} align="stretch">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <HStack
                 key={item.path}
-                gap={3}
-                px={3}
-                py={2}
+                gap="0.75rem"
+                px="0.75rem"
+                py="0.5rem"
                 borderRadius="md"
                 cursor="pointer"
-                bg={isActive ? 'purple.50' : 'transparent'}
-                color={isActive ? 'purple.700' : 'gray.700'}
+                bg={isActive ? Colors.brand.activeBg : 'transparent'}
+                color={isActive ? Colors.brand.activeText : Colors.text.primary}
                 fontWeight={isActive ? 'semibold' : 'normal'}
-                _hover={{ bg: isActive ? 'purple.50' : 'gray.100' }}
+                _hover={{ bg: isActive ? Colors.brand.activeBg : Colors.surface.hoverBg }}
                 onClick={() => navigate(item.path)}
               >
                 {item.icon}
@@ -90,7 +91,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <Separator />
 
-        <VStack gap={3} p={4} align="stretch">
+        <VStack gap="0.75rem" p="1rem" align="stretch">
           <Switch.Root
             checked={isSoundEnabled}
             onCheckedChange={handleSoundToggle}
@@ -101,27 +102,27 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Switch.Thumb />
             </Switch.Control>
             <Switch.Label>
-              <Text fontSize="sm" color="gray.600">Sound notifications</Text>
+              <Text fontSize="sm" color={Colors.text.secondary}>Sound notifications</Text>
             </Switch.Label>
           </Switch.Root>
 
           <HStack
-            gap={3}
-            px={3}
-            py={2}
+            gap="0.75rem"
+            px="0.75rem"
+            py="0.5rem"
             borderRadius="md"
             cursor="pointer"
-            color="gray.600"
-            _hover={{ bg: 'gray.100', color: 'red.600' }}
+            color={Colors.text.secondary}
+            _hover={{ bg: Colors.surface.hoverBg, color: 'red.600' }}
             onClick={logout}
           >
-            <LogOut size={20} />
+            <LogOut size="1.25rem" />
             <Text fontSize="sm">Sign out</Text>
           </HStack>
         </VStack>
       </Box>
 
-      <Box as="main" flex={1} ml={`${SIDEBAR_WIDTH}px`} p={6}>
+      <Box as="main" flex={1} ml={SIDEBAR_WIDTH} p="1.5rem">
         {children}
       </Box>
     </Flex>

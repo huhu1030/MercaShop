@@ -3,8 +3,8 @@ import { AuthGuard } from './components/layout/AuthGuard';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
-import { ProductCreatePage } from './pages/ProductCreatePage';
-import { ProductListPage } from './pages/ProductListPage';
+import { CreatePage } from './pages/products/CreatePage.tsx';
+import { ListPage } from './pages/products/ListPage.tsx';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 
 function DashboardRoute({ children }: { children: React.ReactNode }) {
@@ -21,8 +21,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/orders" element={<DashboardRoute><OrdersPage /></DashboardRoute>} />
-        <Route path="/products" element={<DashboardRoute><ProductListPage /></DashboardRoute>} />
-        <Route path="/products/new" element={<DashboardRoute><ProductCreatePage /></DashboardRoute>} />
+        <Route path="/products" element={<DashboardRoute><ListPage /></DashboardRoute>} />
+        <Route path="/products/new" element={<DashboardRoute><CreatePage /></DashboardRoute>} />
         <Route path="/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />
         <Route path="*" element={<Navigate to="/orders" replace />} />
       </Routes>
