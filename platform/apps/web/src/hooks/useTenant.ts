@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ITenantConfig } from '@mercashop/shared';
+import type { ITenantConfig } from '@mercashop/shared/api-client';
+import { api } from '../services/apiClientSetup';
 
 export function useTenant() {
   const [tenant, setTenant] = useState<ITenantConfig | null>(null);
@@ -7,15 +8,12 @@ export function useTenant() {
 
   useEffect(() => {
     const domain = window.location.hostname;
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    fetch(`${apiUrl}/tenant/config?domain=${encodeURIComponent(domain)}`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`Failed to fetch tenant config: ${res.status}`);
-        return res.json() as Promise<ITenantConfig>;
-      })
+    api.getTenantConfig({ domain })
       .then(setTenant)
-      .catch((err: Error) => console.error(err.message))
+      .catch((err: unknown) => {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        console.error('Failed to fetch tenant config:', message);
+      })
       .finally(() => setLoading(false));
   }, []);
 

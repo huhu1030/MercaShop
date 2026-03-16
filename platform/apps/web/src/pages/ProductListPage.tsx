@@ -8,41 +8,25 @@ import {
 import { Package } from 'lucide-react';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
-import { createApiConfiguration } from '../services/apiClientSetup';
-
-interface Product {
-  _id: string;
-  nom: string;
-  category: string;
-  prix: number;
-  quantity: number;
-}
-
-interface ProductsResponse {
-  products: Product[];
-}
-
-const apiConfig = createApiConfiguration();
-
-async function fetchProducts(restaurantId: string): Promise<ProductsResponse> {
-  const res = await fetch(`${apiConfig.basePath}/produit/restaurant/${restaurantId}`, {
-    headers: { Authorization: `Bearer ${await apiConfig.accessToken()}` },
-  });
-  if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json() as Promise<ProductsResponse>;
-}
+import { api } from '../services/apiClientSetup';
 
 export function ProductListPage() {
-  const restaurantId = ''; // TODO: get from tenant/restaurateur context
+  const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading } = useQuery({
-    queryKey: ['products', restaurantId],
-    queryFn: () => fetchProducts(restaurantId),
-    enabled: !!restaurantId,
+    queryKey: ['products', establishmentId],
+    queryFn: () => api.getProductsByEstablishment({ establishmentId }),
+    enabled: !!establishmentId,
   });
 
   if (isLoading) return <LoadingScreen />;
 
-  const products = data?.products ?? [];
+  const products = (data?.products ?? []) as Array<{
+    _id: string;
+    name: string;
+    category: string;
+    price: number;
+    quantity: number;
+  }>;
 
   return (
     <VStack gap={5} align="stretch">
@@ -69,10 +53,10 @@ export function ProductListPage() {
               {products.map((product) => (
                 <Table.Row key={product._id}>
                   <Table.Cell>
-                    <Text fontWeight="medium">{product.nom}</Text>
+                    <Text fontWeight="medium">{product.name}</Text>
                   </Table.Cell>
                   <Table.Cell>{product.category}</Table.Cell>
-                  <Table.Cell textAlign="right">&euro;{product.prix.toFixed(2)}</Table.Cell>
+                  <Table.Cell textAlign="right">&euro;{product.price.toFixed(2)}</Table.Cell>
                   <Table.Cell textAlign="right">{product.quantity}</Table.Cell>
                 </Table.Row>
               ))}

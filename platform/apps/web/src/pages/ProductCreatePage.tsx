@@ -9,29 +9,8 @@ import {
   Text,
   Field,
 } from '@chakra-ui/react';
-import { createApiConfiguration } from '../services/apiClientSetup';
-
-interface ProductPayload {
-  nom: string;
-  category: string;
-  prix: number;
-  quantity: number;
-  restaurant_id: string;
-}
-
-const apiConfig = createApiConfiguration();
-
-async function createProduct(payload: ProductPayload): Promise<void> {
-  const res = await fetch(`${apiConfig.basePath}/produit`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${await apiConfig.accessToken()}`,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error('Failed to create product');
-}
+import type { CreateProductBody } from '@mercashop/shared/api-client';
+import { api } from '../services/apiClientSetup';
 
 export function ProductCreatePage() {
   const [name, setName] = useState('');
@@ -40,7 +19,8 @@ export function ProductCreatePage() {
   const [quantity, setQuantity] = useState('');
 
   const mutation = useMutation({
-    mutationFn: createProduct,
+    mutationFn: (body: CreateProductBody) =>
+      api.createProduct({ createProductBody: body }),
     onSuccess: () => {
       setName('');
       setCategory('');
@@ -52,11 +32,11 @@ export function ProductCreatePage() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     mutation.mutate({
-      nom: name,
+      name,
       category,
-      prix: parseFloat(price),
+      price: parseFloat(price),
       quantity: parseInt(quantity, 10),
-      restaurant_id: '', // TODO: get from tenant/restaurateur context
+      establishmentId: '', // TODO: get from tenant/establishment context
     });
   };
 

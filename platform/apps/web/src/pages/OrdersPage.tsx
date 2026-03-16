@@ -12,28 +12,7 @@ import { ShoppingCart } from 'lucide-react';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
-import { createApiConfiguration } from '../services/apiClientSetup';
-
-interface Order {
-  _id: string;
-  status: string;
-  total: number;
-  createdAt: string;
-}
-
-interface OrdersResponse {
-  orders: Order[];
-}
-
-const apiConfig = createApiConfiguration();
-
-async function fetchOrders(restaurantId: string): Promise<OrdersResponse> {
-  const res = await fetch(`${apiConfig.basePath}/commande/restaurant/${restaurantId}`, {
-    headers: { Authorization: `Bearer ${await apiConfig.accessToken()}` },
-  });
-  if (!res.ok) throw new Error('Failed to fetch orders');
-  return res.json() as Promise<OrdersResponse>;
-}
+import { api } from '../services/apiClientSetup';
 
 const statusColorMap: Record<string, string> = {
   pending: 'yellow',
@@ -45,11 +24,11 @@ const statusColorMap: Record<string, string> = {
 };
 
 export function OrdersPage() {
-  const restaurantId = ''; // TODO: get from tenant/restaurateur context
+  const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['orders', restaurantId],
-    queryFn: () => fetchOrders(restaurantId),
-    enabled: !!restaurantId,
+    queryKey: ['orders', establishmentId],
+    queryFn: () => api.getOrdersByEstablishment({ establishmentId }),
+    enabled: !!establishmentId,
   });
 
   const { onNewOrders } = useWebSocket(import.meta.env.VITE_API_URL);
@@ -61,7 +40,12 @@ export function OrdersPage() {
 
   if (isLoading) return <LoadingScreen />;
 
-  const orders = data?.orders ?? [];
+  const orders = (data?.orders ?? []) as Array<{
+    _id: string;
+    status: string;
+    total: number;
+    createdAt: string;
+  }>;
 
   return (
     <VStack gap={5} align="stretch">
