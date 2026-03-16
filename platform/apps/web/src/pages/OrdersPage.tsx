@@ -12,7 +12,7 @@ import { ShoppingCart } from 'lucide-react';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
-import { api } from '../services/apiClientSetup';
+import { orderApi } from '../services/apiClientSetup';
 
 const statusColorMap: Record<string, string> = {
   pending: 'yellow',
@@ -27,7 +27,7 @@ export function OrdersPage() {
   const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['orders', establishmentId],
-    queryFn: () => api.getOrdersByEstablishment(establishmentId),
+    queryFn: () => orderApi.getOrdersByEstablishment(establishmentId),
     enabled: !!establishmentId,
   });
 

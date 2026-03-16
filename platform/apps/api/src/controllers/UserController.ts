@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Route, Body, Security, Request } from 'tsoa';
+import { Controller, Get, Post, Put, Delete, Route, Tags, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import * as userService from '../services/userService';
 
@@ -15,6 +15,7 @@ interface UpdateUserBody {
 }
 
 @Route('api/users')
+@Tags('User')
 export class UserController extends Controller {
   @Post('')
   @Security('BearerAuth')

@@ -1,8 +1,9 @@
-import { Controller, Patch, Get, Route, Path, Query, Security, Request, UploadedFile } from 'tsoa';
+import { Controller, Patch, Get, Route, Tags, Path, Query, Security, Request, UploadedFile } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import * as uploadService from '../services/uploadService';
 
 @Route('api')
+@Tags('Upload')
 export class UploadController extends Controller {
   @Patch('products/{productId}/image')
   @Security('BearerAuth')

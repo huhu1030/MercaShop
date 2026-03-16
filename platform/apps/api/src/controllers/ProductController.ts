@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Patch, Route, Path, Body, Security, Request } from 'tsoa';
+import { Controller, Get, Post, Delete, Patch, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import * as productService from '../services/productService';
 
@@ -14,6 +14,7 @@ interface CreateProductBody {
 }
 
 @Route('api/products')
+@Tags('Product')
 export class ProductController extends Controller {
   @Post('')
   @Security('BearerAuth')

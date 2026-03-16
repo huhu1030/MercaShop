@@ -1,8 +1,9 @@
-import { Controller, Get, Patch, Route, Path, Body, Security, Request } from 'tsoa';
+import { Controller, Get, Patch, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import * as establishmentService from '../services/establishmentService';
 
 @Route('api/establishments')
+@Tags('Establishment')
 export class EstablishmentController extends Controller {
   @Get('')
   @Security('BearerAuth')

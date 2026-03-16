@@ -8,13 +8,13 @@ import {
 import { Package } from 'lucide-react';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
-import { api } from '../services/apiClientSetup';
+import { productApi } from '../services/apiClientSetup';
 
 export function ProductListPage() {
   const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading } = useQuery({
     queryKey: ['products', establishmentId],
-    queryFn: () => api.getProductsByEstablishment(establishmentId),
+    queryFn: () => productApi.getProductsByEstablishment(establishmentId),
     enabled: !!establishmentId,
   });
 

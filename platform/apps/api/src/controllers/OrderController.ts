@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Route, Path, Body, Security, Request } from 'tsoa';
+import { Controller, Get, Post, Patch, Delete, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import { PaymentMethod } from '../types/order';
 import * as orderService from '../services/orderService';
@@ -14,6 +14,7 @@ interface CreateOrderBody {
 }
 
 @Route('api/orders')
+@Tags('Order')
 export class OrderController extends Controller {
   @Post('')
   @Security('BearerAuth')

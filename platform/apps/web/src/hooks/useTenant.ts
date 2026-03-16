@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ITenantConfig } from '@mercashop/shared/api-client';
-import { api } from '../services/apiClientSetup';
+import { tenantApi } from '../services/apiClientSetup';
 
 export function useTenant() {
   const [tenant, setTenant] = useState<ITenantConfig | null>(null);
@@ -8,7 +8,7 @@ export function useTenant() {
 
   useEffect(() => {
     const domain = window.location.hostname;
-    api.getTenantConfig(domain)
+    tenantApi.getTenantConfig(domain)
       .then((res) => setTenant(res.data))
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';

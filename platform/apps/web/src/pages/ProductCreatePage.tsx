@@ -10,7 +10,7 @@ import {
   Field,
 } from '@chakra-ui/react';
 import type { CreateProductBody } from '@mercashop/shared/api-client';
-import { api } from '../services/apiClientSetup';
+import { productApi } from '../services/apiClientSetup';
 
 export function ProductCreatePage() {
   const [name, setName] = useState('');
@@ -19,7 +19,7 @@ export function ProductCreatePage() {
   const [quantity, setQuantity] = useState('');
 
   const mutation = useMutation({
-    mutationFn: (body: CreateProductBody) => api.createProduct(body),
+    mutationFn: (body: CreateProductBody) => productApi.createProduct(body),
     onSuccess: () => {
       setName('');
       setCategory('');

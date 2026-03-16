@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Route, Query, Body, Path, Security } from 'tsoa';
+import { Controller, Get, Post, Put, Route, Tags, Query, Body, Path, Security } from 'tsoa';
 import { ITenantConfig } from '@mercashop/shared';
 import * as tenantService from '../services/tenantService';
 
@@ -11,6 +11,7 @@ interface CreateTenantBody {
 }
 
 @Route('api/tenants')
+@Tags('Tenant')
 export class TenantController extends Controller {
   @Get('config')
   public async getTenantConfig(@Query() domain: string): Promise<ITenantConfig> {

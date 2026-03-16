@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Route, Path, Body, Security, Request } from 'tsoa';
+import { Controller, Post, Get, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
 import { PaymentMethod } from '../types/order';
 import * as paymentService from '../services/paymentService';
 import * as orderService from '../services/orderService';
 
 @Route('api/payments')
+@Tags('Payment')
 export class PaymentController extends Controller {
   @Post('')
   @Security('BearerAuth')
@@ -44,6 +45,7 @@ export class PaymentController extends Controller {
 }
 
 @Route('webhook')
+@Tags('Webhook')
 export class WebhookController extends Controller {
   @Post('')
   public async mollieWebhook(@Body() body: { id: string }): Promise<{ status: string }> {

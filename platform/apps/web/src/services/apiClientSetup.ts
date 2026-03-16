@@ -1,4 +1,13 @@
-import { Configuration, DefaultApi } from '@mercashop/shared/api-client';
+import {
+  Configuration,
+  EstablishmentApi,
+  OrderApi,
+  PaymentApi,
+  ProductApi,
+  TenantApi,
+  UploadApi,
+  UserApi,
+} from '@mercashop/shared/api-client';
 import { auth } from '../config/firebase';
 
 const apiConfiguration = new Configuration({
@@ -9,4 +18,10 @@ const apiConfiguration = new Configuration({
   },
 });
 
-export const api = new DefaultApi(apiConfiguration);
+export const establishmentApi = new EstablishmentApi(apiConfiguration);
+export const orderApi = new OrderApi(apiConfiguration);
+export const paymentApi = new PaymentApi(apiConfiguration);
+export const productApi = new ProductApi(apiConfiguration);
+export const tenantApi = new TenantApi(apiConfiguration);
+export const uploadApi = new UploadApi(apiConfiguration);
+export const userApi = new UserApi(apiConfiguration);
