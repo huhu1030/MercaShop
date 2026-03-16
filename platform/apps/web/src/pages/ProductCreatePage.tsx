@@ -19,8 +19,7 @@ export function ProductCreatePage() {
   const [quantity, setQuantity] = useState('');
 
   const mutation = useMutation({
-    mutationFn: (body: CreateProductBody) =>
-      api.createProduct({ createProductBody: body }),
+    mutationFn: (body: CreateProductBody) => api.createProduct(body),
     onSuccess: () => {
       setName('');
       setCategory('');

@@ -8,8 +8,8 @@ export function useTenant() {
 
   useEffect(() => {
     const domain = window.location.hostname;
-    api.getTenantConfig({ domain })
-      .then(setTenant)
+    api.getTenantConfig(domain)
+      .then((res) => setTenant(res.data))
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';
         console.error('Failed to fetch tenant config:', message);

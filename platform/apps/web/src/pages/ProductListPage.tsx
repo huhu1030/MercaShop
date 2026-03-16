@@ -14,13 +14,13 @@ export function ProductListPage() {
   const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading } = useQuery({
     queryKey: ['products', establishmentId],
-    queryFn: () => api.getProductsByEstablishment({ establishmentId }),
+    queryFn: () => api.getProductsByEstablishment(establishmentId),
     enabled: !!establishmentId,
   });
 
   if (isLoading) return <LoadingScreen />;
 
-  const products = (data?.products ?? []) as Array<{
+  const products = (data?.data?.products ?? []) as Array<{
     _id: string;
     name: string;
     category: string;

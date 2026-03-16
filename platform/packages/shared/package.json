@@ -18,7 +18,10 @@
     "build": "tsc && tsc -p tsconfig.generated.json",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "generate:client": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,supportsES6=true"
+    "generate:client": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-axios -o src/generated/api-client -c .openapi-generator-config.json -p withSeparateModelsAndApi=true -p modelPackage=models -p apiPackage=apis -p unwrapResponseData=true"
+  },
+  "dependencies": {
+    "axios": "^1.7.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.0",

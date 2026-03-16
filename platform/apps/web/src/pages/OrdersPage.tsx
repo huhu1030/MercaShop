@@ -27,7 +27,7 @@ export function OrdersPage() {
   const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['orders', establishmentId],
-    queryFn: () => api.getOrdersByEstablishment({ establishmentId }),
+    queryFn: () => api.getOrdersByEstablishment(establishmentId),
     enabled: !!establishmentId,
   });
 
@@ -40,7 +40,7 @@ export function OrdersPage() {
 
   if (isLoading) return <LoadingScreen />;
 
-  const orders = (data?.orders ?? []) as Array<{
+  const orders = (data?.data?.orders ?? []) as Array<{
     _id: string;
     status: string;
     total: number;
