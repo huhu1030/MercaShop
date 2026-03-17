@@ -3,7 +3,7 @@ import {Box, Button, Field, Heading, Input, Text, VStack,} from '@chakra-ui/reac
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
-import {productApi} from '../../services/apiClientSetup.ts';
+import {getProductApi} from '@mercashop/shared/api-client';
 import {Colors} from '../../constants/colors.ts';
 
 const productSchema = z.object({
@@ -33,7 +33,7 @@ export function CreatePage() {
 
   const mutation = useMutation({
     mutationFn: (values: ProductFormValues) =>
-      productApi.createProduct({
+      getProductApi().createProduct({
         ...values,
         establishmentId: '', // TODO: get from tenant/establishment context
       }),

@@ -2,7 +2,23 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
+import { initApiClient } from '@mercashop/shared/api-client'
+import { signOut } from 'firebase/auth'
+import { auth } from './config/firebase'
 import App from './App'
+
+initApiClient({
+  getAccessToken: async () => {
+    const token = await auth.currentUser?.getIdToken();
+    return token ?? null;
+  },
+  forceRefreshToken: async () => {
+    const token = await auth.currentUser?.getIdToken(true);
+    return token ?? null;
+  },
+  signOut: () => signOut(auth),
+  basePath: import.meta.env.VITE_API_URL,
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {

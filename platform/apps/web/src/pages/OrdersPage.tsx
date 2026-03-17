@@ -5,7 +5,7 @@ import {ShoppingCart} from 'lucide-react';
 import {useWebSocket} from '../hooks/useWebSocket';
 import {LoadingScreen} from '../components/ui/LoadingScreen';
 import {EmptyState} from '../components/ui/EmptyState';
-import {orderApi} from '../services/apiClientSetup';
+import {getOrderApi} from '@mercashop/shared/api-client';
 import {Colors} from '../constants/colors';
 
 const statusColorMap: Record<string, string> = {
@@ -21,7 +21,7 @@ export function OrdersPage() {
   const establishmentId = ''; // TODO: get from tenant/establishment context
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['orders', establishmentId],
-    queryFn: () => orderApi.getOrdersByEstablishment(establishmentId),
+    queryFn: () => getOrderApi().getOrdersByEstablishment(establishmentId),
     enabled: !!establishmentId,
   });
 

@@ -10,8 +10,8 @@
       "default": "./dist/index.js"
     },
     "./api-client": {
-      "types": "./src/apis/api/index.ts",
-      "default": "./src/apis/api/index.ts"
+      "types": "./src/api/index.ts",
+      "default": "./src/api/index.ts"
     }
   },
   "scripts": {

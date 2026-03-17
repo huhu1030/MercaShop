@@ -1,5 +1,6 @@
 .gitignore
 .npmignore
+.openapi-generator-ignore
 api.ts
 apis/establishment-api.ts
 apis/order-api.ts

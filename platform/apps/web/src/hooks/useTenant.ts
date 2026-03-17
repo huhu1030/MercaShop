@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ITenantConfig } from '@mercashop/shared/api-client';
-import { tenantApi } from '../services/apiClientSetup';
+import { getTenantApi } from '@mercashop/shared/api-client';
 import { auth } from '../config/firebase';
 
 export function useTenant() {
@@ -9,7 +9,7 @@ export function useTenant() {
 
   useEffect(() => {
     const domain = window.location.hostname;
-    tenantApi.getTenantConfig(domain)
+    getTenantApi().getTenantConfig(domain)
       .then((res) => setTenant(res.data))
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';
