@@ -3,7 +3,7 @@ import {Heading, Text, VStack} from '@chakra-ui/react';
 import type {ColumnDef} from '@tanstack/react-table';
 import {LoadingScreen} from '../../components/ui/LoadingScreen.tsx';
 import {DataTable} from '../../components/ui/DataTable.tsx';
-import {productApi} from '../../services/apiClientSetup.ts';
+import {getProductApi} from '@mercashop/shared/api-client';
 
 interface Product {
     _id: string;
@@ -40,7 +40,7 @@ export function ListPage() {
     const establishmentId = ''; // TODO: get from tenant/establishment context
     const {data, isLoading} = useQuery({
         queryKey: ['products', establishmentId],
-        queryFn: () => productApi.getProductsByEstablishment(establishmentId),
+        queryFn: () => getProductApi().getProductsByEstablishment(establishmentId),
         enabled: !!establishmentId,
     });
 

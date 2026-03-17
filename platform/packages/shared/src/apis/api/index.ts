@@ -16,3 +16,17 @@
 export * from "./api";
 export * from "./configuration";
 export * from "./models";
+
+// --- Centralized API client factory (hand-written, not generated) ---
+export { initApiClient, getApiAxiosInstance, createApiConfiguration } from '../../api/api-client-factory';
+export {
+  getEstablishmentApi,
+  getOrderApi,
+  getPaymentApi,
+  getProductApi,
+  getTenantApi,
+  getUploadApi,
+  getUserApi,
+  getWebhookApi,
+  resetApiClients,
+} from '../../api/clients';
