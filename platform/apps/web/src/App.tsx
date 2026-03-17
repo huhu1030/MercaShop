@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthGuard } from './components/layout/AuthGuard';
 import { DashboardLayout } from './components/layout/DashboardLayout';
+import { LoadingScreen } from './components/ui/LoadingScreen';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { CreatePage } from './pages/products/CreatePage.tsx';
 import { ListPage } from './pages/products/ListPage.tsx';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { useTenant } from './hooks/useTenant';
 
 function DashboardRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +18,10 @@ function DashboardRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const { loading: tenantLoading } = useTenant();
+
+  if (tenantLoading) return <LoadingScreen />;
+
   return (
     <BrowserRouter>
       <Routes>
