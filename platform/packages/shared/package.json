@@ -4,11 +4,24 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./api-client": {
+      "types": "./src/apis/api/index.ts",
+      "default": "./src/apis/api/index.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src/ --ignore-pattern src/generated/",
+    "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "generate:client": "openapi-generator-cli generate -i ../api/dist/swagger.json -g typescript-fetch -o src/generated/api-client --additional-properties=typescriptThreePlus=true,supportsES6=true"
+    "gen-api": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-axios -o ./src/apis/api -c .openapi-generator-config.json -p withSeparateModelsAndApi=true -p modelPackage=models -p apiPackage=apis -p unwrapResponseData=true"
+  },
+  "dependencies": {
+    "axios": "^1.7.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.0",
