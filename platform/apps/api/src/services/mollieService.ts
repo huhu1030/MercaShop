@@ -1,7 +1,17 @@
-import createMollieClient from '@mollie/api-client';
+import createMollieClient, { MollieClient } from '@mollie/api-client';
 import { env } from '../config/env';
 
-const mollieClient = createMollieClient({ apiKey: env.mollieKey });
+let mollieClient: MollieClient;
+
+function getMollieClient(): MollieClient {
+  if (!mollieClient) {
+    if (!env.mollieKey) {
+      throw new Error('MOLLIE_KEY is not configured');
+    }
+    mollieClient = createMollieClient({ apiKey: env.mollieKey });
+  }
+  return mollieClient;
+}
 
 const AMOUNT_RE = /^\d+\.\d{2}$/;
 const OBJECT_ID_RE = /^[a-f\d]{24}$/i;
@@ -25,7 +35,7 @@ export async function createPayment(opts: CreatePaymentOptions) {
     throw new Error('Invalid orderId format');
   }
 
-  return mollieClient.payments.create({
+  return getMollieClient().payments.create({
     amount: { value: amount, currency },
     method: methods,
     description,
@@ -36,5 +46,5 @@ export async function createPayment(opts: CreatePaymentOptions) {
 }
 
 export async function fetchPaymentById(id: string) {
-  return mollieClient.payments.get(id);
+  return getMollieClient().payments.get(id);
 }

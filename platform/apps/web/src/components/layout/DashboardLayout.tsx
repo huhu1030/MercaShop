@@ -8,9 +8,9 @@ import {
   BarChart3,
   LogOut,
 } from 'lucide-react';
+import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { enableNotification, disableNotification } from '../../store/slices/generalSettingsSlice';
+import { isSoundEnabledAtom } from '../../store/atoms';
 import { Colors } from '../../constants/colors';
 import type { ReactNode } from 'react';
 
@@ -37,11 +37,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
-  const dispatch = useAppDispatch();
-  const isSoundEnabled = useAppSelector((s) => s.generalSettings.isSoundEnabled);
+  const [isSoundEnabled, setIsSoundEnabled] = useAtom(isSoundEnabledAtom);
 
   const handleSoundToggle = () => {
-    dispatch(isSoundEnabled ? disableNotification() : enableNotification());
+    setIsSoundEnabled((prev) => !prev);
   };
 
   return (

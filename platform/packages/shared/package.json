@@ -10,15 +10,15 @@
       "default": "./dist/index.js"
     },
     "./api-client": {
-      "types": "./dist/generated/api-client/index.d.ts",
-      "default": "./dist/generated/api-client/index.js"
+      "types": "./src/apis/api/index.ts",
+      "default": "./src/apis/api/index.ts"
     }
   },
   "scripts": {
-    "build": "tsc && tsc -p tsconfig.generated.json",
+    "build": "tsc",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
-    "generate:client": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-axios -o src/generated/api-client -c .openapi-generator-config.json -p withSeparateModelsAndApi=true -p modelPackage=models -p apiPackage=apis -p unwrapResponseData=true"
+    "gen-api": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-axios -o ./src/apis/api -c .openapi-generator-config.json -p withSeparateModelsAndApi=true -p modelPackage=models -p apiPackage=apis -p unwrapResponseData=true"
   },
   "dependencies": {
     "axios": "^1.7.0"

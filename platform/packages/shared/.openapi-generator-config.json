@@ -2,5 +2,10 @@
   "supportsES6": true,
   "typescriptThreePlus": true,
   "enumNameSuffix": "",
-  "enumPropertyNaming": "original"
+  "enumPropertyNaming": "original",
+  "indentSize": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 150,
+  "semi": true
 }
