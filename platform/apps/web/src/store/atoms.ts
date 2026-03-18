@@ -1,3 +1,3 @@
 import { atomWithStorage } from 'jotai/utils';
 
-export const isSoundEnabledAtom = atomWithStorage('isSoundEnabled', false);
+export const isNotificationsEnabledAtom = atomWithStorage('isNotificationsEnabled', false);
