@@ -10,13 +10,18 @@ async function seedTenant(): Promise<void> {
   const tenant = await TenantModel.create({
     name: 'Local Dev',
     slug: 'local-dev',
-    domains: ['localhost:5173'],
+    domains: ['localhost'],
     branding: {
       logo: '',
       primaryColor: '#b973e3',
       appName: 'MercaShop Dev',
     },
-    contactEmail: 'dev@mercashop.local',
+    contact: {
+      firstName: 'Dev',
+      lastName: 'User',
+      email: 'dev@mercashop.local',
+      phone: '',
+    },
     isActive: true,
     identityPlatformTenantId: 'local-dev-h2wn2',
   });
