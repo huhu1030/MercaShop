@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Box, Flex, VStack, HStack, Text, Heading, Separator } from '@chakra-ui/react';
 import { Switch } from '@chakra-ui/react';
 import {
@@ -7,11 +7,13 @@ import {
   Package,
   BarChart3,
   LogOut,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
 import { isNotificationsEnabledAtom } from '../../store/atoms';
 import { useOrderNotifications } from '../../hooks/useOrderNotifications';
+import { useEstablishmentId } from '../../hooks/useEstablishmentId';
 import { Colors } from '../../constants/colors';
 import type { ReactNode } from 'react';
 
@@ -23,12 +25,14 @@ interface NavItem {
   icon: ReactNode;
 }
 
-const navItems: NavItem[] = [
-  { path: '/orders', label: 'Orders', icon: <ShoppingCart size="1.25rem" /> },
-  { path: '/products', label: 'Products', icon: <Package size="1.25rem" /> },
-  { path: '/products/new', label: 'Add Product', icon: <PackagePlus size="1.25rem" /> },
-  { path: '/analytics', label: 'Analytics', icon: <BarChart3 size="1.25rem" /> },
-];
+function getNavItems(establishmentId: string): NavItem[] {
+  return [
+    { path: `/establishments/${establishmentId}/orders`, label: 'Orders', icon: <ShoppingCart size="1.25rem" /> },
+    { path: `/establishments/${establishmentId}/products`, label: 'Products', icon: <Package size="1.25rem" /> },
+    { path: `/establishments/${establishmentId}/products/new`, label: 'Add Product', icon: <PackagePlus size="1.25rem" /> },
+    { path: `/establishments/${establishmentId}/analytics`, label: 'Analytics', icon: <BarChart3 size="1.25rem" /> },
+  ];
+}
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -41,6 +45,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useAtom(isNotificationsEnabledAtom);
 
   useOrderNotifications(import.meta.env.VITE_API_URL);
+
+  const result = useEstablishmentId();
+  if (!result) return <Navigate to="/establishments" replace />;
+  const { establishmentId } = result;
+  const navItems = getNavItems(establishmentId);
 
   const handleNotificationToggle = async () => {
     if (!isNotificationsEnabled) {
@@ -71,6 +80,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         <Box p="1.25rem">
           <Heading size="lg" color={Colors.brand.primary}>MercaShop</Heading>
+          <HStack
+            gap="0.5rem"
+            cursor="pointer"
+            color={Colors.text.muted}
+            _hover={{ color: Colors.brand.primary }}
+            onClick={() => navigate('/establishments')}
+          >
+            <ArrowLeftRight size="0.875rem" />
+            <Text fontSize="xs">Switch establishment</Text>
+          </HStack>
         </Box>
 
         <Separator />
