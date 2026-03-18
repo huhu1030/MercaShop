@@ -10,7 +10,8 @@ import {
 } from 'lucide-react';
 import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
-import { isSoundEnabledAtom } from '../../store/atoms';
+import { isNotificationsEnabledAtom } from '../../store/atoms';
+import { useOrderNotifications } from '../../hooks/useOrderNotifications';
 import { Colors } from '../../constants/colors';
 import type { ReactNode } from 'react';
 
@@ -37,10 +38,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
-  const [isSoundEnabled, setIsSoundEnabled] = useAtom(isSoundEnabledAtom);
+  const [isNotificationsEnabled, setIsNotificationsEnabled] = useAtom(isNotificationsEnabledAtom);
 
-  const handleSoundToggle = () => {
-    setIsSoundEnabled((prev) => !prev);
+  useOrderNotifications(import.meta.env.VITE_API_URL);
+
+  const handleNotificationToggle = async () => {
+    if (!isNotificationsEnabled) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        setIsNotificationsEnabled(true);
+      }
+      // If denied/dismissed, toggle stays off — user sees it didn't enable
+    } else {
+      setIsNotificationsEnabled(false);
+    }
   };
 
   return (
@@ -92,8 +103,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <VStack gap="0.75rem" p="1rem" align="stretch">
           <Switch.Root
-            checked={isSoundEnabled}
-            onCheckedChange={handleSoundToggle}
+            checked={isNotificationsEnabled}
+            onCheckedChange={() => void handleNotificationToggle()}
             size="sm"
           >
             <Switch.HiddenInput />
@@ -101,7 +112,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Switch.Thumb />
             </Switch.Control>
             <Switch.Label>
-              <Text fontSize="sm" color={Colors.text.secondary}>Sound notifications</Text>
+              <Text fontSize="sm" color={Colors.text.secondary}>Order notifications</Text>
             </Switch.Label>
           </Switch.Root>
 
