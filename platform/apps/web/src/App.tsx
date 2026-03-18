@@ -8,6 +8,7 @@ import { CreatePage } from './pages/products/CreatePage.tsx';
 import { ListPage } from './pages/products/ListPage.tsx';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { useTenant } from './hooks/useTenant';
+import { AuthProvider } from './hooks/useAuth';
 
 function DashboardRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -18,11 +19,12 @@ function DashboardRoute({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const { loading: tenantLoading } = useTenant();
+  const { tenant, loading: tenantLoading } = useTenant();
 
   if (tenantLoading) return <LoadingScreen />;
 
   return (
+    <AuthProvider tenantId={tenant?.identityPlatformTenantId}>
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
@@ -33,5 +35,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/orders" replace />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
