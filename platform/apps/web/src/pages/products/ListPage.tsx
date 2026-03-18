@@ -1,8 +1,9 @@
 import {useQuery} from '@tanstack/react-query';
-import {Heading, Text, VStack} from '@chakra-ui/react';
+import {Text, VStack} from '@chakra-ui/react';
 import type {ColumnDef} from '@tanstack/react-table';
 import {LoadingScreen} from '../../components/ui/LoadingScreen.tsx';
 import {DataTable} from '../../components/ui/DataTable.tsx';
+import {PageHeader} from '../../components/ui/PageHeader.tsx';
 import {getProductApi} from '@mercashop/shared/api-client';
 import {useEstablishmentId} from '../../hooks/useEstablishmentId';
 
@@ -50,7 +51,11 @@ export function ListPage() {
 
     return (
         <VStack gap="1.25rem" align="stretch">
-            <Heading size="lg">Products</Heading>
+            <PageHeader
+                breadcrumbs={[{label: 'Products'}]}
+                title="Products"
+                description="View and manage your product catalog."
+            />
 
             <DataTable
                 columns={columns}

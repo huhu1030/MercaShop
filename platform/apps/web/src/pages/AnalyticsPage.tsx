@@ -1,6 +1,7 @@
-import {Heading, VStack} from '@chakra-ui/react';
+import {VStack} from '@chakra-ui/react';
 import {Chart, useChart} from '@chakra-ui/charts';
 import {Bar, BarChart, CartesianGrid, XAxis, YAxis} from 'recharts';
+import {PageHeader} from '../components/ui/PageHeader';
 import {Colors} from '../constants/colors';
 
 const PLACEHOLDER_CHART_DATA = [
@@ -21,7 +22,11 @@ export function AnalyticsPage() {
 
     return (
         <VStack gap="1.25rem" align="stretch">
-            <Heading size="lg">Analytics</Heading>
+            <PageHeader
+                breadcrumbs={[{label: 'Analytics'}]}
+                title="Analytics"
+                description="Overview of your store performance."
+            />
             <Chart.Root chart={chart}>
                 <BarChart data={chart.data}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>

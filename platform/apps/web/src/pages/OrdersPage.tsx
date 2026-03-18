@@ -1,10 +1,11 @@
 import {useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {Badge, Card, Heading, HStack, Text, VStack,} from '@chakra-ui/react';
+import {Badge, Card, HStack, Text, VStack,} from '@chakra-ui/react';
 import {ShoppingCart} from 'lucide-react';
 import {useWebSocket} from '../hooks/useWebSocket';
 import {LoadingScreen} from '../components/ui/LoadingScreen';
 import {EmptyState} from '../components/ui/EmptyState';
+import {PageHeader} from '../components/ui/PageHeader';
 import {getOrderApi} from '@mercashop/shared/api-client';
 import {Colors} from '../constants/colors';
 import {useEstablishmentId} from '../hooks/useEstablishmentId';
@@ -45,7 +46,11 @@ export function OrdersPage() {
 
     return (
         <VStack gap="1.25rem" align="stretch">
-            <Heading size="lg">Orders</Heading>
+            <PageHeader
+                breadcrumbs={[{label: 'Orders'}]}
+                title="Orders"
+                description="Manage and track incoming orders."
+            />
 
             {orders.length === 0 ? (
                 <EmptyState

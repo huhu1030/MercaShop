@@ -1,9 +1,10 @@
 import {useMutation} from '@tanstack/react-query';
-import {Box, Button, Field, Heading, Input, Text, VStack,} from '@chakra-ui/react';
+import {Box, Button, Field, Input, Text, VStack,} from '@chakra-ui/react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {getProductApi} from '@mercashop/shared/api-client';
+import {PageHeader} from '../../components/ui/PageHeader.tsx';
 import {Colors} from '../../constants/colors.ts';
 import {useEstablishmentId} from '../../hooks/useEstablishmentId';
 
@@ -50,7 +51,14 @@ export function CreatePage() {
 
     return (
         <VStack gap="1.25rem" align="stretch" maxW="31.25rem">
-            <Heading size="lg">Add Product</Heading>
+            <PageHeader
+                breadcrumbs={[
+                    {label: 'Products', path: `/establishments/${establishmentId}/products`},
+                    {label: 'Add Product'},
+                ]}
+                title="Add Product"
+                description="Add a new product to your catalog."
+            />
 
             {mutation.isSuccess && (
                 <Box p="0.75rem" bg={Colors.feedback.successBg} borderRadius="md" borderLeft="0.25rem solid"
