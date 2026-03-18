@@ -7,7 +7,12 @@ interface CreateTenantBody {
   slug: string;
   domains: string[];
   branding: { logo: string; primaryColor: string; appName: string };
-  contactEmail: string;
+  contact: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+  };
 }
 
 @Route('api/tenants')

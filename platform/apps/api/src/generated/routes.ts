@@ -79,14 +79,14 @@ const models: TsoaRoute.Models = {
             "slug": {"dataType":"string","required":true},
             "domains": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "branding": {"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}},"required":true},
-            "contactEmail": {"dataType":"string","required":true},
+            "contact": {"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}},"required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreateTenantBody_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contactEmail":{"dataType":"string"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contact":{"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}}}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateProductBody": {

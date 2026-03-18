@@ -9,7 +9,12 @@ export interface TenantDocument extends Document {
     primaryColor: string;
     appName: string;
   };
-  contactEmail: string;
+  contact: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  };
   isActive: boolean;
   identityPlatformTenantId: string;
 }
@@ -24,7 +29,12 @@ const tenantSchema = new Schema<TenantDocument>(
       primaryColor: { type: String, default: '#b973e3' },
       appName: { type: String, default: '' },
     },
-    contactEmail: { type: String, required: true },
+    contact: {
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+      email: { type: String, required: true },
+      phone: { type: String, default: '' },
+    },
     isActive: { type: Boolean, default: true },
     identityPlatformTenantId: { type: String, required: true },
   },
