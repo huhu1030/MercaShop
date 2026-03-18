@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { IEstablishmentSummary } from './iestablishment-summary';
 
 /**
  * 
@@ -22,9 +25,9 @@
 export interface GetEstablishment200Response {
     /**
      * 
-     * @type {any}
+     * @type {IEstablishmentSummary}
      * @memberof GetEstablishment200Response
      */
-    'establishment': any;
+    'establishment': IEstablishmentSummary;
 }
 

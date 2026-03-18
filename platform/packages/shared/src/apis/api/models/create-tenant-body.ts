@@ -16,6 +16,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { CreateTenantBodyBranding } from './create-tenant-body-branding';
+// May contain unused imports in some cases
+// @ts-ignore
+import { CreateTenantBodyContact } from './create-tenant-body-contact';
 
 /**
  * 
@@ -49,9 +52,9 @@ export interface CreateTenantBody {
     'branding': CreateTenantBodyBranding;
     /**
      * 
-     * @type {string}
+     * @type {CreateTenantBodyContact}
      * @memberof CreateTenantBody
      */
-    'contactEmail': string;
+    'contact': CreateTenantBodyContact;
 }
 

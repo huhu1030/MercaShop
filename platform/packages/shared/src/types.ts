@@ -48,3 +48,11 @@ export interface ITenantConfig {
   branding: ITenantBranding;
   identityPlatformTenantId: string;
 }
+
+export interface IEstablishmentSummary {
+  _id: string;
+  name: string;
+  category: string;
+  status: string;
+  logo: string;
+}

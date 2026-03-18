@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 api.ts
 apis/establishment-api.ts
 apis/order-api.ts
@@ -21,6 +20,7 @@ models/create-order-body.ts
 models/create-product-body.ts
 models/create-product200-response.ts
 models/create-tenant-body-branding.ts
+models/create-tenant-body-contact.ts
 models/create-tenant-body.ts
 models/create-tenant200-response.ts
 models/create-user-body.ts
@@ -31,6 +31,7 @@ models/get-establishments200-response.ts
 models/get-orders-by-establishment200-response.ts
 models/get-payment-status200-response.ts
 models/get-products-by-establishment200-response.ts
+models/iestablishment-summary.ts
 models/index.ts
 models/itenant-branding.ts
 models/itenant-config.ts

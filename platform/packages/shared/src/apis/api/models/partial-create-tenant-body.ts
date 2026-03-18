@@ -16,6 +16,9 @@
 // May contain unused imports in some cases
 // @ts-ignore
 import { CreateTenantBodyBranding } from './create-tenant-body-branding';
+// May contain unused imports in some cases
+// @ts-ignore
+import { CreateTenantBodyContact } from './create-tenant-body-contact';
 
 /**
  * Make all properties in T optional
@@ -49,9 +52,9 @@ export interface PartialCreateTenantBody {
     'branding'?: CreateTenantBodyBranding;
     /**
      * 
-     * @type {string}
+     * @type {CreateTenantBodyContact}
      * @memberof PartialCreateTenantBody
      */
-    'contactEmail'?: string;
+    'contact'?: CreateTenantBodyContact;
 }
 
