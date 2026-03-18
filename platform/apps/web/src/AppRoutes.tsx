@@ -6,6 +6,7 @@ import { OrdersPage } from './pages/OrdersPage';
 import { CreatePage } from './pages/products/CreatePage.tsx';
 import { ListPage } from './pages/products/ListPage.tsx';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { EstablishmentPickerPage } from './pages/establishments/EstablishmentPickerPage';
 
 function DashboardRoute({ children }: { children: React.ReactNode }) {
   return (
@@ -19,11 +20,12 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/orders" element={<DashboardRoute><OrdersPage /></DashboardRoute>} />
-      <Route path="/products" element={<DashboardRoute><ListPage /></DashboardRoute>} />
-      <Route path="/products/new" element={<DashboardRoute><CreatePage /></DashboardRoute>} />
-      <Route path="/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />
-      <Route path="*" element={<Navigate to="/orders" replace />} />
+      <Route path="/establishments" element={<AuthGuard><EstablishmentPickerPage /></AuthGuard>} />
+      <Route path="/establishments/:establishmentId/orders" element={<DashboardRoute><OrdersPage /></DashboardRoute>} />
+      <Route path="/establishments/:establishmentId/products" element={<DashboardRoute><ListPage /></DashboardRoute>} />
+      <Route path="/establishments/:establishmentId/products/new" element={<DashboardRoute><CreatePage /></DashboardRoute>} />
+      <Route path="/establishments/:establishmentId/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />
+      <Route path="*" element={<Navigate to="/establishments" replace />} />
     </Routes>
   );
 }
