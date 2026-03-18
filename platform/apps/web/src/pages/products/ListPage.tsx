@@ -4,6 +4,7 @@ import type {ColumnDef} from '@tanstack/react-table';
 import {LoadingScreen} from '../../components/ui/LoadingScreen.tsx';
 import {DataTable} from '../../components/ui/DataTable.tsx';
 import {getProductApi} from '@mercashop/shared/api-client';
+import {useEstablishmentId} from '../../hooks/useEstablishmentId';
 
 interface Product {
     _id: string;
@@ -37,11 +38,10 @@ const columns: ColumnDef<Product, unknown>[] = [
 ];
 
 export function ListPage() {
-    const establishmentId = ''; // TODO: get from tenant/establishment context
+    const {establishmentId} = useEstablishmentId()!;
     const {data, isLoading} = useQuery({
         queryKey: ['products', establishmentId],
         queryFn: () => getProductApi().getProductsByEstablishment(establishmentId),
-        enabled: !!establishmentId,
     });
 
     if (isLoading) return <LoadingScreen/>;

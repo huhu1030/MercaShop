@@ -5,6 +5,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
 import {getProductApi} from '@mercashop/shared/api-client';
 import {Colors} from '../../constants/colors.ts';
+import {useEstablishmentId} from '../../hooks/useEstablishmentId';
 
 const productSchema = z.object({
     name: z.string().min(1, 'Product name is required'),
@@ -16,6 +17,7 @@ const productSchema = z.object({
 type ProductFormValues = z.infer<typeof productSchema>;
 
 export function CreatePage() {
+    const {establishmentId} = useEstablishmentId()!;
     const {
         register,
         handleSubmit,
@@ -35,7 +37,7 @@ export function CreatePage() {
         mutationFn: (values: ProductFormValues) =>
             getProductApi().createProduct({
                 ...values,
-                establishmentId: '', // TODO: get from tenant/establishment context
+                establishmentId,
             }),
         onSuccess: () => {
             reset();

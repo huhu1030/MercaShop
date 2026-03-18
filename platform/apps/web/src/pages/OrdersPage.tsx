@@ -7,6 +7,7 @@ import {LoadingScreen} from '../components/ui/LoadingScreen';
 import {EmptyState} from '../components/ui/EmptyState';
 import {getOrderApi} from '@mercashop/shared/api-client';
 import {Colors} from '../constants/colors';
+import {useEstablishmentId} from '../hooks/useEstablishmentId';
 
 const statusColorMap: Record<string, string> = {
     pending: 'yellow',
@@ -18,11 +19,10 @@ const statusColorMap: Record<string, string> = {
 };
 
 export function OrdersPage() {
-    const establishmentId = ''; // TODO: get from tenant/establishment context
+    const {establishmentId} = useEstablishmentId()!;
     const {data, isLoading, refetch} = useQuery({
         queryKey: ['orders', establishmentId],
         queryFn: () => getOrderApi().getOrdersByEstablishment(establishmentId),
-        enabled: !!establishmentId,
     });
 
     const {onNewOrders} = useWebSocket(import.meta.env.VITE_API_URL);
