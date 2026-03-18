@@ -2,6 +2,17 @@ import { Controller, Get, Patch, Route, Tags, Path, Body, Security, Request } fr
 import type { Request as ExpressRequest } from 'express';
 import * as establishmentService from '../services/establishmentService';
 import type { IEstablishmentSummary } from '@mercashop/shared';
+import type { EstablishmentDocument } from '../models/Establishment';
+
+function toSummary(doc: EstablishmentDocument): IEstablishmentSummary {
+  return {
+    _id: doc._id.toString(),
+    name: doc.name,
+    category: doc.category,
+    status: doc.status,
+    logo: doc.logo,
+  };
+}
 
 @Route('api/establishments')
 @Tags('Establishment')
@@ -10,7 +21,7 @@ export class EstablishmentController extends Controller {
   @Security('BearerAuth')
   public async getEstablishments(@Request() req: ExpressRequest): Promise<{ establishments: IEstablishmentSummary[] }> {
     const establishments = await establishmentService.findEstablishments(req.tenantId!);
-    return { establishments };
+    return { establishments: establishments.map(toSummary) };
   }
 
   @Get('{id}')
@@ -24,7 +35,7 @@ export class EstablishmentController extends Controller {
       this.setStatus(404);
       throw new Error('Establishment not found');
     }
-    return { establishment };
+    return { establishment: toSummary(establishment) };
   }
 
   @Patch('status')
@@ -42,6 +53,6 @@ export class EstablishmentController extends Controller {
       this.setStatus(404);
       throw new Error('Establishment not found');
     }
-    return { establishment };
+    return { establishment: toSummary(establishment) };
   }
 }
