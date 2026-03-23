@@ -19,7 +19,7 @@ export function useTenant() {
 
   useEffect(() => {
     if (tenant) {
-      document.documentElement.style.setProperty('--primary-color', tenant.branding.primaryColor);
+      document.documentElement.style.setProperty('--primary-color', tenant.branding?.primaryColor ?? '#b973e3');
     }
   }, [tenant]);
 
