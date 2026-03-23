@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev:api": "pnpm --filter @mercashop/api dev",
-    "dev:web": "pnpm --filter @mercashop/web dev",
+    "dev:dashboard": "pnpm --filter @mercashop/dashboard dev",
+    "dev:store": "pnpm --filter @mercashop/store dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
