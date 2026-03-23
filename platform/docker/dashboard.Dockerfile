@@ -17,6 +17,18 @@ COPY --from=deps /app/apps/dashboard/node_modules ./apps/dashboard/node_modules
 COPY platform/pnpm-lock.yaml platform/pnpm-workspace.yaml platform/package.json platform/tsconfig.base.json ./
 COPY platform/packages/shared ./packages/shared
 COPY platform/apps/dashboard ./apps/dashboard
+ARG VITE_FIREBASE_API_KEY
+ARG VITE_FIREBASE_AUTH_DOMAIN
+ARG VITE_FIREBASE_PROJECT_ID
+ARG VITE_FIREBASE_STORAGE_BUCKET
+ARG VITE_API_URL
+
+ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
+ENV VITE_FIREBASE_AUTH_DOMAIN=$VITE_FIREBASE_AUTH_DOMAIN
+ENV VITE_FIREBASE_PROJECT_ID=$VITE_FIREBASE_PROJECT_ID
+ENV VITE_FIREBASE_STORAGE_BUCKET=$VITE_FIREBASE_STORAGE_BUCKET
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN pnpm --filter @mercashop/shared build
 RUN pnpm --filter @mercashop/dashboard build
 
