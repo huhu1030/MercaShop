@@ -32,7 +32,7 @@ pnpm test
 
 # Single package
 pnpm --filter @mercashop/api test
-pnpm --filter @mercashop/web lint
+pnpm --filter @mercashop/dashboard lint
 pnpm --filter @mercashop/shared build
 
 # API client regeneration (run after changing Tsoa controllers)

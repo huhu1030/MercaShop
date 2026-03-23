@@ -7,7 +7,44 @@ on:
     branches: [main]
 
 jobs:
-  ci:
+  shared:
+    name: Shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: platform/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: platform
+
+      - name: Build
+        run: pnpm --filter @mercashop/shared build
+        working-directory: platform
+
+      - name: Lint
+        run: pnpm --filter @mercashop/shared lint
+        working-directory: platform
+
+      - name: Typecheck
+        run: pnpm --filter @mercashop/shared typecheck
+        working-directory: platform
+
+      - name: Test
+        run: pnpm --filter @mercashop/shared test
+        working-directory: platform
+
+  api:
+    name: API
+    needs: shared
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,13 +67,49 @@ jobs:
         working-directory: platform
 
       - name: Lint
-        run: pnpm -r lint
+        run: pnpm --filter @mercashop/api lint
         working-directory: platform
 
       - name: Typecheck
-        run: pnpm -r typecheck
+        run: pnpm --filter @mercashop/api typecheck
         working-directory: platform
 
       - name: Test
-        run: pnpm -r test
+        run: pnpm --filter @mercashop/api test
+        working-directory: platform
+
+  dashboard:
+    name: Web
+    needs: shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: platform/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: platform
+
+      - name: Build shared
+        run: pnpm --filter @mercashop/shared build
+        working-directory: platform
+
+      - name: Lint
+        run: pnpm --filter @mercashop/dashboard lint
+        working-directory: platform
+
+      - name: Typecheck
+        run: pnpm --filter @mercashop/dashboard typecheck
+        working-directory: platform
+
+      - name: Test
+        run: pnpm --filter @mercashop/dashboard test
         working-directory: platform
