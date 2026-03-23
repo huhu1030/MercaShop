@@ -4,7 +4,7 @@
   "scripts": {
     "dev:api": "pnpm --filter @mercashop/api dev",
     "dev:dashboard": "pnpm --filter @mercashop/dashboard dev",
-    "dev:store": "pnpm --filter @mercashop/store dev",
+    "dev:storefront": "pnpm --filter @mercashop/storefront dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
