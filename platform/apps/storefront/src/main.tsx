@@ -1,13 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import {ChakraProvider, defaultSystem} from '@chakra-ui/react'
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 import App from './App'
 
+const rootElement = document.getElementById('root')
+if (!rootElement) throw new Error('Root element not found')
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <ChakraProvider value={defaultSystem}>
-            <App/>
-        </ChakraProvider>
-    </React.StrictMode>,
+ReactDOM.createRoot(rootElement).render(
+  <React.StrictMode>
+    <ChakraProvider value={defaultSystem}>
+      <App />
+    </ChakraProvider>
+  </React.StrictMode>,
 )
