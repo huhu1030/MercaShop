@@ -79,7 +79,7 @@ jobs:
         working-directory: platform
 
   dashboard:
-    name: Web
+    name: Dashboard
     needs: shared
     runs-on: ubuntu-latest
     steps:
