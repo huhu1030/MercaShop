@@ -40,12 +40,17 @@ export interface ITenantBranding {
   logo: string;
   primaryColor: string;
   appName: string;
+  favicon?: string;
 }
 
 export interface ITenantConfig {
   id: string;
   name: string;
   branding: ITenantBranding;
+  identityPlatformTenantId: string;
+}
+
+export interface ITenantAuthConfig {
   identityPlatformTenantId: string;
 }
 
