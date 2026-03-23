@@ -28,15 +28,11 @@ export const env = {
             clientSecret: process.env.OAUTH_FACEBOOK_CLIENT_SECRET ?? '',
         },
     },
+    apiUrl: process.env.API_URL ?? 'http://localhost:3030',
     mollieKey: process.env.MOLLIE_KEY ?? '',
     mail: {
         address: process.env.MAIL ?? '',
         password: process.env.MAIL_PASSWORD ?? '',
         server: process.env.MAIL_SERVER ?? 'smtp-mail.outlook.com',
     },
-    apiUrl: process.env.API_URL ?? 'http://localhost:3030',
 } as const;
-
-if (env.nodeEnv === 'production' && !env.apiUrl.startsWith('https://')) {
-    throw new Error('API_URL must use HTTPS in production');
-}
