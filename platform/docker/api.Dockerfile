@@ -14,7 +14,7 @@ FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
-COPY platform/pnpm-lock.yaml platform/pnpm-workspace.yaml platform/package.json ./
+COPY platform/pnpm-lock.yaml platform/pnpm-workspace.yaml platform/package.json platform/tsconfig.base.json ./
 COPY platform/packages/shared ./packages/shared
 COPY platform/apps/api ./apps/api
 RUN pnpm --filter @mercashop/shared build
