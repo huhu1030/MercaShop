@@ -1,5 +1,5 @@
 {
-  "name": "@mercashop/dashboard",
+  "name": "@mercashop/storefront",
   "private": true,
   "version": "1.0.0",
   "type": "module",

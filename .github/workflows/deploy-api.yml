@@ -13,10 +13,10 @@ env:
   IMAGE: api
 
 jobs:
-  deploy-staging:
+  deploy-production:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    environment: staging
+    environment: production
     permissions:
       contents: read
       id-token: write
@@ -41,47 +41,6 @@ jobs:
           docker build -f platform/docker/api.Dockerfile -t "$IMAGE_TAG" .
           docker push "$IMAGE_TAG"
 
-      - name: Deploy to Cloud Run (staging)
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: mercashop-api-staging
-          region: ${{ env.REGION }}
-          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.event.workflow_run.head_sha }}
-          flags: --allow-unauthenticated --port=3030 --session-affinity --http2
-          env_vars: |
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
-            MOLLIE_KEY=${{ secrets.MOLLIE_KEY }}
-            FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
-            FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}
-            FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
-            FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}
-            MAIL=${{ secrets.MAIL }}
-            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
-            MAIL_SERVER=${{ secrets.MAIL_SERVER }}
-
-  deploy-production:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
-          service_account: ${{ secrets.GCP_SA_EMAIL }}
-
-      - uses: google-github-actions/setup-gcloud@v2
-
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
-
       - name: Deploy to Cloud Run (production)
         uses: google-github-actions/deploy-cloudrun@v2
         with:
@@ -100,3 +59,5 @@ jobs:
             MAIL=${{ secrets.MAIL }}
             MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
             MAIL_SERVER=${{ secrets.MAIL_SERVER }}
+            API_URL=${{ secrets.API_URL }}
+            GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}
