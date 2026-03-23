@@ -63,9 +63,9 @@ export default tseslint.config(
           noWarnOnMultipleProjects: true,
           project: [
             './tsconfig.json',
+            './apps/api/tsconfig.json',
             './apps/dashboard/tsconfig.json',
-            './apps/driver/tsconfig.json',
-            './apps/client-portal/tsconfig.json',
+            './apps/storefront/tsconfig.json',
             './packages/shared/tsconfig.json',
           ],
           extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts'],
@@ -101,6 +101,7 @@ export default tseslint.config(
       // ===========================================
       // IMPORT RULES
       // ===========================================
+      'import-x/default': 'off',
       'import-x/no-duplicates': 'warn',
       'import-x/consistent-type-specifier-style': ['warn', 'prefer-top-level'],
       'import-x/no-unresolved': ['error', { ignore: ['^virtual:pwa-register$'] }],
@@ -122,7 +123,7 @@ export default tseslint.config(
   // ===========================================
   {
     files: ['**/*.{ts,tsx}'],
-    ignores: ['src/api/clients/**', 'packages/shared/src/api/clients/**'],
+    ignores: ['src/api/clients/**', 'packages/shared/src/api/**'],
     rules: {
       '@typescript-eslint/no-restricted-imports': [
         'error',

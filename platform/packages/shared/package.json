@@ -25,10 +25,6 @@
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.13.0",
-    "@typescript-eslint/eslint-plugin": "^8.57.0",
-    "@typescript-eslint/parser": "^8.57.0",
-    "eslint": "^9.0.0",
-    "typescript": "^5.4.0",
-    "typescript-eslint": "^8.57.0"
+    "typescript": "^5.4.0"
   }
 }
