@@ -47,7 +47,7 @@ jobs:
           service: mercashop-api-production
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.IMAGE }}:${{ github.event.workflow_run.head_sha }}
-          flags: --allow-unauthenticated --port=3030 --session-affinity --use-http2
+          flags: --allow-unauthenticated --port=3030 --session-affinity
           env_vars: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             DATABASE_NAME=${{ secrets.DATABASE_NAME }}
