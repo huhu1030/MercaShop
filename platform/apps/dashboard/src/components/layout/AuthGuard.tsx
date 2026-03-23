@@ -1,7 +1,7 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { LoadingScreen } from '../ui/LoadingScreen';
-import type { ReactNode } from 'react';
+import {Navigate} from 'react-router-dom';
+import {useAuth} from '../../hooks/useAuth';
+import {LoadingScreen} from '../ui/LoadingScreen';
+import type {ReactNode} from 'react';
 
 interface AuthGuardProps {
   children: ReactNode;

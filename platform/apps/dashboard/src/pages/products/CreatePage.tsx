@@ -13,6 +13,7 @@ const productSchema = z.object({
     category: z.string().min(1, 'Category is required'),
     price: z.coerce.number().min(0, 'Price must be 0 or greater'),
     quantity: z.coerce.number().int().min(0).optional(),
+    location: z.string().optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -31,6 +32,7 @@ export function CreatePage() {
             category: '',
             price: 0,
             quantity: undefined,
+            location: '',
         },
     });
 
@@ -114,6 +116,15 @@ export function CreatePage() {
                             {...register('quantity')}
                         />
                         {errors.quantity && <Field.ErrorText>{errors.quantity.message}</Field.ErrorText>}
+                    </Field.Root>
+
+                    <Field.Root invalid={!!errors.location}>
+                        <Field.Label>Location</Field.Label>
+                        <Input
+                            placeholder="e.g. 41B"
+                            {...register('location')}
+                        />
+                        {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
                     </Field.Root>
 
                     <Button
