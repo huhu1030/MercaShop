@@ -61,7 +61,7 @@ export function ProfilePage() {
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login', { replace: true })
+    navigate('/sign-in', { replace: true })
   }
 
   if (isLoading) {

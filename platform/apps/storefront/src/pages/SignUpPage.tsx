@@ -1,10 +1,10 @@
 import { Center } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { LoginForm } from '../components/LoginForm'
+import { SignUpForm } from '../components/SignUpForm'
 import { useAuth } from '../hooks/useAuth'
 
-export function LoginPage() {
+export function SignUpPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -18,7 +18,7 @@ export function LoginPage() {
 
   return (
     <Center minH={{ base: 'auto', md: '70vh' }} px={{ base: 0, md: 4 }}>
-      <LoginForm />
+      <SignUpForm />
     </Center>
   )
 }

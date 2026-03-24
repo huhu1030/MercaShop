@@ -69,4 +69,3 @@ export interface CreateProductBody {
      */
     'serialNumber'?: string;
 }
-

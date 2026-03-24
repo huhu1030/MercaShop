@@ -1,12 +1,13 @@
 import {useMutation} from '@tanstack/react-query';
-import {Box, Button, Field, Input, Text, VStack,} from '@chakra-ui/react';
+import {Box, Button, Field, FileUpload, Input, Text, VStack,} from '@chakra-ui/react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {z} from 'zod';
-import {getProductApi} from '@mercashop/shared/api-client';
+import {getProductApi, getUploadApi} from '@mercashop/shared/api-client';
 import {PageHeader} from '../../components/ui/PageHeader.tsx';
 import {Colors} from '../../constants/colors.ts';
 import {useEstablishmentId} from '../../hooks/useEstablishmentId';
+import {Upload, X} from 'lucide-react';
 
 const productSchema = z.object({
     name: z.string().min(1, 'Product name is required'),
@@ -14,6 +15,7 @@ const productSchema = z.object({
     price: z.coerce.number().min(0, 'Price must be 0 or greater'),
     quantity: z.coerce.number().int().min(0).optional(),
     location: z.string().optional(),
+    picture: z.instanceof(File, {message: 'Picture is required'}),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -24,6 +26,9 @@ export function CreatePage() {
         register,
         handleSubmit,
         reset,
+        resetField,
+        setValue,
+        watch,
         formState: {errors},
     } = useForm<ProductFormValues>({
         resolver: zodResolver(productSchema),
@@ -36,12 +41,30 @@ export function CreatePage() {
         },
     });
 
+    const picture = watch('picture');
+
     const mutation = useMutation({
-        mutationFn: (values: ProductFormValues) =>
-            getProductApi().createProduct({
-                ...values,
+        mutationFn: async (values: ProductFormValues) => {
+            const {picture, ...productValues} = values;
+            const createResponse = await getProductApi().createProduct({
+                ...productValues,
                 establishmentId,
-            }),
+            });
+
+            const productId = createResponse.data.product?._id as string | undefined;
+            if (!productId) {
+                throw new Error('Product creation did not return an id');
+            }
+
+            try {
+                await getUploadApi().uploadProductImage(productId, picture);
+            } catch (error) {
+                await getProductApi().deleteProduct(productId).catch(() => undefined);
+                throw error;
+            }
+
+            return createResponse;
+        },
         onSuccess: () => {
             reset();
         },
@@ -125,6 +148,106 @@ export function CreatePage() {
                             {...register('location')}
                         />
                         {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
+                    </Field.Root>
+
+                    <Field.Root required invalid={!!errors.picture}>
+                        <Field.Label>Picture</Field.Label>
+                        <FileUpload.Root
+                            maxFiles={1}
+                            accept={['image/*']}
+                            invalid={!!errors.picture}
+                            acceptedFiles={picture ? [picture] : []}
+                            onFileChange={({acceptedFiles}) => {
+                                const file = acceptedFiles[0];
+                                if (file) {
+                                    setValue('picture', file, {shouldValidate: true});
+                                    return;
+                                }
+
+                                resetField('picture');
+                            }}
+                        >
+                            <FileUpload.HiddenInput />
+                            <FileUpload.Dropzone
+                                w="full"
+                                minH="11rem"
+                                borderWidth="2px"
+                                borderStyle="dashed"
+                                borderColor={errors.picture ? Colors.feedback.errorBorder : 'gray.300'}
+                                borderRadius="xl"
+                                bg="gray.50"
+                            >
+                                <FileUpload.DropzoneContent>
+                                    <VStack gap="0.75rem" py="1.5rem" px="1rem" textAlign="center">
+                                        <Box
+                                            display="inline-flex"
+                                            alignItems="center"
+                                            justifyContent="center"
+                                            boxSize="3rem"
+                                            borderRadius="full"
+                                            bg="white"
+                                            borderWidth="1px"
+                                            borderColor="gray.200"
+                                        >
+                                            <Upload size="1.25rem"/>
+                                        </Box>
+                                        <VStack gap="0.25rem">
+                                            <Text fontWeight="semibold">Drop product picture here</Text>
+                                            <Text fontSize="sm" color={Colors.text.muted}>
+                                                Drag and drop an image, or click to browse.
+                                            </Text>
+                                        </VStack>
+                                    </VStack>
+                                </FileUpload.DropzoneContent>
+                            </FileUpload.Dropzone>
+
+                            <FileUpload.Context>
+                                {({acceptedFiles}) => acceptedFiles.length > 0 ? (
+                                    <VStack
+                                        mt="0.75rem"
+                                        w="full"
+                                        gap="0.75rem"
+                                        align="stretch"
+                                    >
+                                        {acceptedFiles.map((file) => (
+                                            <FileUpload.Item
+                                                key={file.name}
+                                                file={file}
+                                                p="0.75rem"
+                                                borderWidth="1px"
+                                                borderRadius="lg"
+                                                alignItems="center"
+                                                gap="0.75rem"
+                                            >
+                                                <FileUpload.ItemPreview
+                                                    boxSize="4rem"
+                                                    overflow="hidden"
+                                                    borderRadius="md"
+                                                    bg="gray.100"
+                                                >
+                                                    <FileUpload.ItemPreviewImage
+                                                        w="100%"
+                                                        h="100%"
+                                                        objectFit="cover"
+                                                    />
+                                                </FileUpload.ItemPreview>
+                                                <FileUpload.ItemContent>
+                                                    <FileUpload.ItemName fontWeight="medium"/>
+                                                    <FileUpload.ItemSizeText color={Colors.text.muted} fontSize="sm"/>
+                                                </FileUpload.ItemContent>
+                                                <FileUpload.ItemDeleteTrigger
+                                                    aria-label={`Remove ${file.name}`}
+                                                    onClick={() => resetField('picture')}
+                                                >
+                                                    <X size="1rem"/>
+                                                </FileUpload.ItemDeleteTrigger>
+                                            </FileUpload.Item>
+                                        ))}
+                                    </VStack>
+                                ) : null}
+                            </FileUpload.Context>
+                        </FileUpload.Root>
+                        {errors.picture && <Field.ErrorText>{errors.picture.message}</Field.ErrorText>}
                     </Field.Root>
 
                     <Button

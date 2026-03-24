@@ -28,9 +28,13 @@ export async function expressAuthentication(
   const tenantAuth = firebaseAuth.tenantManager().authForTenant(ipTenantId);
   const decoded = await tenantAuth.verifyIdToken(token);
 
-  return {
+  const firebaseUser = {
     uid: decoded.uid,
     email: decoded.email ?? '',
     tenantId: request.tenantId ?? '',
   };
+
+  request.firebaseUser = firebaseUser;
+
+  return firebaseUser;
 }

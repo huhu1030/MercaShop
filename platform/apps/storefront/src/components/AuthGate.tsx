@@ -23,7 +23,7 @@ export function AuthGate({ children }: AuthGateProps) {
     const returnUrl = `${location.pathname}${location.search}`
     return (
       <Navigate
-        to={`/login?returnUrl=${encodeURIComponent(returnUrl)}`}
+        to={`/sign-in?returnUrl=${encodeURIComponent(returnUrl)}`}
         replace
       />
     )

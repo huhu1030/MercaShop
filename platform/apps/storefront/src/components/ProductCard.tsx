@@ -2,11 +2,15 @@ import {
   Box,
   Button,
   Card,
+  HStack,
+  IconButton,
   Image,
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { Minus, Plus } from 'lucide-react'
 import type { IPublicProduct } from '@mercashop/shared'
+import { useState } from 'react'
 import { useCart } from '../hooks/useCart'
 
 interface ProductCardProps {
@@ -34,6 +38,7 @@ function formatPrice(price: number) {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
   const imageUrl = getProductImageUrl(product.photo)
+  const [quantity, setQuantity] = useState(1)
 
   return (
     <Card.Root
@@ -78,13 +83,42 @@ export function ProductCard({ product }: ProductCardProps) {
       </Card.Body>
 
       <Card.Footer pt={0}>
-        <Button
-          width="full"
-          colorPalette="green"
-          onClick={() => addItem(product)}
-        >
-          Add to cart
-        </Button>
+        <VStack width="full" align="stretch" gap={3}>
+          <HStack justify="space-between">
+            <Text fontSize="sm" color="fg.muted">
+              Quantity
+            </Text>
+            <HStack gap={2}>
+              <IconButton
+                aria-label={`Decrease quantity for ${product.name}`}
+                size="sm"
+                variant="outline"
+                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+              >
+                <Minus size={16} />
+              </IconButton>
+              <Text minW="6" textAlign="center" fontWeight="semibold">
+                {quantity}
+              </Text>
+              <IconButton
+                aria-label={`Increase quantity for ${product.name}`}
+                size="sm"
+                variant="outline"
+                onClick={() => setQuantity((current) => current + 1)}
+              >
+                <Plus size={16} />
+              </IconButton>
+            </HStack>
+          </HStack>
+
+          <Button
+            width="full"
+            colorPalette="green"
+            onClick={() => addItem(product, quantity)}
+          >
+            Add {quantity} to cart
+          </Button>
+        </VStack>
       </Card.Footer>
     </Card.Root>
   )

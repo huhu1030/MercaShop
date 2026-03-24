@@ -50,6 +50,7 @@ describe('expressAuthentication', () => {
       email: 'test@test.com',
       tenantId: 'tenant-1',
     });
+    expect(req.firebaseUser).toEqual(result);
   });
 
   it('throws on missing authorization header', async () => {

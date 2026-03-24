@@ -1,13 +1,7 @@
-import {
-  Button,
-  Drawer,
-  HStack,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { useNavigate } from 'react-router-dom'
-import { useCart } from '../hooks/useCart'
-import { OrderSummary } from './OrderSummary'
+import {Button, Drawer, HStack, Text, VStack,} from '@chakra-ui/react'
+import {useNavigate} from 'react-router-dom'
+import {useCart} from '../hooks/useCart'
+import {OrderSummary} from './OrderSummary'
 
 interface CartDrawerProps {
   isOpen: boolean
@@ -20,6 +14,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <Drawer.Root
+        size={"lg"}
       open={isOpen}
       placement="end"
       onOpenChange={(details) => {

@@ -4,9 +4,15 @@ import { ProductCard } from './ProductCard'
 
 interface ProductGridProps {
   products: IPublicProduct[]
+  emptyTitle?: string
+  emptyDescription?: string
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  emptyTitle = 'No products available yet.',
+  emptyDescription = 'Check back shortly for the latest menu items.',
+}: ProductGridProps) {
   if (products.length === 0) {
     return (
       <VStack
@@ -19,10 +25,10 @@ export function ProductGrid({ products }: ProductGridProps) {
         bg="blackAlpha.50"
       >
         <Text fontSize="lg" fontWeight="medium">
-          No products available yet.
+          {emptyTitle}
         </Text>
         <Text color="fg.muted">
-          Check back shortly for the latest menu items.
+          {emptyDescription}
         </Text>
       </VStack>
     )

@@ -80,7 +80,7 @@
 - Modify: `platform/packages/shared/src/types.ts`
 - Modify: `platform/apps/api/src/types/order.ts`
 
-- [ ] **Step 1: Add BANCONTACT to shared PaymentMethod enum**
+- [x] **Step 1: Add BANCONTACT to shared PaymentMethod enum**
 
 In `platform/packages/shared/src/enums.ts`, add `BANCONTACT` to the `PaymentMethod` enum:
 
@@ -92,7 +92,7 @@ export enum PaymentMethod {
 }
 ```
 
-- [ ] **Step 2: Add BANCONTACT to API-side PaymentMethod enum**
+- [x] **Step 2: Add BANCONTACT to API-side PaymentMethod enum**
 
 In `platform/apps/api/src/types/order.ts`, add `BANCONTACT`:
 
@@ -104,7 +104,7 @@ export enum PaymentMethod {
 }
 ```
 
-- [ ] **Step 3: Add public DTOs to shared types**
+- [x] **Step 3: Add public DTOs to shared types**
 
 In `platform/packages/shared/src/types.ts`, add after the existing interfaces:
 
@@ -134,17 +134,17 @@ export interface IPublicProduct {
 
 Import `PaymentMethod` at the top of the file if not already imported from enums.
 
-- [ ] **Step 4: Verify shared package builds**
+- [x] **Step 4: Verify shared package builds**
 
 Run: `cd platform && pnpm --filter @mercashop/shared build`
 Expected: Build succeeds with no errors.
 
-- [ ] **Step 5: Run typecheck across monorepo**
+- [x] **Step 5: Run typecheck across monorepo**
 
 Run: `cd platform && pnpm typecheck`
 Expected: No type errors related to PaymentMethod or new interfaces. There may be existing unrelated errors — note them but do not fix.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add platform/packages/shared/src/enums.ts platform/packages/shared/src/types.ts platform/apps/api/src/types/order.ts
@@ -159,7 +159,7 @@ git commit -m "feat: add BANCONTACT payment method and public DTOs to shared typ
 - Modify: `platform/apps/api/src/models/Establishment.ts`
 - Modify: `platform/apps/api/src/scripts/seed-establishment.ts`
 
-- [ ] **Step 1: Add slug and paymentMethods to EstablishmentDocument interface**
+- [x] **Step 1: Add slug and paymentMethods to EstablishmentDocument interface**
 
 In `platform/apps/api/src/models/Establishment.ts`, add to the `EstablishmentDocument` interface:
 
@@ -168,7 +168,7 @@ slug: string;
 paymentMethods: string[];
 ```
 
-- [ ] **Step 2: Add slug and paymentMethods to Mongoose schema**
+- [x] **Step 2: Add slug and paymentMethods to Mongoose schema**
 
 Add these fields to the `EstablishmentSchema` definition:
 
@@ -183,7 +183,7 @@ Add a compound unique index for slug within a tenant:
 EstablishmentSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
 ```
 
-- [ ] **Step 3: Update seed script**
+- [x] **Step 3: Update seed script**
 
 In `platform/apps/api/src/scripts/seed-establishment.ts`, add `slug` and `paymentMethods` to the seed data. Use a URL-friendly slug derived from the establishment name (e.g., `"main-store"`). Include all three payment methods:
 
@@ -192,12 +192,12 @@ slug: 'main-store',
 paymentMethods: ['CARD', 'CASH', 'BANCONTACT'],
 ```
 
-- [ ] **Step 4: Verify API builds**
+- [x] **Step 4: Verify API builds**
 
 Run: `cd platform && pnpm --filter @mercashop/api build`
 Expected: Build succeeds.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add platform/apps/api/src/models/Establishment.ts platform/apps/api/src/scripts/seed-establishment.ts
@@ -213,7 +213,7 @@ git commit -m "feat: add slug and paymentMethods fields to Establishment model"
 - Create: `platform/apps/api/src/controllers/PublicController.ts`
 - Create: `platform/apps/api/tests/services/publicService.test.ts`
 
-- [ ] **Step 1: Write failing tests for publicService**
+- [x] **Step 1: Write failing tests for publicService**
 
 Create `platform/apps/api/tests/services/publicService.test.ts`:
 
@@ -304,12 +304,12 @@ describe('publicService', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=publicService`
 Expected: FAIL — Cannot find module `../../src/services/publicService`
 
-- [ ] **Step 3: Implement publicService**
+- [x] **Step 3: Implement publicService**
 
 Create `platform/apps/api/src/services/publicService.ts`:
 
@@ -339,12 +339,12 @@ export const publicService = {
 };
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=publicService`
 Expected: PASS — all tests green.
 
-- [ ] **Step 5: Create PublicController**
+- [x] **Step 5: Create PublicController**
 
 Create `platform/apps/api/src/controllers/PublicController.ts`. This is a Tsoa controller **without** `@Security('BearerAuth')`:
 
@@ -378,33 +378,33 @@ export class PublicController extends Controller {
 
 Note: `request.tenantId` is set by the existing tenant resolution middleware which runs on all `/api/*` routes. The public controller does NOT use `@Security('BearerAuth')`, so no JWT is required.
 
-- [ ] **Step 6: Regenerate Tsoa routes**
+- [x] **Step 6: Regenerate Tsoa routes**
 
 Run: `cd platform && pnpm generate:api-spec`
 Expected: Routes regenerated. New routes for `/api/public/*` appear in generated output.
 
 Verify the public routes do NOT have auth middleware by inspecting the generated routes file.
 
-- [ ] **Step 7: Verify API builds**
+- [x] **Step 7: Verify API builds**
 
 Run: `cd platform && pnpm --filter @mercashop/api build`
 Expected: Build succeeds.
 
-- [ ] **Step 8: Regenerate API client (so storefront tasks can use generated PublicApi)**
+- [x] **Step 8: Regenerate API client (so storefront tasks can use generated PublicApi)**
 
 Run: `cd platform && pnpm generate:api-client`
 Expected: New `PublicApi` class generated in `platform/packages/shared/src/apis/api/`.
 
-- [ ] **Step 9: Add `getPublicApi()` to shared clients**
+- [x] **Step 9: Add `getPublicApi()` to shared clients**
 
 In `platform/packages/shared/src/api/clients.ts`, add a lazy-loaded `getPublicApi()` singleton following the existing pattern (e.g., `getProductApi()`). Import the generated `PublicApi` class.
 
-- [ ] **Step 10: Rebuild shared package**
+- [x] **Step 10: Rebuild shared package**
 
 Run: `cd platform && pnpm --filter @mercashop/shared build`
 Expected: Build succeeds.
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 git add platform/apps/api/src/services/publicService.ts platform/apps/api/src/controllers/PublicController.ts platform/apps/api/tests/services/publicService.test.ts platform/apps/api/src/generated/ platform/packages/shared/src/
@@ -421,7 +421,7 @@ git commit -m "feat: add public API endpoints for establishment and product brow
 - Modify: `platform/apps/api/src/controllers/PaymentController.ts`
 - Modify: `platform/apps/api/tests/services/paymentService.test.ts`
 
-- [ ] **Step 1: Update existing handleCardPayment tests to accept 3rd arg**
+- [x] **Step 1: Update existing handleCardPayment tests to accept 3rd arg**
 
 The existing tests in `platform/apps/api/tests/services/paymentService.test.ts` call `handleCardPayment(email, mockOrder)` with only 2 arguments. After adding the `redirectUrl` parameter, these will break. Update ALL existing `handleCardPayment` test calls to pass a third argument:
 
@@ -434,7 +434,7 @@ handleCardPayment('user@test.com', mockOrder, 'https://test.example.com/order/or
 
 Note: The existing test file imports individual named functions (`{ handleCardPayment, handleCashPayment, handleWebhook }`) — NOT `processPayment`. The new tests below add `processPayment` to the imports.
 
-- [ ] **Step 2: Write failing test for BANCONTACT routing**
+- [x] **Step 2: Write failing test for BANCONTACT routing**
 
 Add to `platform/apps/api/tests/services/paymentService.test.ts`. Import `processPayment` alongside the existing imports. The test needs to mock `orderService.findOrderById` and `userService.findUserByFirebaseUid` since `processPayment` calls these before routing to card/cash:
 
@@ -447,7 +447,7 @@ it('routes BANCONTACT payments through Mollie (same as CARD)', async () => {
 });
 ```
 
-- [ ] **Step 3: Write failing test for redirect URL construction**
+- [x] **Step 3: Write failing test for redirect URL construction**
 
 ```typescript
 it('constructs redirect URL from tenant storefront domain', async () => {
@@ -462,12 +462,12 @@ it('uses http protocol for localhost domains', async () => {
 });
 ```
 
-- [ ] **Step 4: Run tests to verify they fail**
+- [x] **Step 4: Run tests to verify they fail**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=paymentService`
 Expected: FAIL — BANCONTACT falls through to cash, no redirectUrl parameter exists.
 
-- [ ] **Step 4: Update mollieService to accept redirectUrl**
+- [x] **Step 4: Update mollieService to accept redirectUrl**
 
 In `platform/apps/api/src/services/mollieService.ts`, add `redirectUrl` to the `CreatePaymentOptions` interface and use it instead of the hardcoded value:
 
@@ -484,7 +484,7 @@ interface CreatePaymentOptions {
 
 Replace the hardcoded `redirectUrl: \`be.mercashop.app://paymentstatus/${orderId}\`` with `redirectUrl` from options. The `currency` and `methods` fields remain optional with their existing defaults inside the function — `redirectUrl` must be required to prevent accidentally falling back to the old hardcoded URL.
 
-- [ ] **Step 5: Update paymentService for BANCONTACT routing + redirect URL**
+- [x] **Step 5: Update paymentService for BANCONTACT routing + redirect URL**
 
 In `platform/apps/api/src/services/paymentService.ts`:
 
@@ -510,7 +510,7 @@ if (paymentMethod === PaymentMethod.CARD || paymentMethod === PaymentMethod.BANC
 
 4. Pass `redirectUrl` through `handleCardPayment` to `mollieService.createPayment`.
 
-- [ ] **Step 6: Update PaymentController to pass tenant domains**
+- [x] **Step 6: Update PaymentController to pass tenant domains**
 
 In `platform/apps/api/src/controllers/PaymentController.ts`, pass `request.tenant.domains` to `paymentService.processPayment`. Note: `request.tenant` can be `undefined` (typed as `TenantDocument | undefined`). Add a guard before accessing it:
 
@@ -522,21 +522,21 @@ if (!request.tenant) {
 const tenantDomains = request.tenant.domains;
 ```
 
-- [ ] **Step 7: Run tests to verify they pass**
+- [x] **Step 7: Run tests to verify they pass**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=paymentService`
 Expected: PASS — all tests green.
 
-- [ ] **Step 8: Regenerate Tsoa routes (if controller signature changed)**
+- [x] **Step 8: Regenerate Tsoa routes (if controller signature changed)**
 
 Run: `cd platform && pnpm generate:api-spec`
 
-- [ ] **Step 9: Verify API builds**
+- [x] **Step 9: Verify API builds**
 
 Run: `cd platform && pnpm --filter @mercashop/api build`
 Expected: Build succeeds.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add platform/apps/api/src/services/mollieService.ts platform/apps/api/src/services/paymentService.ts platform/apps/api/src/controllers/PaymentController.ts platform/apps/api/tests/services/paymentService.test.ts platform/apps/api/src/generated/
@@ -551,7 +551,7 @@ git commit -m "feat: add BANCONTACT routing and server-side Mollie redirect URL"
 - Modify: `platform/apps/api/src/services/socketServer.ts`
 - Create: `platform/apps/api/tests/services/socketServer.test.ts`
 
-- [ ] **Step 1: Write failing tests for room-based isolation**
+- [x] **Step 1: Write failing tests for room-based isolation**
 
 Create `platform/apps/api/tests/services/socketServer.test.ts`:
 
@@ -605,12 +605,12 @@ describe('SocketServer', () => {
 
 Adapt the test structure to match the actual `SocketServer` class in `socketServer.ts`.
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=socketServer`
 Expected: FAIL — `sendOrderUpdate` method does not exist, no `join-order` handler.
 
-- [ ] **Step 3: Implement room-based isolation**
+- [x] **Step 3: Implement room-based isolation**
 
 In `platform/apps/api/src/services/socketServer.ts`:
 
@@ -632,12 +632,12 @@ public sendOrderUpdate(orderId: string, data: Record<string, unknown>): void {
 
 3. Keep the existing `sendOrders` method unchanged (dashboard backward compat).
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd platform && pnpm --filter @mercashop/api test -- --testPathPattern=socketServer`
 Expected: PASS.
 
-- [ ] **Step 5: Wire sendOrderUpdate into order status changes**
+- [x] **Step 5: Wire sendOrderUpdate into order status changes**
 
 Call `socketServer.sendOrderUpdate(orderId, orderData)` IN ADDITION TO the existing `sendOrders` call at these specific locations:
 
@@ -647,12 +647,12 @@ Call `socketServer.sendOrderUpdate(orderId, orderData)` IN ADDITION TO the exist
 
 Do NOT replace the existing `sendOrders` calls — the dashboard still uses the global `newOrders` event. Add `sendOrderUpdate` alongside each existing call.
 
-- [ ] **Step 6: Verify API builds**
+- [x] **Step 6: Verify API builds**
 
 Run: `cd platform && pnpm --filter @mercashop/api build`
 Expected: Build succeeds.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add platform/apps/api/src/services/socketServer.ts platform/apps/api/tests/services/socketServer.test.ts
@@ -672,7 +672,7 @@ git commit -m "feat: add room-based Socket.io isolation for order status updates
 - Create: `platform/apps/storefront/src/lib/firebase.ts`
 - Modify: `platform/apps/storefront/src/main.tsx`
 
-- [ ] **Step 1: Create Firebase lazy init module**
+- [x] **Step 1: Create Firebase lazy init module**
 
 Create `platform/apps/storefront/src/lib/firebase.ts`:
 
@@ -705,7 +705,7 @@ export function initFirebaseWithTenant(tenantId: string): Auth {
 }
 ```
 
-- [ ] **Step 2: Update main.tsx with API client + QueryClient**
+- [x] **Step 2: Update main.tsx with API client + QueryClient**
 
 Update `platform/apps/storefront/src/main.tsx` to initialize the API client and wrap with QueryClientProvider. Follow the dashboard pattern from `platform/apps/dashboard/src/main.tsx`:
 
@@ -747,12 +747,12 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-- [ ] **Step 3: Verify storefront builds**
+- [x] **Step 3: Verify storefront builds**
 
 Run: `cd platform && pnpm --filter @mercashop/storefront build`
 Expected: Build succeeds. (May need VITE_API_URL and VITE_FIREBASE_* env vars set — check if `.env` or `.env.local` exists in the storefront app.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add platform/apps/storefront/src/lib/firebase.ts platform/apps/storefront/src/main.tsx
@@ -768,7 +768,7 @@ git commit -m "feat: add Firebase lazy init and API client setup for storefront"
 - Create: `platform/apps/storefront/src/hooks/useAuth.ts`
 - Modify: `platform/apps/storefront/src/App.tsx`
 
-- [ ] **Step 1: Create AuthContext**
+- [x] **Step 1: Create AuthContext**
 
 Create `platform/apps/storefront/src/context/AuthContext.tsx`. Follow the dashboard's pattern from `platform/apps/dashboard/src/hooks/useAuth.tsx` but adapted for the storefront's lazy auth strategy:
 
@@ -878,7 +878,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 Adapt this to match the exact API client method signatures from the generated API client in `platform/packages/shared/src/apis/api/`. Check the actual method names (e.g., `getTenantConfig` may take different parameters).
 
-- [ ] **Step 2: Create useAuth hook**
+- [x] **Step 2: Create useAuth hook**
 
 Create `platform/apps/storefront/src/hooks/useAuth.ts`:
 
@@ -895,7 +895,7 @@ export function useAuth() {
 }
 ```
 
-- [ ] **Step 3: Wrap App with AuthProvider**
+- [x] **Step 3: Wrap App with AuthProvider**
 
 In `platform/apps/storefront/src/App.tsx`, wrap the content with `<AuthProvider>`:
 
@@ -912,12 +912,12 @@ import { AuthProvider } from './context/AuthContext';
 </AuthProvider>
 ```
 
-- [ ] **Step 4: Verify storefront builds**
+- [x] **Step 4: Verify storefront builds**
 
 Run: `cd platform && pnpm --filter @mercashop/storefront build`
 Expected: Build succeeds.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add platform/apps/storefront/src/context/AuthContext.tsx platform/apps/storefront/src/hooks/useAuth.ts platform/apps/storefront/src/App.tsx

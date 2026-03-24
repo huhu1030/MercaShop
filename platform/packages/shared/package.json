@@ -2,12 +2,15 @@
   "name": "@mercashop/shared",
   "version": "1.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./dist/esm/index.js"
     },
     "./api-client": {
       "types": "./src/api/index.ts",
@@ -15,7 +18,10 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "pnpm run build:esm && pnpm run build:cjs && pnpm run build:types",
+    "build:esm": "tsc -p tsconfig.esm.json && node -e \"const fs=require('node:fs');fs.mkdirSync('dist/esm',{recursive:true});fs.writeFileSync('dist/esm/package.json', JSON.stringify({ type: 'module' }, null, 2) + '\\n');\"",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:types": "tsc -p tsconfig.types.json",
     "lint": "eslint src/",
     "typecheck": "tsc --noEmit",
     "gen-api": "openapi-generator-cli generate -i ../../apps/api/dist/swagger.json -g typescript-axios -o ./src/apis/api -c .openapi-generator-config.json -p withSeparateModelsAndApi=true -p modelPackage=models -p apiPackage=apis -p unwrapResponseData=true"
