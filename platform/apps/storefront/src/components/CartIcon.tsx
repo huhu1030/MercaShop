@@ -1,7 +1,7 @@
-import { Box, Circle, IconButton, useBreakpointValue } from '@chakra-ui/react'
-import { ShoppingCart } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useCart } from '../hooks/useCart'
+import {Box, Circle, IconButton, useBreakpointValue} from '@chakra-ui/react'
+import {ShoppingCart} from 'lucide-react'
+import {useNavigate} from 'react-router-dom'
+import {useCart} from '../hooks/useCart'
 
 interface CartIconProps {
   onDesktopOpen: () => void
@@ -15,6 +15,7 @@ export function CartIcon({ onDesktopOpen }: CartIconProps) {
   return (
     <Box position="relative">
       <IconButton
+          _hover={{bg: 'whiteAlpha.200'}}
         aria-label="Open cart"
         variant="ghost"
         color="currentColor"

@@ -1,11 +1,11 @@
-import { Box, Button, Flex, Heading, HStack, Image, Spacer, useDisclosure } from '@chakra-ui/react'
-import { Menu as MenuIcon } from 'lucide-react'
-import type { ReactNode } from 'react'
-import type { ITenantBranding } from '@mercashop/shared'
-import { useLocation } from 'react-router-dom'
-import { CartDrawer } from './CartDrawer'
-import { CartIcon } from './CartIcon'
-import { HeaderMenuDrawer } from './HeaderMenuDrawer'
+import {Box, Button, Flex, Heading, HStack, Image, Spacer, useDisclosure} from '@chakra-ui/react'
+import {Menu as MenuIcon} from 'lucide-react'
+import {ReactNode} from 'react'
+import type {ITenantBranding} from '@mercashop/shared'
+import {useLocation} from 'react-router-dom'
+import {CartDrawer} from './CartDrawer'
+import {CartIcon} from './CartIcon'
+import {HeaderMenuDrawer} from './HeaderMenuDrawer'
 
 interface StorefrontShellProps {
   branding: ITenantBranding
@@ -38,7 +38,7 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
         color="white"
         flexShrink={0}
       >
-        <Button variant="ghost" color="currentColor" onClick={onMenuOpen}>
+        <Button variant="ghost" color="currentColor" onClick={onMenuOpen} _hover={{bg: 'whiteAlpha.200'}}>
           <MenuIcon size={18} />
           MENU
         </Button>
