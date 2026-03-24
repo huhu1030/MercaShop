@@ -3,6 +3,7 @@ import { useBranding } from './hooks/useBranding'
 import { StorefrontShell } from './components/StorefrontShell'
 import { LoadingScreen } from './components/LoadingScreen'
 import { StoreNotFound } from './components/StoreNotFound'
+import { AuthProvider } from './context/AuthContext'
 import { AppRoutes } from './AppRoutes'
 
 export default function App() {
@@ -12,10 +13,12 @@ export default function App() {
   if (error || !branding) return <StoreNotFound />
 
   return (
-    <BrowserRouter>
-      <StorefrontShell branding={branding}>
-        <AppRoutes />
-      </StorefrontShell>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <StorefrontShell branding={branding}>
+          <AppRoutes />
+        </StorefrontShell>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
