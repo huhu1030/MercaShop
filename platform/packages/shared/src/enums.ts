@@ -11,6 +11,7 @@ export enum OrderStatus {
 export enum PaymentMethod {
   CASH = 'CASH',
   CARD = 'CARD',
+  BANCONTACT = 'BANCONTACT',
 }
 
 export enum DeliveryMethod {

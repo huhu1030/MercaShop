@@ -1,3 +1,5 @@
+import { PaymentMethod } from './enums';
+
 export interface ILocation {
   latitude: number;
   longitude: number;
@@ -60,4 +62,26 @@ export interface IEstablishmentSummary {
   category: string;
   status: string;
   logo: string;
+}
+
+export interface IPublicEstablishment {
+  _id: string;
+  name: string;
+  slug: string;
+  logo: string;
+  banner?: string;
+  status: string;
+  openingHours?: string;
+  address: IAddress;
+  paymentMethods: PaymentMethod[];
+  description?: string;
+}
+
+export interface IPublicProduct {
+  _id: string;
+  name: string;
+  description?: string;
+  price: number;
+  photo?: string;
+  category: string;
 }

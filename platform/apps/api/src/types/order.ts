@@ -1,6 +1,7 @@
 export enum PaymentMethod {
   CARD = 'CARD',
   CASH = 'CASH',
+  BANCONTACT = 'BANCONTACT',
 }
 
 export interface OrderLineItem {
