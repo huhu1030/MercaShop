@@ -24,12 +24,19 @@ class SocketServer {
   private initListeners(): void {
     this.io.on('connection', (socket: Socket) => {
       console.log(`Connected: ${socket.id}`);
+      socket.on('join-order', (orderId: string) => {
+        socket.join(`order:${orderId}`);
+      });
       socket.on('disconnect', () => console.log(`Disconnected: ${socket.id}`));
     });
   }
 
   sendOrders(data: unknown): void {
     this.io.emit('newOrders', data);
+  }
+
+  sendOrderUpdate(orderId: string, data: Record<string, unknown>): void {
+    this.io.to(`order:${orderId}`).emit('order-updated', data);
   }
 }
 

@@ -84,9 +84,11 @@ export async function notifyEstablishment(
   const establishment = await EstablishmentModel.findOne({ tenantId, _id: establishmentId });
   if (establishment) {
     SocketServer.getInstance().sendOrders(order);
+    SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
   }
 }
 
 export function notifyRealtime(order: Order): void {
   SocketServer.getInstance().sendOrders(order);
+  SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
 }
