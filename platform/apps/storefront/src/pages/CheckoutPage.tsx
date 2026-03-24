@@ -15,7 +15,6 @@ import {
 } from '@mercashop/shared/api-client'
 import { useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { AuthGate } from '../components/AuthGate'
 import {
   CheckoutForm,
   type CheckoutFormData,
@@ -25,14 +24,6 @@ import { useCart } from '../hooks/useCart'
 import { useEstablishment } from '../hooks/useEstablishment'
 
 export function CheckoutPage() {
-  return (
-    <AuthGate>
-      <CheckoutPageContent />
-    </AuthGate>
-  )
-}
-
-function CheckoutPageContent() {
   const navigate = useNavigate()
   const { items, total, clearCart } = useCart()
   const { establishment, isLoading } = useEstablishment()
