@@ -8,6 +8,7 @@ export {
   getOrderApi,
   getPaymentApi,
   getProductApi,
+  getPublicApi,
   getTenantApi,
   getUploadApi,
   getUserApi,
