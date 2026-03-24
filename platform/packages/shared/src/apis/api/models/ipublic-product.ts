@@ -17,32 +17,44 @@
 /**
  * 
  * @export
- * @interface ITenantBranding
+ * @interface IPublicProduct
  */
-export interface ITenantBranding {
+export interface IPublicProduct {
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IPublicProduct
      */
-    'logo': string;
+    '_id': string;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IPublicProduct
      */
-    'primaryColor': string;
+    'name': string;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IPublicProduct
      */
-    'appName': string;
+    'description'?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof IPublicProduct
+     */
+    'price': number;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IPublicProduct
      */
-    'favicon'?: string;
+    'photo'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof IPublicProduct
+     */
+    'category': string;
 }
 

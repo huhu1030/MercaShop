@@ -10,6 +10,8 @@ import { UploadController } from './../controllers/UploadController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TenantController } from './../controllers/TenantController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { PublicController } from './../controllers/PublicController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductController } from './../controllers/ProductController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PaymentController } from './../controllers/PaymentController';
@@ -57,6 +59,7 @@ const models: TsoaRoute.Models = {
             "logo": {"dataType":"string","required":true},
             "primaryColor": {"dataType":"string","required":true},
             "appName": {"dataType":"string","required":true},
+            "favicon": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -89,6 +92,54 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contact":{"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}}}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAddress": {
+        "dataType": "refObject",
+        "properties": {
+            "street": {"dataType":"string","required":true},
+            "number": {"dataType":"string","required":true},
+            "zipCode": {"dataType":"string","required":true},
+            "municipality": {"dataType":"string","required":true},
+            "city": {"dataType":"string","required":true},
+            "country": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaymentMethod": {
+        "dataType": "refEnum",
+        "enums": ["CASH","CARD","BANCONTACT"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IPublicEstablishment": {
+        "dataType": "refObject",
+        "properties": {
+            "_id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "slug": {"dataType":"string","required":true},
+            "logo": {"dataType":"string","required":true},
+            "banner": {"dataType":"string"},
+            "status": {"dataType":"string","required":true},
+            "openingHours": {"dataType":"string"},
+            "address": {"ref":"IAddress","required":true},
+            "paymentMethods": {"dataType":"array","array":{"dataType":"refEnum","ref":"PaymentMethod"},"required":true},
+            "description": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IPublicProduct": {
+        "dataType": "refObject",
+        "properties": {
+            "_id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "description": {"dataType":"string"},
+            "price": {"dataType":"double","required":true},
+            "photo": {"dataType":"string"},
+            "category": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateProductBody": {
         "dataType": "refObject",
         "properties": {
@@ -102,11 +153,6 @@ const models: TsoaRoute.Models = {
             "serialNumber": {"dataType":"string"},
         },
         "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PaymentMethod": {
-        "dataType": "refEnum",
-        "enums": ["CARD","CASH"],
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Record_string.unknown_": {
@@ -437,6 +483,67 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateTenant',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPublicController_getEstablishments: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.get('/api/public/establishments',
+            ...(fetchMiddlewares<RequestHandler>(PublicController)),
+            ...(fetchMiddlewares<RequestHandler>(PublicController.prototype.getEstablishments)),
+
+            async function PublicController_getEstablishments(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPublicController_getEstablishments, request, response });
+
+                const controller = new PublicController();
+
+              await templateService.apiHandler({
+                methodName: 'getEstablishments',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPublicController_getProductsByEstablishment: Record<string, TsoaRoute.ParameterSchema> = {
+                establishmentId: {"in":"path","name":"establishmentId","required":true,"dataType":"string"},
+                request: {"in":"request","name":"request","required":true,"dataType":"object"},
+        };
+        app.get('/api/public/establishments/:establishmentId/products',
+            ...(fetchMiddlewares<RequestHandler>(PublicController)),
+            ...(fetchMiddlewares<RequestHandler>(PublicController.prototype.getProductsByEstablishment)),
+
+            async function PublicController_getProductsByEstablishment(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPublicController_getProductsByEstablishment, request, response });
+
+                const controller = new PublicController();
+
+              await templateService.apiHandler({
+                methodName: 'getProductsByEstablishment',
                 controller,
                 response,
                 next,

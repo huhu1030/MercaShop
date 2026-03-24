@@ -1,8 +1,4 @@
-export enum PaymentMethod {
-  CARD = 'CARD',
-  CASH = 'CASH',
-  BANCONTACT = 'BANCONTACT',
-}
+export { PaymentMethod } from '@mercashop/shared';
 
 export interface OrderLineItem {
   _id: string;

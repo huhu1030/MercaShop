@@ -18,6 +18,7 @@ export * from './apis/establishment-api';
 export * from './apis/order-api';
 export * from './apis/payment-api';
 export * from './apis/product-api';
+export * from './apis/public-api';
 export * from './apis/tenant-api';
 export * from './apis/upload-api';
 export * from './apis/user-api';

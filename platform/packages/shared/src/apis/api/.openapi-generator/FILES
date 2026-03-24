@@ -5,6 +5,7 @@ apis/establishment-api.ts
 apis/order-api.ts
 apis/payment-api.ts
 apis/product-api.ts
+apis/public-api.ts
 apis/tenant-api.ts
 apis/upload-api.ts
 apis/user-api.ts
@@ -31,8 +32,11 @@ models/get-establishments200-response.ts
 models/get-orders-by-establishment200-response.ts
 models/get-payment-status200-response.ts
 models/get-products-by-establishment200-response.ts
+models/iaddress.ts
 models/iestablishment-summary.ts
 models/index.ts
+models/ipublic-establishment.ts
+models/ipublic-product.ts
 models/itenant-branding.ts
 models/itenant-config.ts
 models/list-images200-response.ts

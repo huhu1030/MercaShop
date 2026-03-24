@@ -17,32 +17,44 @@
 /**
  * 
  * @export
- * @interface ITenantBranding
+ * @interface IAddress
  */
-export interface ITenantBranding {
+export interface IAddress {
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IAddress
      */
-    'logo': string;
+    'street': string;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IAddress
      */
-    'primaryColor': string;
+    'number': string;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IAddress
      */
-    'appName': string;
+    'zipCode': string;
     /**
      * 
      * @type {string}
-     * @memberof ITenantBranding
+     * @memberof IAddress
      */
-    'favicon'?: string;
+    'municipality': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof IAddress
+     */
+    'city': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof IAddress
+     */
+    'country': string;
 }
 

@@ -5,6 +5,7 @@ import {
   OrderApi,
   PaymentApi,
   ProductApi,
+  PublicApi,
   TenantApi,
   UploadApi,
   UserApi,
@@ -19,6 +20,7 @@ let productApi: ProductApi | null = null;
 let tenantApi: TenantApi | null = null;
 let uploadApi: UploadApi | null = null;
 let userApi: UserApi | null = null;
+let publicApi: PublicApi | null = null;
 let webhookApi: WebhookApi | null = null;
 
 type ApiConstructor<T> = new (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) => T;
@@ -64,6 +66,11 @@ export function getUserApi(): UserApi {
   return userApi;
 }
 
+export function getPublicApi(): PublicApi {
+  if (!publicApi) publicApi = createInstance(PublicApi);
+  return publicApi;
+}
+
 export function getWebhookApi(): WebhookApi {
   if (!webhookApi) webhookApi = createInstance(WebhookApi);
   return webhookApi;
@@ -77,5 +84,6 @@ export function resetApiClients(): void {
   tenantApi = null;
   uploadApi = null;
   userApi = null;
+  publicApi = null;
   webhookApi = null;
 }
