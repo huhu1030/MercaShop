@@ -1,4 +1,5 @@
-import { handleCardPayment, handleCashPayment, handleWebhook } from '../../src/services/paymentService';
+import { handleCardPayment, handleCashPayment, handleWebhook, processPayment } from '../../src/services/paymentService';
+import { PaymentMethod } from '../../src/types/order';
 
 jest.mock('../../src/services/mollieService', () => ({
   createPayment: jest.fn().mockResolvedValue({
@@ -9,6 +10,7 @@ jest.mock('../../src/services/mollieService', () => ({
 }));
 
 jest.mock('../../src/services/orderService', () => ({
+  findOrderById: jest.fn(),
   linkMolliePayment: jest.fn().mockResolvedValue(undefined),
   markPaidAndDecrementStock: jest.fn().mockResolvedValue(undefined),
   markUnpaidAndDecrementStock: jest.fn().mockResolvedValue(undefined),
@@ -22,9 +24,14 @@ jest.mock('../../src/services/notificationService', () => ({
   sendOrderConfirmationToUser: jest.fn().mockResolvedValue(undefined),
 }));
 
+jest.mock('../../src/services/userService', () => ({
+  findUserByFirebaseUid: jest.fn().mockResolvedValue({ email: 'user@test.com' }),
+}));
+
 import * as mollieService from '../../src/services/mollieService';
 import * as orderService from '../../src/services/orderService';
 import * as notificationService from '../../src/services/notificationService';
+import * as userService from '../../src/services/userService';
 
 const mockOrder = {
   _id: '507f1f77bcf86cd799439011',
@@ -41,17 +48,17 @@ describe('paymentService', () => {
 
   describe('handleCardPayment', () => {
     it('creates Mollie payment and returns checkout URL', async () => {
-      const result = await handleCardPayment('user@test.com', mockOrder);
+      const result = await handleCardPayment('user@test.com', mockOrder, 'https://test.example.com/order/order-1/status');
       expect(result.checkoutUrl).toBe('https://checkout.mollie.com/mock');
     });
 
     it('links mollie payment to order', async () => {
-      await handleCardPayment('user@test.com', mockOrder);
+      await handleCardPayment('user@test.com', mockOrder, 'https://test.example.com/order/order-1/status');
       expect(orderService.linkMolliePayment).toHaveBeenCalledWith(mockOrder._id, 'tr_mock123');
     });
 
     it('does not send a confirmation email', async () => {
-      await handleCardPayment('user@test.com', mockOrder);
+      await handleCardPayment('user@test.com', mockOrder, 'https://test.example.com/order/order-1/status');
       expect(notificationService.sendOrderConfirmation).not.toHaveBeenCalled();
       expect(notificationService.sendOrderConfirmationToUser).not.toHaveBeenCalled();
     });
@@ -64,6 +71,52 @@ describe('paymentService', () => {
       expect(orderService.markUnpaidAndDecrementStock).toHaveBeenCalledWith(mockOrder);
       expect(orderService.notifyEstablishment).toHaveBeenCalledWith('tenant-1', 'est-1', mockOrder);
       expect(notificationService.sendOrderConfirmation).toHaveBeenCalledWith('user@test.com', mockOrder);
+    });
+  });
+
+  describe('processPayment — BANCONTACT routing', () => {
+    const mockOrderDoc = {
+      ...mockOrder,
+      toObject: () => mockOrder,
+      _id: { toString: () => mockOrder._id },
+    };
+
+    beforeEach(() => {
+      (orderService.findOrderById as jest.Mock).mockResolvedValue(mockOrderDoc);
+      (userService.findUserByFirebaseUid as jest.Mock).mockResolvedValue({ email: 'user@test.com' });
+    });
+
+    it('routes BANCONTACT payments through Mollie (same as CARD)', async () => {
+      const result = await processPayment(
+        'tenant-1', 'firebase-uid', 'user@test.com',
+        mockOrder._id, PaymentMethod.BANCONTACT, ['lebon.be'],
+      );
+      expect(result.checkoutUrl).toBe('https://checkout.mollie.com/mock');
+      expect(mollieService.createPayment).toHaveBeenCalled();
+    });
+
+    it('constructs redirect URL from tenant storefront domain', async () => {
+      await processPayment(
+        'tenant-1', 'firebase-uid', 'user@test.com',
+        mockOrder._id, PaymentMethod.BANCONTACT, ['dashboard.lebon.be', 'lebon.be'],
+      );
+      expect(mollieService.createPayment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          redirectUrl: `https://lebon.be/order/${mockOrder._id}/status`,
+        }),
+      );
+    });
+
+    it('uses http protocol for localhost domains', async () => {
+      await processPayment(
+        'tenant-1', 'firebase-uid', 'user@test.com',
+        mockOrder._id, PaymentMethod.CARD, ['localhost:3000'],
+      );
+      expect(mollieService.createPayment).toHaveBeenCalledWith(
+        expect.objectContaining({
+          redirectUrl: `http://localhost:3000/order/${mockOrder._id}/status`,
+        }),
+      );
     });
   });
 

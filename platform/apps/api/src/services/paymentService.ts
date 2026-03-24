@@ -6,12 +6,20 @@ import {getCurrentDateTimeEuro} from '../utils/date';
 import type {Order} from '../types/order';
 import {PaymentMethod} from '../types/order';
 
+function buildRedirectUrl(tenantDomains: string[], orderId: string): string {
+    const storefrontDomain = tenantDomains.find(d => !d.startsWith('dashboard.'));
+    if (!storefrontDomain) throw new Error('No storefront domain configured for tenant');
+    const protocol = storefrontDomain.startsWith('localhost') ? 'http' : 'https';
+    return `${protocol}://${storefrontDomain}/order/${orderId}/status`;
+}
+
 export async function processPayment(
     tenantId: string,
     firebaseUid: string,
     firebaseEmail: string,
     orderId: string,
     paymentMethod: PaymentMethod,
+    tenantDomains: string[],
 ): Promise<{ checkoutUrl?: string; message?: string }> {
     const order = await orderService.findOrderById(orderId, tenantId);
     if (!order) {
@@ -22,8 +30,9 @@ export async function processPayment(
     const email = user?.email ?? firebaseEmail;
     const plainOrder = {...order.toObject(), _id: order._id.toString()} as Order;
 
-    if (paymentMethod === PaymentMethod.CARD) {
-        return handleCardPayment(email, plainOrder);
+    if (paymentMethod === PaymentMethod.CARD || paymentMethod === PaymentMethod.BANCONTACT) {
+        const redirectUrl = buildRedirectUrl(tenantDomains, plainOrder._id);
+        return handleCardPayment(email, plainOrder, redirectUrl);
     }
 
     await handleCashPayment(tenantId, email, plainOrder);
@@ -33,6 +42,7 @@ export async function processPayment(
 export async function handleCardPayment(
     _userEmail: string,
     order: Order & { userId: string },
+    redirectUrl: string,
 ): Promise<{ checkoutUrl: string }> {
     const description = `Order from ${getCurrentDateTimeEuro()} for User ${order.userId}`;
 
@@ -40,6 +50,7 @@ export async function handleCardPayment(
         amount: order.total.toFixed(2),
         description,
         orderId: order._id,
+        redirectUrl,
     });
 
     await orderService.linkMolliePayment(order._id, (payment as any).id);

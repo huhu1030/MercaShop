@@ -14,12 +14,18 @@ export class PaymentController extends Controller {
     @Body() body: { orderId: string; paymentMethod: PaymentMethod },
   ): Promise<{ checkoutUrl?: string; message?: string }> {
     try {
+      if (!req.tenant) {
+        this.setStatus(500);
+        throw new Error('Tenant not resolved');
+      }
+      const tenantDomains = req.tenant.domains;
       return await paymentService.processPayment(
         req.tenantId!,
         req.firebaseUser!.uid,
         req.firebaseUser!.email,
         body.orderId,
         body.paymentMethod,
+        tenantDomains,
       );
     } catch (error: any) {
       if (error.message === 'Order not found') {

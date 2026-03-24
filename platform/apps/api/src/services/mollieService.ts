@@ -20,12 +20,13 @@ export interface CreatePaymentOptions {
   amount: string;
   description: string;
   orderId: string;
+  redirectUrl: string;
   currency?: string;
   methods?: string[];
 }
 
 export async function createPayment(opts: CreatePaymentOptions) {
-  const { amount, description, orderId, currency = 'EUR', methods = ['creditcard', 'bancontact'] } = opts;
+  const { amount, description, orderId, redirectUrl, currency = 'EUR', methods = ['creditcard', 'bancontact'] } = opts;
 
   if (!AMOUNT_RE.test(amount) || parseFloat(amount) <= 0) {
     throw new Error('Invalid payment amount: must be a positive number with two decimals');
@@ -39,7 +40,7 @@ export async function createPayment(opts: CreatePaymentOptions) {
     amount: { value: amount, currency },
     method: methods,
     description,
-    redirectUrl: `be.mercashop.app://paymentstatus/${orderId}`,
+    redirectUrl,
     webhookUrl: `${env.apiUrl}/webhook`,
     idempotencyKey: orderId,
   } as any);
