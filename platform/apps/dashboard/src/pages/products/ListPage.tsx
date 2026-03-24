@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
-import {Badge, Box, Button, Card, HStack, Image, Input, SimpleGrid, Text, VStack} from '@chakra-ui/react';
+import {Badge, Box, Button, Card, CloseButton, HStack, Image, Input, SimpleGrid, Text, VStack} from '@chakra-ui/react';
 import type {ColumnDef} from '@tanstack/react-table';
 import {Inbox, LayoutGrid, Rows3} from 'lucide-react';
 import {LoadingScreen} from '../../components/ui/LoadingScreen.tsx';
@@ -20,58 +20,12 @@ interface Product {
     photo?: string;
 }
 
-const columns: ColumnDef<Product, unknown>[] = [
-    {
-        accessorKey: 'photo',
-        header: 'Picture',
-        enableSorting: false,
-        cell: ({row}) => (
-            <Box
-                overflow="hidden"
-                w="3rem"
-                h="3rem"
-                borderRadius="md"
-                bg="gray.100"
-            >
-                {row.original.photo ? (
-                    <Image
-                        src={row.original.photo}
-                        alt={row.original.name}
-                        w="100%"
-                        h="100%"
-                        objectFit="cover"
-                    />
-                ) : null}
-            </Box>
-        ),
-    },
-    {
-        accessorKey: 'name',
-        header: 'Name',
-        cell: ({getValue}) => <Text fontWeight="medium">{getValue<string>()}</Text>,
-    },
-    {
-        accessorKey: 'category',
-        header: 'Category',
-    },
-    {
-        accessorKey: 'price',
-        header: 'Price',
-        meta: {align: 'right'},
-        cell: ({getValue}) => `€${getValue<number>().toFixed(2)}`,
-    },
-    {
-        accessorKey: 'quantity',
-        header: 'Qty',
-        meta: {align: 'right'},
-    },
-];
-
 export function ListPage() {
     const {establishmentId} = useEstablishmentId()!;
     const [search, setSearch] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [view, setView] = useState<'table' | 'grid'>('table');
+    const [selectedImage, setSelectedImage] = useState<{src: string; alt: string} | null>(null);
     const {data, isLoading} = useQuery({
         queryKey: ['products', establishmentId],
         queryFn: () => getProductApi().getProductsByEstablishment(establishmentId),
@@ -90,6 +44,71 @@ export function ListPage() {
 
         return matchesCategory && matchesSearch;
     });
+
+    useEffect(() => {
+        if (!selectedImage) return;
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setSelectedImage(null);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedImage]);
+
+    const columns: ColumnDef<Product, unknown>[] = [
+        {
+            accessorKey: 'photo',
+            header: 'Picture',
+            enableSorting: false,
+            cell: ({row}) => (
+                <Box
+                    overflow="hidden"
+                    w="7rem"
+                    h="7rem"
+                    borderRadius="md"
+                    bg="gray.100"
+                    cursor={row.original.photo ? 'zoom-in' : 'default'}
+                    onClick={() => row.original.photo
+                        ? setSelectedImage({src: row.original.photo, alt: row.original.name})
+                        : undefined}
+                >
+                    {row.original.photo ? (
+                        <Image
+                            src={row.original.photo}
+                            alt={row.original.name}
+                            w="100%"
+                            h="100%"
+                            objectFit="cover"
+                        />
+                    ) : null}
+                </Box>
+            ),
+        },
+        {
+            accessorKey: 'name',
+            header: 'Name',
+            cell: ({getValue}) => <Text fontWeight="medium">{getValue<string>()}</Text>,
+        },
+        {
+            accessorKey: 'category',
+            header: 'Category',
+        },
+        {
+            accessorKey: 'price',
+            header: 'Price',
+            meta: {align: 'right'},
+            cell: ({getValue}) => `€${getValue<number>().toFixed(2)}`,
+        },
+        {
+            accessorKey: 'quantity',
+            header: 'Qty',
+            meta: {align: 'right'},
+        },
+    ];
 
     return (
         <VStack gap="1.25rem" align="stretch">
@@ -177,6 +196,8 @@ export function ListPage() {
                                         w="100%"
                                         h="100%"
                                         objectFit="cover"
+                                        cursor="zoom-in"
+                                        onClick={() => setSelectedImage({src: product.photo!, alt: product.name})}
                                     />
                                 ) : null}
                             </Box>
@@ -202,6 +223,46 @@ export function ListPage() {
                     ))}
                 </SimpleGrid>
             )}
+
+            {selectedImage ? (
+                <Box
+                    position="fixed"
+                    inset={0}
+                    bg="blackAlpha.800"
+                    zIndex={1400}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    p={{base: '1rem', md: '2rem'}}
+                    onClick={() => setSelectedImage(null)}
+                >
+                    <CloseButton
+                        position="absolute"
+                        top="1rem"
+                        right="1rem"
+                        size="lg"
+                        color="white"
+                        bg="blackAlpha.600"
+                        _hover={{bg: 'blackAlpha.700'}}
+                        onClick={() => setSelectedImage(null)}
+                    />
+                    <Box
+                        maxW="min(90vw, 1200px)"
+                        maxH="90vh"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <Image
+                            src={selectedImage.src}
+                            alt={selectedImage.alt}
+                            maxW="100%"
+                            maxH="90vh"
+                            objectFit="contain"
+                            borderRadius="md"
+                            boxShadow="2xl"
+                        />
+                    </Box>
+                </Box>
+            ) : null}
         </VStack>
     );
 }

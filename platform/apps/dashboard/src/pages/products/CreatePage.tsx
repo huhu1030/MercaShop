@@ -203,11 +203,16 @@ export function CreatePage() {
 
                             <FileUpload.Context>
                                 {({acceptedFiles}) => acceptedFiles.length > 0 ? (
-                                    <VStack
+                                    <FileUpload.ItemGroup
                                         mt="0.75rem"
                                         w="full"
                                         gap="0.75rem"
-                                        align="stretch"
+                                        display="flex"
+                                        flexDirection="column"
+                                        alignItems="stretch"
+                                        listStyleType="none"
+                                        p="0"
+                                        m="0"
                                     >
                                         {acceptedFiles.map((file) => (
                                             <FileUpload.Item
@@ -243,7 +248,7 @@ export function CreatePage() {
                                                 </FileUpload.ItemDeleteTrigger>
                                             </FileUpload.Item>
                                         ))}
-                                    </VStack>
+                                    </FileUpload.ItemGroup>
                                 ) : null}
                             </FileUpload.Context>
                         </FileUpload.Root>

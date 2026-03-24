@@ -14,7 +14,6 @@ export async function uploadProductImage(
     metadata: { contentType: file.mimetype },
   });
 
-  await blob.makePublic();
   const url = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
   await productService.updateProductPhoto(productId, tenantId, url);

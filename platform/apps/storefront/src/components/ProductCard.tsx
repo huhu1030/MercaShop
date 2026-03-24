@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  Card,
-  HStack,
-  IconButton,
-  Image,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { Minus, Plus } from 'lucide-react'
-import type { IPublicProduct } from '@mercashop/shared'
-import { useState } from 'react'
-import { useCart } from '../hooks/useCart'
+import {Box, Button, Card, HStack, IconButton, Image, Text, VStack,} from '@chakra-ui/react'
+import {Minus, Plus} from 'lucide-react'
+import type {IPublicProduct} from '@mercashop/shared'
+import {useState} from 'react'
+import {useCart} from '../hooks/useCart'
 
 interface ProductCardProps {
   product: IPublicProduct
@@ -54,13 +45,13 @@ export function ProductCard({ product }: ProductCardProps) {
         <Image
           src={imageUrl}
           alt={product.name}
-          h="200px"
+          h="160px"
           w="100%"
           objectFit="cover"
         />
       ) : (
         <Box
-          h="200px"
+          h="160px"
           bgGradient="linear(to-br, blackAlpha.100, blackAlpha.200)"
         />
       )}

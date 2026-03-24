@@ -2,6 +2,7 @@ import { Box, Button, Flex, Heading, HStack, Image, Spacer, useDisclosure } from
 import { Menu as MenuIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { ITenantBranding } from '@mercashop/shared'
+import { useLocation } from 'react-router-dom'
 import { CartDrawer } from './CartDrawer'
 import { CartIcon } from './CartIcon'
 import { HeaderMenuDrawer } from './HeaderMenuDrawer'
@@ -12,6 +13,7 @@ interface StorefrontShellProps {
 }
 
 export function StorefrontShell({ branding, children }: StorefrontShellProps) {
+  const location = useLocation()
   const {
     open: cartOpen,
     onOpen: onCartOpen,
@@ -22,9 +24,10 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
     onOpen: onMenuOpen,
     onClose: onMenuClose,
   } = useDisclosure()
+  const isHomePage = location.pathname === '/'
 
   return (
-    <Box minH="100vh">
+    <Flex direction="column" h="100dvh" overflow="hidden">
       <Flex
         as="header"
         align="center"
@@ -33,6 +36,7 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
         py={4}
         bg={branding.primaryColor}
         color="white"
+        flexShrink={0}
       >
         <Button variant="ghost" color="currentColor" onClick={onMenuOpen}>
           <MenuIcon size={18} />
@@ -51,11 +55,17 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
           <CartIcon onDesktopOpen={onCartOpen} />
         </HStack>
       </Flex>
-      <Box as="main" p={6}>
+      <Box
+        as="main"
+        p={6}
+        flex="1"
+        minH={0}
+        overflowY={isHomePage ? 'hidden' : 'auto'}
+      >
         {children}
       </Box>
       <HeaderMenuDrawer isOpen={menuOpen} onClose={onMenuClose} />
       <CartDrawer isOpen={cartOpen} onClose={onCartClose} />
-    </Box>
+    </Flex>
   )
 }
