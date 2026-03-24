@@ -40,6 +40,7 @@ pnpm generate:api-client  # Generates OpenAPI spec → TypeScript Axios client
 ```
 
 **Testing:**
+
 - API: Jest (`platform/apps/api/jest.config.js`)
 - Web: Vitest (`platform/apps/web/vitest.config.ts`)
 
@@ -47,7 +48,8 @@ pnpm generate:api-client  # Generates OpenAPI spec → TypeScript Axios client
 
 ### Multi-Tenancy
 
-Single MongoDB database. Every document (except Tenant) has a `tenantId` field. Tenant resolved via middleware matching `Origin` or `x-tenant-id` header.
+Single MongoDB database. Every document (except Tenant) has a `tenantId` field. Tenant resolved via middleware matching `Origin` or `x-tenant-id`
+header.
 
 ### API (Express + Tsoa)
 
@@ -76,7 +78,8 @@ Single MongoDB database. Every document (except Tenant) has a `tenantId` field. 
 
 ### API Client Flow
 
-Tsoa controller decorators → `pnpm generate:api-spec` → OpenAPI spec (`dist/swagger.json`) → `openapi-generator-cli` → TypeScript Axios client in shared package. Always regenerate after controller changes.
+Tsoa controller decorators → `pnpm generate:api-spec` → OpenAPI spec (`dist/swagger.json`) → `openapi-generator-cli` → TypeScript Axios client in
+shared package. Always regenerate after controller changes.
 
 ## Key Technical Decisions
 
@@ -87,3 +90,12 @@ Tsoa controller decorators → `pnpm generate:api-spec` → OpenAPI spec (`dist/
 - **Google Cloud Storage** for file uploads
 - **Socket.io** for real-time order notifications
 - **Strict TypeScript** — no `any`/`unknown`/casting; everything must be properly typed
+
+## Code style :
+
+Avoid using `any` or `unknown` types.
+If you have to use any or unknown that means something is wrong.
+Use `never` for exhaustive switch statements.
+Use `never` for exhaustive type guards.
+Use `never` for exhaustive type assertions.
+Use meaningful variable and function names.
