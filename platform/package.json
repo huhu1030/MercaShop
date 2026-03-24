@@ -10,7 +10,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "generate:api-spec": "pnpm --filter @mercashop/api generate:spec",
-    "generate:api-client": "pnpm run generate:api-spec && pnpm --filter @mercashop/shared generate:client"
+    "generate:api-client": "pnpm run generate:api-spec && pnpm --filter @mercashop/shared gen-api"
   },
   "engines": {
     "node": ">=20",
