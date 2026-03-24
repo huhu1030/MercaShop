@@ -1,34 +1,25 @@
-import {
-  HStack,
-  RadioGroup,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { PaymentMethod } from '@mercashop/shared'
+import { HStack, RadioGroup, Text, VStack } from '@chakra-ui/react';
+import { PaymentMethod } from '@mercashop/shared';
 
 interface PaymentMethodSelectorProps {
-  methods: PaymentMethod[]
-  value: string
-  onChange: (method: string) => void
+  methods: PaymentMethod[];
+  value: string;
+  onChange: (method: string) => void;
 }
 
 const paymentMethodLabels: Record<PaymentMethod, string> = {
   [PaymentMethod.CARD]: 'Credit Card',
   [PaymentMethod.BANCONTACT]: 'Bancontact',
   [PaymentMethod.CASH]: 'Cash',
-}
+};
 
-export function PaymentMethodSelector({
-  methods,
-  value,
-  onChange,
-}: PaymentMethodSelectorProps) {
+export function PaymentMethodSelector({ methods, value, onChange }: PaymentMethodSelectorProps) {
   return (
     <RadioGroup.Root
       value={value}
       onValueChange={(details) => {
         if (details.value) {
-          onChange(details.value)
+          onChange(details.value);
         }
       }}
     >
@@ -52,5 +43,5 @@ export function PaymentMethodSelector({
         ))}
       </VStack>
     </RadioGroup.Root>
-  )
+  );
 }

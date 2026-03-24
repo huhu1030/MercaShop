@@ -1,11 +1,7 @@
 import { getBucket } from '../config/gcp';
 import * as productService from './productService';
 
-export async function uploadProductImage(
-  tenantId: string,
-  productId: string,
-  file: Express.Multer.File,
-): Promise<string> {
+export async function uploadProductImage(tenantId: string, productId: string, file: Express.Multer.File): Promise<string> {
   const filePath = `tenants/${tenantId}/products/${productId}/${file.originalname}`;
   const bucket = getBucket();
   const blob = bucket.file(filePath);
@@ -22,9 +18,7 @@ export async function uploadProductImage(
 }
 
 export async function listImages(tenantId: string, prefix?: string): Promise<string[]> {
-  const searchPrefix = prefix
-    ? `tenants/${tenantId}/${prefix}`
-    : `tenants/${tenantId}/`;
+  const searchPrefix = prefix ? `tenants/${tenantId}/${prefix}` : `tenants/${tenantId}/`;
 
   const bucket = getBucket();
   const [files] = await bucket.getFiles({ prefix: searchPrefix });

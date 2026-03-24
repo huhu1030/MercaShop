@@ -1,11 +1,11 @@
-import { SimpleGrid, Text, VStack } from '@chakra-ui/react'
-import type { IPublicProduct } from '@mercashop/shared'
-import { ProductCard } from './ProductCard'
+import { SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import type { IPublicProduct } from '@mercashop/shared';
+import { ProductCard } from './ProductCard';
 
 interface ProductGridProps {
-  products: IPublicProduct[]
-  emptyTitle?: string
-  emptyDescription?: string
+  products: IPublicProduct[];
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
 export function ProductGrid({
@@ -15,23 +15,13 @@ export function ProductGrid({
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
-      <VStack
-        py={16}
-        px={6}
-        borderRadius="2xl"
-        borderWidth="1px"
-        borderStyle="dashed"
-        borderColor="blackAlpha.200"
-        bg="blackAlpha.50"
-      >
+      <VStack py={16} px={6} borderRadius="2xl" borderWidth="1px" borderStyle="dashed" borderColor="blackAlpha.200" bg="blackAlpha.50">
         <Text fontSize="lg" fontWeight="medium">
           {emptyTitle}
         </Text>
-        <Text color="fg.muted">
-          {emptyDescription}
-        </Text>
+        <Text color="fg.muted">{emptyDescription}</Text>
       </VStack>
-    )
+    );
   }
 
   return (
@@ -40,5 +30,5 @@ export function ProductGrid({
         <ProductCard key={product._id} product={product} />
       ))}
     </SimpleGrid>
-  )
+  );
 }

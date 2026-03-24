@@ -19,9 +19,7 @@ export function EstablishmentPickerPage() {
   if (isError) {
     return (
       <Box p="2rem" textAlign="center">
-        <Text color={Colors.feedback.errorText}>
-          Failed to load establishments. Please try again.
-        </Text>
+        <Text color={Colors.feedback.errorText}>Failed to load establishments. Please try again.</Text>
       </Box>
     );
   }
@@ -34,11 +32,7 @@ export function EstablishmentPickerPage() {
         <Heading size="lg">Select an Establishment</Heading>
 
         {establishments.length === 0 ? (
-          <EmptyState
-            icon={<Store size="2.5rem" />}
-            title="No establishments"
-            description="You don't have any establishments yet."
-          />
+          <EmptyState icon={<Store size="2.5rem" />} title="No establishments" description="You don't have any establishments yet." />
         ) : (
           <SimpleGrid columns={{ base: 1, md: 2 }} gap="1rem" w="full">
             {establishments.map((establishment) => (
@@ -57,11 +51,7 @@ export function EstablishmentPickerPage() {
                         {establishment.category}
                       </Text>
                     )}
-                    <Badge
-                      colorPalette={establishment.status === 'OPEN' ? 'green' : 'gray'}
-                    >
-                      {establishment.status}
-                    </Badge>
+                    <Badge colorPalette={establishment.status === 'OPEN' ? 'green' : 'gray'}>{establishment.status}</Badge>
                   </VStack>
                 </Card.Body>
               </Card.Root>

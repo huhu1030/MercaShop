@@ -37,10 +37,8 @@ const mockOrder = {
   _id: '507f1f77bcf86cd799439011',
   userId: 'user-1',
   establishmentId: 'est-1',
-  total: 25.50,
-  orderLines: [
-    { item: { _id: 'prod-1', name: 'Pizza', quantity: 2, price: 12.75 } },
-  ],
+  total: 25.5,
+  orderLines: [{ item: { _id: 'prod-1', name: 'Pizza', quantity: 2, price: 12.75 } }],
 };
 
 describe('paymentService', () => {
@@ -87,19 +85,13 @@ describe('paymentService', () => {
     });
 
     it('routes BANCONTACT payments through Mollie (same as CARD)', async () => {
-      const result = await processPayment(
-        'tenant-1', 'firebase-uid', 'user@test.com',
-        mockOrder._id, PaymentMethod.BANCONTACT, ['lebon.be'],
-      );
+      const result = await processPayment('tenant-1', 'firebase-uid', 'user@test.com', mockOrder._id, PaymentMethod.BANCONTACT, ['lebon.be']);
       expect(result.checkoutUrl).toBe('https://checkout.mollie.com/mock');
       expect(mollieService.createPayment).toHaveBeenCalled();
     });
 
     it('constructs redirect URL from tenant storefront domain', async () => {
-      await processPayment(
-        'tenant-1', 'firebase-uid', 'user@test.com',
-        mockOrder._id, PaymentMethod.BANCONTACT, ['dashboard.lebon.be', 'lebon.be'],
-      );
+      await processPayment('tenant-1', 'firebase-uid', 'user@test.com', mockOrder._id, PaymentMethod.BANCONTACT, ['dashboard.lebon.be', 'lebon.be']);
       expect(mollieService.createPayment).toHaveBeenCalledWith(
         expect.objectContaining({
           redirectUrl: `https://lebon.be/order/${mockOrder._id}/status`,
@@ -108,10 +100,7 @@ describe('paymentService', () => {
     });
 
     it('uses http protocol for localhost domains', async () => {
-      await processPayment(
-        'tenant-1', 'firebase-uid', 'user@test.com',
-        mockOrder._id, PaymentMethod.CARD, ['localhost:3000'],
-      );
+      await processPayment('tenant-1', 'firebase-uid', 'user@test.com', mockOrder._id, PaymentMethod.CARD, ['localhost:3000']);
       expect(mollieService.createPayment).toHaveBeenCalledWith(
         expect.objectContaining({
           redirectUrl: `http://localhost:3000/order/${mockOrder._id}/status`,

@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 
-export async function withTransaction<T>(
-  fn: (session: mongoose.ClientSession) => Promise<T>,
-): Promise<T> {
+export async function withTransaction<T>(fn: (session: mongoose.ClientSession) => Promise<T>): Promise<T> {
   const session = await mongoose.startSession();
   try {
     let result: T;

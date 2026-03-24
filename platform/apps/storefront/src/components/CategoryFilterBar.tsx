@@ -1,18 +1,14 @@
-import { Button, HStack } from '@chakra-ui/react'
+import { Button, HStack } from '@chakra-ui/react';
 
 interface CategoryFilterBarProps {
-  categories: string[]
-  selectedCategory: string | null
-  onSelectCategory: (category: string | null) => void
+  categories: string[];
+  selectedCategory: string | null;
+  onSelectCategory: (category: string | null) => void;
 }
 
-export function CategoryFilterBar({
-  categories,
-  selectedCategory,
-  onSelectCategory,
-}: CategoryFilterBarProps) {
+export function CategoryFilterBar({ categories, selectedCategory, onSelectCategory }: CategoryFilterBarProps) {
   if (categories.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -50,5 +46,5 @@ export function CategoryFilterBar({
         </Button>
       ))}
     </HStack>
-  )
+  );
 }

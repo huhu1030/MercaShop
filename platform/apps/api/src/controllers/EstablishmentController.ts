@@ -26,10 +26,7 @@ export class EstablishmentController extends Controller {
 
   @Get('{id}')
   @Security('BearerAuth')
-  public async getEstablishment(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ establishment: IEstablishmentSummary }> {
+  public async getEstablishment(@Request() req: ExpressRequest, @Path() id: string): Promise<{ establishment: IEstablishmentSummary }> {
     const establishment = await establishmentService.findEstablishmentById(id, req.tenantId!);
     if (!establishment) {
       this.setStatus(404);
@@ -44,11 +41,7 @@ export class EstablishmentController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: { establishmentId: string; status: string },
   ): Promise<{ establishment: IEstablishmentSummary }> {
-    const establishment = await establishmentService.updateEstablishmentStatus(
-      body.establishmentId,
-      req.tenantId!,
-      body.status,
-    );
+    const establishment = await establishmentService.updateEstablishmentStatus(body.establishmentId, req.tenantId!, body.status);
     if (!establishment) {
       this.setStatus(404);
       throw new Error('Establishment not found');

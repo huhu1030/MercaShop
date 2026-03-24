@@ -9,7 +9,7 @@ export const mailTemplates = {
   orderConfirmation: 'orderConfirmation',
 } as const;
 
-export type MailTemplateName = typeof mailTemplates[keyof typeof mailTemplates];
+export type MailTemplateName = (typeof mailTemplates)[keyof typeof mailTemplates];
 
 interface MailData {
   firstName?: string;
@@ -31,11 +31,7 @@ function createTransporter() {
   });
 }
 
-export async function sendEmail(
-  recipientEmail: string,
-  templateName: string,
-  data: MailData = {},
-): Promise<void> {
+export async function sendEmail(recipientEmail: string, templateName: string, data: MailData = {}): Promise<void> {
   if (!env.mail.address || !env.mail.password) {
     throw new Error('Mail configuration is not correctly set!');
   }

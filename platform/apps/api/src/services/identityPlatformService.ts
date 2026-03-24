@@ -53,7 +53,10 @@ export async function createIdentityPlatformTenant(displayName: string): Promise
   try {
     await configureOAuthProviders(tenant.tenantId);
   } catch (error) {
-    await firebaseAuth.tenantManager().deleteTenant(tenant.tenantId).catch(() => {});
+    await firebaseAuth
+      .tenantManager()
+      .deleteTenant(tenant.tenantId)
+      .catch(() => {});
     throw error;
   }
 

@@ -1,0 +1,5 @@
+apps/api/src/generated
+packages/shared/src/apis
+**/node_modules
+**/dist
+**/build

@@ -18,10 +18,7 @@ export class UploadController extends Controller {
 
   @Get('images')
   @Security('BearerAuth')
-  public async listImages(
-    @Request() req: ExpressRequest,
-    @Query() prefix?: string,
-  ): Promise<{ files: string[] }> {
+  public async listImages(@Request() req: ExpressRequest, @Query() prefix?: string): Promise<{ files: string[] }> {
     const files = await uploadService.listImages(req.tenantId!, prefix);
     return { files };
   }

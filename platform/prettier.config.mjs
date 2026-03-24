@@ -1,6 +1,5 @@
 export default {
-  plugins: ['@prettier/plugin-oxc', 'prettier-plugin-tailwindcss'],
-  tailwindConfig: './tailwind.config.ts',
+  plugins: ['prettier-plugin-tailwindcss'],
   trailingComma: 'all',
   tabWidth: 2,
   semi: true,

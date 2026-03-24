@@ -9,9 +9,5 @@ export async function findEstablishmentById(id: string, tenantId: string) {
 }
 
 export async function updateEstablishmentStatus(establishmentId: string, tenantId: string, status: string) {
-  return EstablishmentModel.findOneAndUpdate(
-    { _id: establishmentId, tenantId },
-    { status },
-    { new: true },
-  );
+  return EstablishmentModel.findOneAndUpdate({ _id: establishmentId, tenantId }, { status }, { new: true });
 }

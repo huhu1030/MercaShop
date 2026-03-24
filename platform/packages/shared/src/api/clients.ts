@@ -1,16 +1,6 @@
 import type { AxiosInstance } from 'axios';
 import type { Configuration } from '../apis/api/configuration';
-import {
-  EstablishmentApi,
-  OrderApi,
-  PaymentApi,
-  ProductApi,
-  PublicApi,
-  TenantApi,
-  UploadApi,
-  UserApi,
-  WebhookApi,
-} from '../apis/api/api';
+import { EstablishmentApi, OrderApi, PaymentApi, ProductApi, PublicApi, TenantApi, UploadApi, UserApi, WebhookApi } from '../apis/api/api';
 import { createApiConfiguration, getApiAxiosInstance } from './api-client-factory';
 
 let establishmentApi: EstablishmentApi | null = null;

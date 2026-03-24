@@ -12,14 +12,7 @@ export default tseslint.config(
   // IGNORED PATHS
   // ===========================================
   {
-    ignores: [
-      "apps/api/src/generated",
-      'packages/shared/src/apis',
-      'eslint.config.js',
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-    ],
+    ignores: ['apps/api/src/generated', 'packages/shared/src/apis', 'eslint.config.js', '**/node_modules/**', '**/dist/**', '**/build/**'],
   },
 
   // ===========================================

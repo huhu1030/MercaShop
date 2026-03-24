@@ -11,9 +11,9 @@ export default function App() {
 
   return (
     <AuthProvider tenantId={tenant?.identityPlatformTenantId}>
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </AuthProvider>
   );
 }

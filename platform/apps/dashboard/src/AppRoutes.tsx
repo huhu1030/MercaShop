@@ -20,11 +20,46 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/establishments" element={<AuthGuard><EstablishmentPickerPage /></AuthGuard>} />
-      <Route path="/establishments/:establishmentId/orders" element={<DashboardRoute><OrdersPage /></DashboardRoute>} />
-      <Route path="/establishments/:establishmentId/products" element={<DashboardRoute><ListPage /></DashboardRoute>} />
-      <Route path="/establishments/:establishmentId/products/new" element={<DashboardRoute><CreatePage /></DashboardRoute>} />
-      <Route path="/establishments/:establishmentId/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />
+      <Route
+        path="/establishments"
+        element={
+          <AuthGuard>
+            <EstablishmentPickerPage />
+          </AuthGuard>
+        }
+      />
+      <Route
+        path="/establishments/:establishmentId/orders"
+        element={
+          <DashboardRoute>
+            <OrdersPage />
+          </DashboardRoute>
+        }
+      />
+      <Route
+        path="/establishments/:establishmentId/products"
+        element={
+          <DashboardRoute>
+            <ListPage />
+          </DashboardRoute>
+        }
+      />
+      <Route
+        path="/establishments/:establishmentId/products/new"
+        element={
+          <DashboardRoute>
+            <CreatePage />
+          </DashboardRoute>
+        }
+      />
+      <Route
+        path="/establishments/:establishmentId/analytics"
+        element={
+          <DashboardRoute>
+            <AnalyticsPage />
+          </DashboardRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/establishments" replace />} />
     </Routes>
   );

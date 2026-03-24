@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createElement, type ReactNode } from 'react'
-import { useEstablishment } from '../hooks/useEstablishment'
+import { describe, expect, it, vi } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
+import { createElement } from 'react';
+import { useEstablishment } from '../hooks/useEstablishment';
 
 vi.mock('@mercashop/shared/api-client', () => ({
   getPublicApi: () => ({
@@ -15,7 +16,7 @@ vi.mock('@mercashop/shared/api-client', () => ({
       },
     ]),
   }),
-}))
+}));
 
 function wrapper({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient({
@@ -24,20 +25,20 @@ function wrapper({ children }: { children: ReactNode }) {
         retry: false,
       },
     },
-  })
+  });
 
-  return createElement(QueryClientProvider, { client: queryClient }, children)
+  return createElement(QueryClientProvider, { client: queryClient }, children);
 }
 
 describe('useEstablishment', () => {
   it('fetches and returns the first establishment', async () => {
-    const { result } = renderHook(() => useEstablishment(), { wrapper })
+    const { result } = renderHook(() => useEstablishment(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
+      expect(result.current.isLoading).toBe(false);
+    });
 
-    expect(result.current.establishment).toBeDefined()
-    expect(result.current.establishment?.name).toBe('Main Store')
-  })
-})
+    expect(result.current.establishment).toBeDefined();
+    expect(result.current.establishment?.name).toBe('Main Store');
+  });
+});

@@ -19,10 +19,7 @@ interface UpdateUserBody {
 export class UserController extends Controller {
   @Post('')
   @Security('BearerAuth')
-  public async createUser(
-    @Request() req: ExpressRequest,
-    @Body() body: CreateUserBody,
-  ): Promise<{ user: any }> {
+  public async createUser(@Request() req: ExpressRequest, @Body() body: CreateUserBody): Promise<{ user: any }> {
     const { uid, email, tenantId } = req.firebaseUser!;
 
     const existing = await userService.findUserByFirebaseUid(tenantId!, uid);
@@ -57,10 +54,7 @@ export class UserController extends Controller {
 
   @Put('me')
   @Security('BearerAuth')
-  public async updateMe(
-    @Request() req: ExpressRequest,
-    @Body() body: UpdateUserBody,
-  ): Promise<{ user: any }> {
+  public async updateMe(@Request() req: ExpressRequest, @Body() body: UpdateUserBody): Promise<{ user: any }> {
     const user = await userService.updateUser(req.tenantId!, req.firebaseUser!.uid, body);
     if (!user) {
       this.setStatus(404);

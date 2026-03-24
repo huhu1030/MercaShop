@@ -18,10 +18,7 @@ interface CreateOrderBody {
 export class OrderController extends Controller {
   @Post('')
   @Security('BearerAuth')
-  public async createOrder(
-    @Request() req: ExpressRequest,
-    @Body() body: CreateOrderBody,
-  ): Promise<{ order: any }> {
+  public async createOrder(@Request() req: ExpressRequest, @Body() body: CreateOrderBody): Promise<{ order: any }> {
     const order = await orderService.createOrder({
       tenantId: req.tenantId!,
       userId: req.firebaseUser!.uid,
@@ -33,10 +30,7 @@ export class OrderController extends Controller {
 
   @Get('{id}')
   @Security('BearerAuth')
-  public async getOrder(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ order: any }> {
+  public async getOrder(@Request() req: ExpressRequest, @Path() id: string): Promise<{ order: any }> {
     const order = await orderService.findOrderById(id, req.tenantId!);
     if (!order) {
       this.setStatus(404);
@@ -47,31 +41,21 @@ export class OrderController extends Controller {
 
   @Get('establishment/{establishmentId}')
   @Security('BearerAuth')
-  public async getOrdersByEstablishment(
-    @Request() req: ExpressRequest,
-    @Path() establishmentId: string,
-  ): Promise<{ orders: any[] }> {
+  public async getOrdersByEstablishment(@Request() req: ExpressRequest, @Path() establishmentId: string): Promise<{ orders: any[] }> {
     const orders = await orderService.findOrdersByEstablishment(req.tenantId!, establishmentId);
     return { orders };
   }
 
   @Get('user/{userId}')
   @Security('BearerAuth')
-  public async getOrdersByUser(
-    @Request() req: ExpressRequest,
-    @Path() userId: string,
-  ): Promise<{ orders: any[] }> {
+  public async getOrdersByUser(@Request() req: ExpressRequest, @Path() userId: string): Promise<{ orders: any[] }> {
     const orders = await orderService.findOrdersByUser(req.tenantId!, userId);
     return { orders };
   }
 
   @Patch('{id}/status')
   @Security('BearerAuth')
-  public async updateOrderStatus(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-    @Body() body: { status: string },
-  ): Promise<{ order: any }> {
+  public async updateOrderStatus(@Request() req: ExpressRequest, @Path() id: string, @Body() body: { status: string }): Promise<{ order: any }> {
     const order = await orderService.updateOrderStatus(id, req.tenantId!, body.status);
     if (!order) {
       this.setStatus(404);
@@ -82,10 +66,7 @@ export class OrderController extends Controller {
 
   @Delete('{id}')
   @Security('BearerAuth')
-  public async deleteOrder(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ message: string }> {
+  public async deleteOrder(@Request() req: ExpressRequest, @Path() id: string): Promise<{ message: string }> {
     await orderService.deleteOrder(id, req.tenantId!);
     return { message: 'Order deleted' };
   }

@@ -44,13 +44,7 @@ export async function deleteOrder(id: string, tenantId: string): Promise<void> {
 
 async function decrementStock(orderLines: OrderLine[], session: ClientSession) {
   await Promise.all(
-    orderLines.map((line) =>
-      ProductModel.findByIdAndUpdate(
-        line.item._id,
-        { $inc: { quantity: -line.item.quantity } },
-        { session },
-      ),
-    ),
+    orderLines.map((line) => ProductModel.findByIdAndUpdate(line.item._id, { $inc: { quantity: -line.item.quantity } }, { session })),
   );
 }
 
@@ -76,11 +70,7 @@ export async function findByMolliePaymentId(molliePaymentId: string): Promise<Or
   return OrderModel.findOne({ mollieOrderId: molliePaymentId }).lean<Order>();
 }
 
-export async function notifyEstablishment(
-  tenantId: string,
-  establishmentId: string,
-  order: Order,
-): Promise<void> {
+export async function notifyEstablishment(tenantId: string, establishmentId: string, order: Order): Promise<void> {
   const establishment = await EstablishmentModel.findOne({ tenantId, _id: establishmentId });
   if (establishment) {
     SocketServer.getInstance().sendOrders(order);

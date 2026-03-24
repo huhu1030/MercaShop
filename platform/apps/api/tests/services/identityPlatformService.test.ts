@@ -68,9 +68,7 @@ describe('identityPlatformService', () => {
       });
       mockDeleteTenant.mockResolvedValue(undefined);
 
-      await expect(createIdentityPlatformTenant('Fail OAuth')).rejects.toThrow(
-        'Failed to configure google.com',
-      );
+      await expect(createIdentityPlatformTenant('Fail OAuth')).rejects.toThrow('Failed to configure google.com');
       expect(mockDeleteTenant).toHaveBeenCalledWith('ip-tenant-456');
     });
   });

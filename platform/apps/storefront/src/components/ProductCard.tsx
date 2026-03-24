@@ -1,59 +1,42 @@
-import {Box, Button, Card, HStack, IconButton, Image, Text, VStack,} from '@chakra-ui/react'
-import {Minus, Plus} from 'lucide-react'
-import type {IPublicProduct} from '@mercashop/shared'
-import {useState} from 'react'
-import {useCart} from '../hooks/useCart'
+import { Box, Button, Card, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react';
+import { Minus, Plus } from 'lucide-react';
+import type { IPublicProduct } from '@mercashop/shared';
+import { useState } from 'react';
+import { useCart } from '../hooks/useCart';
 
 interface ProductCardProps {
-  product: IPublicProduct
+  product: IPublicProduct;
 }
 
 function getProductImageUrl(photo?: string) {
-  if (!photo) return null
+  if (!photo) return null;
   if (photo.startsWith('http://') || photo.startsWith('https://')) {
-    return photo
+    return photo;
   }
 
-  const basePath = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? ''
-  const assetPath = photo.startsWith('/') ? photo : `/${photo}`
-  return `${basePath}${assetPath}`
+  const basePath = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
+  const assetPath = photo.startsWith('/') ? photo : `/${photo}`;
+  return `${basePath}${assetPath}`;
 }
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('en-BE', {
     style: 'currency',
     currency: 'EUR',
-  }).format(price)
+  }).format(price);
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart()
-  const imageUrl = getProductImageUrl(product.photo)
-  const [quantity, setQuantity] = useState(1)
+  const { addItem } = useCart();
+  const imageUrl = getProductImageUrl(product.photo);
+  const [quantity, setQuantity] = useState(1);
 
   return (
-    <Card.Root
-      overflow="hidden"
-      h="100%"
-      borderRadius="2xl"
-      borderWidth="1px"
-      borderColor="blackAlpha.100"
-      bg="white"
-      boxShadow="sm"
-    >
+    <Card.Root overflow="hidden" h="100%" borderRadius="2xl" borderWidth="1px" borderColor="blackAlpha.100" bg="white" boxShadow="sm">
       {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={product.name}
-          h="160px"
-          w="100%"
-          objectFit="cover"
-        />
+        <Image src={imageUrl} alt={product.name} h="160px" w="100%" objectFit="cover" />
       ) : (
-        <Box
-          h="160px"
-          bgGradient="linear(to-br, blackAlpha.100, blackAlpha.200)"
-        />
+        <Box h="160px" bgGradient="linear(to-br, blackAlpha.100, blackAlpha.200)" />
       )}
 
       <Card.Body>
@@ -102,15 +85,11 @@ export function ProductCard({ product }: ProductCardProps) {
             </HStack>
           </HStack>
 
-          <Button
-            width="full"
-            colorPalette="green"
-            onClick={() => addItem(product, quantity)}
-          >
+          <Button width="full" colorPalette="green" onClick={() => addItem(product, quantity)}>
             Add {quantity} to cart
           </Button>
         </VStack>
       </Card.Footer>
     </Card.Root>
-  )
+  );
 }

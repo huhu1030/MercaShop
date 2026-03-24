@@ -18,10 +18,7 @@ interface CreateProductBody {
 export class ProductController extends Controller {
   @Post('')
   @Security('BearerAuth')
-  public async createProduct(
-    @Request() req: ExpressRequest,
-    @Body() body: CreateProductBody,
-  ): Promise<{ product: any }> {
+  public async createProduct(@Request() req: ExpressRequest, @Body() body: CreateProductBody): Promise<{ product: any }> {
     const product = await productService.createProduct({ tenantId: req.tenantId!, ...body });
     this.setStatus(201);
     return { product };
@@ -29,10 +26,7 @@ export class ProductController extends Controller {
 
   @Get('{id}')
   @Security('BearerAuth')
-  public async getProduct(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ product: any }> {
+  public async getProduct(@Request() req: ExpressRequest, @Path() id: string): Promise<{ product: any }> {
     const product = await productService.findProductById(id, req.tenantId!);
     if (!product) {
       this.setStatus(404);
@@ -43,31 +37,21 @@ export class ProductController extends Controller {
 
   @Get('establishment/{establishmentId}')
   @Security('BearerAuth')
-  public async getProductsByEstablishment(
-    @Request() req: ExpressRequest,
-    @Path() establishmentId: string,
-  ): Promise<{ products: any[] }> {
+  public async getProductsByEstablishment(@Request() req: ExpressRequest, @Path() establishmentId: string): Promise<{ products: any[] }> {
     const products = await productService.findProductsByEstablishment(req.tenantId!, establishmentId);
     return { products };
   }
 
   @Delete('{id}')
   @Security('BearerAuth')
-  public async deleteProduct(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ message: string }> {
+  public async deleteProduct(@Request() req: ExpressRequest, @Path() id: string): Promise<{ message: string }> {
     await productService.deleteProduct(id, req.tenantId!);
     return { message: 'Product deleted' };
   }
 
   @Patch('{id}/quantity')
   @Security('BearerAuth')
-  public async updateQuantity(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-    @Body() body: { quantity: number },
-  ): Promise<{ product: any }> {
+  public async updateQuantity(@Request() req: ExpressRequest, @Path() id: string, @Body() body: { quantity: number }): Promise<{ product: any }> {
     const product = await productService.updateProductQuantity(id, req.tenantId!, body.quantity);
     if (!product) {
       this.setStatus(404);

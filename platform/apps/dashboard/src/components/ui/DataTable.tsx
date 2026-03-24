@@ -1,9 +1,9 @@
-import {useState} from 'react';
-import {Center, Heading, Table, Text, VStack} from '@chakra-ui/react';
-import type {ColumnDef, SortingState} from '@tanstack/react-table';
-import {flexRender, getCoreRowModel, getSortedRowModel, useReactTable} from '@tanstack/react-table';
-import {ArrowDown, ArrowUp, ArrowUpDown, Inbox} from 'lucide-react';
-import {Colors} from '../../constants/colors';
+import { useState } from 'react';
+import { Center, Heading, Table, Text, VStack } from '@chakra-ui/react';
+import type { ColumnDef, SortingState } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { ArrowDown, ArrowUp, ArrowUpDown, Inbox } from 'lucide-react';
+import { Colors } from '../../constants/colors';
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];
@@ -12,19 +12,19 @@ interface DataTableProps<TData> {
   emptyDescription?: string;
 }
 
-function SortIcon({direction}: {direction: false | 'asc' | 'desc'}) {
-  if (direction === 'asc') return <ArrowUp size="0.875rem"/>;
-  if (direction === 'desc') return <ArrowDown size="0.875rem"/>;
-  return <ArrowUpDown size="0.875rem" opacity={0.3}/>;
+function SortIcon({ direction }: { direction: false | 'asc' | 'desc' }) {
+  if (direction === 'asc') return <ArrowUp size="0.875rem" />;
+  if (direction === 'desc') return <ArrowDown size="0.875rem" />;
+  return <ArrowUpDown size="0.875rem" opacity={0.3} />;
 }
 
-export function DataTable<TData>({columns, data, emptyTitle = 'No data', emptyDescription}: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, data, emptyTitle = 'No data', emptyDescription }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
-    state: {sorting},
+    state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -47,9 +47,9 @@ export function DataTable<TData>({columns, data, emptyTitle = 'No data', emptyDe
                     userSelect={canSort ? 'none' : undefined}
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    <span style={{display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {canSort && <SortIcon direction={header.column.getIsSorted()}/>}
+                      {canSort && <SortIcon direction={header.column.getIsSorted()} />}
                     </span>
                   </Table.ColumnHeader>
                 );
@@ -63,8 +63,10 @@ export function DataTable<TData>({columns, data, emptyTitle = 'No data', emptyDe
               <Table.Cell colSpan={columns.length}>
                 <Center minH="12.5rem">
                   <VStack gap="0.75rem">
-                    <Inbox size="2.5rem" color={Colors.text.muted}/>
-                    <Heading size="md" color={Colors.text.secondary}>{emptyTitle}</Heading>
+                    <Inbox size="2.5rem" color={Colors.text.muted} />
+                    <Heading size="md" color={Colors.text.secondary}>
+                      {emptyTitle}
+                    </Heading>
                     {emptyDescription && <Text color={Colors.text.muted}>{emptyDescription}</Text>}
                   </VStack>
                 </Center>
@@ -76,10 +78,7 @@ export function DataTable<TData>({columns, data, emptyTitle = 'No data', emptyDe
                 {row.getVisibleCells().map((cell) => {
                   const align = (cell.column.columnDef.meta as Record<string, string> | undefined)?.align;
                   return (
-                    <Table.Cell
-                      key={cell.id}
-                      textAlign={align === 'right' ? 'right' : undefined}
-                    >
+                    <Table.Cell key={cell.id} textAlign={align === 'right' ? 'right' : undefined}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Table.Cell>
                   );

@@ -1,35 +1,26 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  HStack,
-  Menu,
-  Portal,
-  Spinner,
-  Text,
-} from '@chakra-ui/react'
-import { ChevronDown, LogIn, LogOut, UserRound } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { Avatar, Box, Button, HStack, Menu, Portal, Spinner, Text } from '@chakra-ui/react';
+import { ChevronDown, LogIn, LogOut, UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 function getProfileLabel(email: string | null | undefined, displayName: string | null | undefined) {
   if (displayName?.trim()) {
-    return displayName
+    return displayName;
   }
 
   if (email?.trim()) {
-    return email
+    return email;
   }
 
-  return 'Account'
+  return 'Account';
 }
 
 export function ProfileMenu() {
-  const { user, isAuthenticated, loading, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, isAuthenticated, loading, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const profileLabel = getProfileLabel(user?.email, user?.displayName)
-  const statusLabel = loading ? 'Checking account' : isAuthenticated ? 'Logged in' : 'Not signed in'
+  const profileLabel = getProfileLabel(user?.email, user?.displayName);
+  const statusLabel = loading ? 'Checking account' : isAuthenticated ? 'Logged in' : 'Not signed in';
 
   return (
     <Menu.Root positioning={{ placement: 'bottom-end' }}>
@@ -43,23 +34,12 @@ export function ProfileMenu() {
         >
           <HStack gap={2}>
             {loading ? (
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                boxSize="8"
-                borderRadius="full"
-                bg="whiteAlpha.300"
-              >
+              <Box display="flex" alignItems="center" justifyContent="center" boxSize="8" borderRadius="full" bg="whiteAlpha.300">
                 <Spinner size="sm" color="currentColor" />
               </Box>
             ) : (
               <Avatar.Root size="sm" variant="subtle">
-                <Avatar.Fallback
-                  name={isAuthenticated ? profileLabel : 'Guest'}
-                  bg="whiteAlpha.300"
-                  color="white"
-                />
+                <Avatar.Fallback name={isAuthenticated ? profileLabel : 'Guest'} bg="whiteAlpha.300" color="white" />
               </Avatar.Root>
             )}
 
@@ -101,8 +81,8 @@ export function ProfileMenu() {
                   value="logout"
                   color="red.600"
                   onClick={async () => {
-                    await logout()
-                    navigate('/', { replace: true })
+                    await logout();
+                    navigate('/', { replace: true });
                   }}
                 >
                   <LogOut size={16} />
@@ -119,5 +99,5 @@ export function ProfileMenu() {
         </Menu.Positioner>
       </Portal>
     </Menu.Root>
-  )
+  );
 }

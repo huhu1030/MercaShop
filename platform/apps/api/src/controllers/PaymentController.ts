@@ -37,10 +37,7 @@ export class PaymentController extends Controller {
 
   @Get('{id}')
   @Security('BearerAuth')
-  public async getPaymentStatus(
-    @Request() req: ExpressRequest,
-    @Path() id: string,
-  ): Promise<{ order: any }> {
+  public async getPaymentStatus(@Request() req: ExpressRequest, @Path() id: string): Promise<{ order: any }> {
     const order = await orderService.findOrderById(id, req.tenantId!);
     if (!order) {
       this.setStatus(404);

@@ -13,7 +13,9 @@ export function EmptyState({ icon, title, description }: EmptyStateProps) {
     <Center minH="12.5rem">
       <VStack gap="0.75rem">
         {icon}
-        <Heading size="md" color={Colors.text.secondary}>{title}</Heading>
+        <Heading size="md" color={Colors.text.secondary}>
+          {title}
+        </Heading>
         {description && <Text color={Colors.text.muted}>{description}</Text>}
       </VStack>
     </Center>

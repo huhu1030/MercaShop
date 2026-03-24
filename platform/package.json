@@ -7,6 +7,8 @@
     "dev:storefront": "pnpm --filter @mercashop/storefront dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "generate:api-spec": "pnpm --filter @mercashop/api generate:spec",
@@ -28,6 +30,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "typescript-eslint": "^8.57.1"
   }
 }

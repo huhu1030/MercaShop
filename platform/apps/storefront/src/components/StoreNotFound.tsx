@@ -1,4 +1,4 @@
-import { Center, Heading, Text, VStack } from '@chakra-ui/react'
+import { Center, Heading, Text, VStack } from '@chakra-ui/react';
 
 export function StoreNotFound() {
   return (
@@ -8,5 +8,5 @@ export function StoreNotFound() {
         <Text color="fg.muted">This store does not exist or is unavailable.</Text>
       </VStack>
     </Center>
-  )
+  );
 }

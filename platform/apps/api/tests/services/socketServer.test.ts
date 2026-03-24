@@ -33,9 +33,7 @@ describe('SocketServer', () => {
 
   it('joins order room when client emits join-order', () => {
     // Find the join-order handler registered on the socket
-    const joinOrderCall = mockSocket.on.mock.calls.find(
-      ([event]: [string]) => event === 'join-order',
-    );
+    const joinOrderCall = mockSocket.on.mock.calls.find(([event]: [string]) => event === 'join-order');
     expect(joinOrderCall).toBeDefined();
 
     // Invoke the handler

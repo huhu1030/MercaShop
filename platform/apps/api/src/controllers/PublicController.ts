@@ -8,19 +8,14 @@ import { IPublicEstablishment, IPublicProduct } from '@mercashop/shared';
 export class PublicController extends Controller {
   @Get('establishments')
   @OperationId('getPublicEstablishments')
-  public async getEstablishments(
-    @Request() request: ExpressRequest,
-  ): Promise<IPublicEstablishment[]> {
+  public async getEstablishments(@Request() request: ExpressRequest): Promise<IPublicEstablishment[]> {
     const tenantId = request.tenantId!;
     return publicService.getEstablishments(tenantId);
   }
 
   @Get('establishments/{establishmentId}/products')
   @OperationId('getPublicProductsByEstablishment')
-  public async getProductsByEstablishment(
-    @Path() establishmentId: string,
-    @Request() request: ExpressRequest,
-  ): Promise<IPublicProduct[]> {
+  public async getProductsByEstablishment(@Path() establishmentId: string, @Request() request: ExpressRequest): Promise<IPublicProduct[]> {
     const tenantId = request.tenantId!;
     return publicService.getProductsByEstablishment(tenantId, establishmentId);
   }

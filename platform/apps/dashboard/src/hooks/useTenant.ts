@@ -8,7 +8,8 @@ export function useTenant() {
 
   useEffect(() => {
     const domain = window.location.hostname;
-    getTenantApi().getTenantConfig(domain)
+    getTenantApi()
+      .getTenantConfig(domain)
       .then((res) => setTenant(res.data))
       .catch((err: unknown) => {
         const message = err instanceof Error ? err.message : 'Unknown error';

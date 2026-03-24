@@ -3,15 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { User, Auth, Unsubscribe, NextOrObserver } from 'firebase/auth';
 import type { ReactNode } from 'react';
 
-const {
-  mockOnAuthStateChanged,
-  mockSignInWithEmailAndPassword,
-  mockSignOut,
-  mockAuth,
-} = vi.hoisted(() => ({
-  mockOnAuthStateChanged: vi.fn<
-    (auth: Auth, nextOrObserver: NextOrObserver<User | null>) => Unsubscribe
-  >(),
+const { mockOnAuthStateChanged, mockSignInWithEmailAndPassword, mockSignOut, mockAuth } = vi.hoisted(() => ({
+  mockOnAuthStateChanged: vi.fn<(auth: Auth, nextOrObserver: NextOrObserver<User | null>) => Unsubscribe>(),
   mockSignInWithEmailAndPassword: vi.fn(),
   mockSignOut: vi.fn(),
   mockAuth: { tenantId: null as string | null },
@@ -64,9 +57,7 @@ describe('useAuth', () => {
   });
 
   it('throws when used outside AuthProvider', () => {
-    expect(() => renderHook(() => useAuth())).toThrow(
-      'useAuth must be used within an AuthProvider'
-    );
+    expect(() => renderHook(() => useAuth())).toThrow('useAuth must be used within an AuthProvider');
   });
 
   it('stays in loading state when tenantId is undefined', () => {

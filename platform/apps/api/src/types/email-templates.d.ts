@@ -11,11 +11,7 @@ declare module 'email-templates' {
 
   class Email {
     constructor(config: EmailConfig);
-    send(options: {
-      template: string;
-      message: Record<string, unknown>;
-      locals?: Record<string, unknown>;
-    }): Promise<void>;
+    send(options: { template: string; message: Record<string, unknown>; locals?: Record<string, unknown> }): Promise<void>;
   }
 
   export default Email;

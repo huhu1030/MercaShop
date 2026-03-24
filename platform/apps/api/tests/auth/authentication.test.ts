@@ -55,31 +55,23 @@ describe('expressAuthentication', () => {
 
   it('throws on missing authorization header', async () => {
     const req = createMockRequest({}, mockTenant);
-    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow(
-      'Missing or invalid authorization header',
-    );
+    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow('Missing or invalid authorization header');
   });
 
   it('throws on malformed authorization header', async () => {
     const req = createMockRequest({ authorization: 'Basic abc' }, mockTenant);
-    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow(
-      'Missing or invalid authorization header',
-    );
+    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow('Missing or invalid authorization header');
   });
 
   it('throws when tenant is not resolved', async () => {
     const req = createMockRequest({ authorization: 'Bearer valid-token' });
-    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow(
-      'Tenant not resolved',
-    );
+    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow('Tenant not resolved');
   });
 
   it('throws when identityPlatformTenantId is empty', async () => {
     const badTenant = { _id: { toString: () => 'tenant-1' }, identityPlatformTenantId: '' };
     const req = createMockRequest({ authorization: 'Bearer valid-token' }, badTenant);
-    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow(
-      'Tenant not configured for Identity Platform',
-    );
+    await expect(expressAuthentication(req, 'BearerAuth')).rejects.toThrow('Tenant not configured for Identity Platform');
   });
 
   it('throws on invalid token', async () => {

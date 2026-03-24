@@ -1,30 +1,23 @@
-import {
-  Button,
-  Drawer,
-  HStack,
-  Separator,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { ClipboardList, LogIn, LogOut, Store, UserRound } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { Button, Drawer, HStack, Separator, Text, VStack } from '@chakra-ui/react';
+import { ClipboardList, LogIn, LogOut, Store, UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface HeaderMenuDrawerProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
-  const { user, isAuthenticated, loading, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user, isAuthenticated, loading, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const accountLabel = user?.displayName?.trim() || user?.email?.trim() || 'Guest'
+  const accountLabel = user?.displayName?.trim() || user?.email?.trim() || 'Guest';
 
   const goTo = (path: string) => {
-    onClose()
-    navigate(path)
-  }
+    onClose();
+    navigate(path);
+  };
 
   return (
     <Drawer.Root
@@ -32,7 +25,7 @@ export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
       placement="start"
       onOpenChange={(details) => {
         if (!details.open) {
-          onClose()
+          onClose();
         }
       }}
     >
@@ -58,20 +51,12 @@ export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
                 Menu
               </Button>
 
-              <Button
-                justifyContent="start"
-                variant="ghost"
-                onClick={() => goTo('/orders')}
-              >
+              <Button justifyContent="start" variant="ghost" onClick={() => goTo('/orders')}>
                 <ClipboardList size={18} />
                 Orders
               </Button>
 
-              <Button
-                justifyContent="start"
-                variant="ghost"
-                onClick={() => goTo('/profile')}
-              >
+              <Button justifyContent="start" variant="ghost" onClick={() => goTo('/profile')}>
                 <UserRound size={18} />
                 Account
               </Button>
@@ -84,8 +69,8 @@ export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
                   variant="ghost"
                   colorPalette="red"
                   onClick={async () => {
-                    await logout()
-                    goTo('/')
+                    await logout();
+                    goTo('/');
                   }}
                 >
                   <LogOut size={18} />
@@ -93,19 +78,11 @@ export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
                 </Button>
               ) : (
                 <VStack align="stretch" gap={2}>
-                  <Button
-                    justifyContent="start"
-                    variant="ghost"
-                    onClick={() => goTo('/sign-in')}
-                  >
+                  <Button justifyContent="start" variant="ghost" onClick={() => goTo('/sign-in')}>
                     <LogIn size={18} />
                     Sign in
                   </Button>
-                  <Button
-                    justifyContent="start"
-                    variant="ghost"
-                    onClick={() => goTo('/sign-up')}
-                  >
+                  <Button justifyContent="start" variant="ghost" onClick={() => goTo('/sign-up')}>
                     <UserRound size={18} />
                     Sign up
                   </Button>
@@ -116,5 +93,5 @@ export function HeaderMenuDrawer({ isOpen, onClose }: HeaderMenuDrawerProps) {
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  )
+  );
 }

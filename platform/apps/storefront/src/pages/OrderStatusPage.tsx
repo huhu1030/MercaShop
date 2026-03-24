@@ -1,103 +1,87 @@
-import {
-  Badge,
-  Box,
-  Button,
-  HStack,
-  Separator,
-  Spinner,
-  Steps,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { OrderStatus } from '@mercashop/shared'
-import { getPaymentApi } from '@mercashop/shared/api-client'
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
-import { Link as RouterLink, useParams } from 'react-router-dom'
-import { io } from 'socket.io-client'
+import { Badge, Box, Button, HStack, Separator, Spinner, Steps, Text, VStack } from '@chakra-ui/react';
+import { OrderStatus } from '@mercashop/shared';
+import { getPaymentApi } from '@mercashop/shared/api-client';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
 
-const orderSteps = [
-  OrderStatus.PENDING,
-  OrderStatus.ACCEPTED,
-  OrderStatus.PREPARING,
-  OrderStatus.READY,
-  OrderStatus.DELIVERED,
-]
+const orderSteps = [OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERED];
 
 function formatLabel(value: string) {
-  return value.replace(/_/g, ' ')
+  return value.replace(/_/g, ' ');
 }
 
 function normalizeStatus(status?: string): OrderStatus {
   if (status && Object.values(OrderStatus).includes(status as OrderStatus)) {
-    return status as OrderStatus
+    return status as OrderStatus;
   }
 
-  return OrderStatus.PENDING
+  return OrderStatus.PENDING;
 }
 
 function statusColor(status: OrderStatus) {
   switch (status) {
     case OrderStatus.DELIVERED:
-      return 'green'
+      return 'green';
     case OrderStatus.CANCELLED:
-      return 'red'
+      return 'red';
     case OrderStatus.READY:
-      return 'teal'
+      return 'teal';
     default:
-      return 'orange'
+      return 'orange';
   }
 }
 
 export function OrderStatusPage() {
-  const { orderId } = useParams<{ orderId: string }>()
-  const [liveStatus, setLiveStatus] = useState<OrderStatus | null>(null)
+  const { orderId } = useParams<{ orderId: string }>();
+  const [liveStatus, setLiveStatus] = useState<OrderStatus | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['order-status', orderId],
     queryFn: async () => {
-      const response = await getPaymentApi().getPaymentStatus(orderId!)
-      return response.data.order as Record<string, any>
+      const response = await getPaymentApi().getPaymentStatus(orderId!);
+      return response.data.order as Record<string, any>;
     },
     enabled: !!orderId,
-  })
+  });
 
   useEffect(() => {
-    if (!orderId) return
+    if (!orderId) return;
 
     const socket = io(import.meta.env.VITE_API_URL, {
       transports: ['websocket'],
-    })
+    });
 
-    socket.emit('join-order', orderId)
+    socket.emit('join-order', orderId);
     socket.on('order-updated', (payload: { status?: string }) => {
       if (payload.status) {
-        setLiveStatus(normalizeStatus(payload.status))
+        setLiveStatus(normalizeStatus(payload.status));
       }
-    })
+    });
 
     return () => {
-      socket.disconnect()
-    }
-  }, [orderId])
+      socket.disconnect();
+    };
+  }, [orderId]);
 
-  const order = data
-  const status = liveStatus ?? normalizeStatus(order?.status)
+  const order = data;
+  const status = liveStatus ?? normalizeStatus(order?.status);
   const currentStep = useMemo(() => {
     if (status === OrderStatus.CANCELLED) {
-      return 0
+      return 0;
     }
 
-    const index = orderSteps.indexOf(status)
-    return index >= 0 ? index : 0
-  }, [status])
+    const index = orderSteps.indexOf(status);
+    return index >= 0 ? index : 0;
+  }, [status]);
 
   if (isLoading) {
     return (
       <VStack py={20}>
         <Spinner size="xl" />
       </VStack>
-    )
+    );
   }
 
   if (error || !order) {
@@ -110,7 +94,7 @@ export function OrderStatusPage() {
           <RouterLink to="/">Back to catalog</RouterLink>
         </Button>
       </VStack>
-    )
+    );
   }
 
   return (
@@ -130,11 +114,7 @@ export function OrderStatusPage() {
       </VStack>
 
       <Box p={5} borderWidth="1px" borderColor="blackAlpha.100" borderRadius="2xl" bg="white">
-        <Steps.Root
-          step={currentStep}
-          count={orderSteps.length}
-          orientation="horizontal"
-        >
+        <Steps.Root step={currentStep} count={orderSteps.length} orientation="horizontal">
           <Steps.List>
             {orderSteps.map((step, index) => (
               <Steps.Item key={step} index={index}>
@@ -196,5 +176,5 @@ export function OrderStatusPage() {
         </VStack>
       </Box>
     </VStack>
-  )
+  );
 }

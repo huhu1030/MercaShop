@@ -1,25 +1,25 @@
-import {Button, Drawer, HStack, Text, VStack,} from '@chakra-ui/react'
-import {useNavigate} from 'react-router-dom'
-import {useCart} from '../hooks/useCart'
-import {OrderSummary} from './OrderSummary'
+import { Button, Drawer, HStack, Text, VStack } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../hooks/useCart';
+import { OrderSummary } from './OrderSummary';
 
 interface CartDrawerProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const { items, total, clearCart } = useCart()
-  const navigate = useNavigate()
+  const { items, total, clearCart } = useCart();
+  const navigate = useNavigate();
 
   return (
     <Drawer.Root
-        size={"lg"}
+      size={'lg'}
       open={isOpen}
       placement="end"
       onOpenChange={(details) => {
         if (!details.open) {
-          onClose()
+          onClose();
         }
       }}
     >
@@ -48,8 +48,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <Button
                 colorPalette="green"
                 onClick={() => {
-                  onClose()
-                  navigate('/checkout')
+                  onClose();
+                  navigate('/checkout');
                 }}
                 disabled={items.length === 0}
               >
@@ -60,5 +60,5 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         </Drawer.Content>
       </Drawer.Positioner>
     </Drawer.Root>
-  )
+  );
 }

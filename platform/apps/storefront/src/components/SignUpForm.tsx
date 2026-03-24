@@ -1,82 +1,57 @@
-import {
-  Button,
-  Card,
-  Field,
-  IconButton,
-  Input,
-  InputGroup,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
-import { Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
-import { Link as RouterLink } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { Button, Card, Field, IconButton, Input, InputGroup, Spinner, Text, VStack } from '@chakra-ui/react';
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 interface SignUpFormState {
-  email: string
-  password: string
-  firstName: string
-  lastName: string
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
 }
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
-    return error.message
+    return error.message;
   }
 
-  return 'Authentication failed'
+  return 'Authentication failed';
 }
 
 export function SignUpForm() {
-  const { signUp, loading } = useAuth()
-  const [error, setError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const { signUp, loading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState<SignUpFormState>({
     email: '',
     password: '',
     firstName: '',
     lastName: '',
-  })
+  });
 
   const handleSignUp = async () => {
-    setError(null)
-    setIsSubmitting(true)
+    setError(null);
+    setIsSubmitting(true);
 
     try {
-      await signUp(
-        form.email,
-        form.password,
-        form.firstName,
-        form.lastName,
-      )
+      await signUp(form.email, form.password, form.firstName, form.lastName);
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err));
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <Card.Root
-      width="full"
-      maxW="lg"
-      borderRadius="3xl"
-      boxShadow="xl"
-      borderWidth="1px"
-      borderColor="blackAlpha.100"
-      overflow="hidden"
-    >
+    <Card.Root width="full" maxW="lg" borderRadius="3xl" boxShadow="xl" borderWidth="1px" borderColor="blackAlpha.100" overflow="hidden">
       <Card.Header>
         <VStack align="start" gap={2}>
           <Text fontSize="2xl" fontWeight="bold">
             Create account
           </Text>
-          <Text color="fg.muted">
-            Register first, then continue ordering and manage your profile.
-          </Text>
+          <Text color="fg.muted">Register first, then continue ordering and manage your profile.</Text>
         </VStack>
       </Card.Header>
 
@@ -149,11 +124,7 @@ export function SignUpForm() {
             </InputGroup>
           </Field.Root>
 
-          <Button
-            colorPalette="green"
-            onClick={handleSignUp}
-            disabled={isSubmitting || loading}
-          >
+          <Button colorPalette="green" onClick={handleSignUp} disabled={isSubmitting || loading}>
             {isSubmitting ? <Spinner size="sm" /> : 'Create account'}
           </Button>
 
@@ -161,13 +132,9 @@ export function SignUpForm() {
             Already have an account? <RouterLink to="/sign-in">Sign in</RouterLink>.
           </Text>
 
-          {error && (
-            <Text color="red.500">
-              {error}
-            </Text>
-          )}
+          {error && <Text color="red.500">{error}</Text>}
         </VStack>
       </Card.Body>
     </Card.Root>
-  )
+  );
 }

@@ -109,7 +109,7 @@ const seedProducts: SeedProduct[] = [
     location: 'Shelf B2',
   },
   {
-    name: 'Lay\'s Classic',
+    name: "Lay's Classic",
     description: 'Classic salted potato chips.',
     category: 'Chips',
     price: 2.7,
@@ -157,7 +157,7 @@ const seedProducts: SeedProduct[] = [
     location: 'Shelf D1',
   },
   {
-    name: 'M&M\'s Peanut',
+    name: "M&M's Peanut",
     description: 'Candy-coated peanuts in a sharing bag.',
     category: 'Candy',
     price: 2.6,
@@ -257,8 +257,7 @@ async function seedProductsForEstablishment(): Promise<void> {
   await establishment.save();
 
   console.log(
-    `Seeded ${products.length} products for ${establishment.name}. ` +
-      `Inserted: ${result.upsertedCount}, Updated: ${result.modifiedCount}`,
+    `Seeded ${products.length} products for ${establishment.name}. ` + `Inserted: ${result.upsertedCount}, Updated: ${result.modifiedCount}`,
   );
 
   await mongoose.disconnect();
