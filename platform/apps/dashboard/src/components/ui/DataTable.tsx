@@ -1,13 +1,7 @@
 import {useState} from 'react';
 import {Center, Heading, Table, Text, VStack} from '@chakra-ui/react';
-import {
-  type ColumnDef,
-  type SortingState,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import type {ColumnDef, SortingState} from '@tanstack/react-table';
+import {flexRender, getCoreRowModel, getSortedRowModel, useReactTable} from '@tanstack/react-table';
 import {ArrowDown, ArrowUp, ArrowUpDown, Inbox} from 'lucide-react';
 import {Colors} from '../../constants/colors';
 

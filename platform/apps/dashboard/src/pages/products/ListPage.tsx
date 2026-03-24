@@ -31,11 +31,12 @@ export function ListPage() {
         queryFn: () => getProductApi().getProductsByEstablishment(establishmentId),
     });
 
-    if (isLoading) return <LoadingScreen/>;
+
 
     const products = (data?.data?.products ?? []) as Product[];
     const categories = ['All', ...new Set(products.map((product) => product.category).filter(Boolean))];
     const normalizedSearch = search.trim().toLowerCase();
+
     const filteredProducts = products.filter((product) => {
         const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
         const matchesSearch = !normalizedSearch
@@ -58,6 +59,7 @@ export function ListPage() {
 
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [selectedImage]);
+
 
     const columns: ColumnDef<Product, unknown>[] = [
         {
@@ -110,6 +112,7 @@ export function ListPage() {
         },
     ];
 
+    if (isLoading) return <LoadingScreen/>;
     return (
         <VStack gap="1.25rem" align="stretch">
             <PageHeader

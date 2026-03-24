@@ -1,13 +1,8 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  type User,
-  type UserCredential,
-} from 'firebase/auth';
-import { auth } from '../config/firebase';
-import type { ReactNode } from 'react';
+import type {ReactNode} from 'react';
+import {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import type {User, UserCredential} from 'firebase/auth';
+import {onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth';
+import {auth} from '../config/firebase';
 
 interface AuthContextValue {
   user: User | null;
@@ -68,7 +63,7 @@ export function AuthProvider({ children, tenantId }: AuthProviderProps) {
   const value = useMemo<AuthContextValue>(() => ({
     user,
     loading,
-    isAuthenticated: !!user,
+    isAuthenticated: Boolean(user),
     error,
     signIn,
     logout,

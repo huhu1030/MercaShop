@@ -100,7 +100,7 @@ export function CreatePage() {
 
             <Box as="form" onSubmit={handleSubmit(onSubmit)}>
                 <VStack gap="1rem" align="stretch">
-                    <Field.Root required invalid={!!errors.name}>
+                    <Field.Root required invalid={Boolean(errors.name)}>
                         <Field.Label>Product Name</Field.Label>
                         <Input
                             placeholder="e.g. Margherita Pizza"
@@ -109,7 +109,7 @@ export function CreatePage() {
                         {errors.name && <Field.ErrorText>{errors.name.message}</Field.ErrorText>}
                     </Field.Root>
 
-                    <Field.Root required invalid={!!errors.category}>
+                    <Field.Root required invalid={Boolean(errors.category)}>
                         <Field.Label>Category</Field.Label>
                         <Input
                             placeholder="e.g. Pizza, Drinks"
@@ -118,7 +118,7 @@ export function CreatePage() {
                         {errors.category && <Field.ErrorText>{errors.category.message}</Field.ErrorText>}
                     </Field.Root>
 
-                    <Field.Root required invalid={!!errors.price}>
+                    <Field.Root required invalid={Boolean(errors.price)}>
                         <Field.Label>Price (&euro;)</Field.Label>
                         <Input
                             type="number"
@@ -130,7 +130,7 @@ export function CreatePage() {
                         {errors.price && <Field.ErrorText>{errors.price.message}</Field.ErrorText>}
                     </Field.Root>
 
-                    <Field.Root invalid={!!errors.quantity}>
+                    <Field.Root invalid={Boolean(errors.quantity)}>
                         <Field.Label>Quantity</Field.Label>
                         <Input
                             type="number"
@@ -141,7 +141,7 @@ export function CreatePage() {
                         {errors.quantity && <Field.ErrorText>{errors.quantity.message}</Field.ErrorText>}
                     </Field.Root>
 
-                    <Field.Root invalid={!!errors.location}>
+                    <Field.Root invalid={Boolean(errors.location)}>
                         <Field.Label>Location</Field.Label>
                         <Input
                             placeholder="e.g. 41B"
@@ -150,12 +150,12 @@ export function CreatePage() {
                         {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
                     </Field.Root>
 
-                    <Field.Root required invalid={!!errors.picture}>
+                    <Field.Root required invalid={Boolean(errors.picture)}>
                         <Field.Label>Picture</Field.Label>
                         <FileUpload.Root
                             maxFiles={1}
                             accept={['image/*']}
-                            invalid={!!errors.picture}
+                            invalid={Boolean(errors.picture)}
                             acceptedFiles={picture ? [picture] : []}
                             onFileChange={({acceptedFiles}) => {
                                 const file = acceptedFiles[0];
