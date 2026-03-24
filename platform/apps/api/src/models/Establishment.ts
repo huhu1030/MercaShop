@@ -20,6 +20,8 @@ export interface EstablishmentDocument extends Document {
   description?: string;
   path?: string;
   mode?: string;
+  slug: string;
+  paymentMethods: string[];
   status: string;
   openingHours?: string;
   location: { latitude: number; longitude: number };
@@ -59,6 +61,8 @@ const establishmentSchema = new Schema<EstablishmentDocument>(
     description: { type: String, default: '' },
     path: { type: String, default: '' },
     mode: { type: String, default: '' },
+    slug: { type: String, required: true },
+    paymentMethods: { type: [String], default: ['CARD', 'CASH'] },
     status: { type: String, default: 'OPEN' },
     openingHours: { type: String, default: '' },
     location: { type: locationSchema, required: true },
@@ -67,5 +71,6 @@ const establishmentSchema = new Schema<EstablishmentDocument>(
 );
 
 establishmentSchema.index({ tenantId: 1, ownerId: 1 });
+establishmentSchema.index({ tenantId: 1, slug: 1 }, { unique: true });
 
 export const EstablishmentModel = model<EstablishmentDocument>('Establishment', establishmentSchema);

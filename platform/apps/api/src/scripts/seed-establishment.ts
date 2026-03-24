@@ -28,6 +28,8 @@ async function seedEstablishment(): Promise<void> {
       city: 'Amsterdam',
       country: 'NL',
     },
+    slug: 'dev-store',
+    paymentMethods: ['CARD', 'CASH', 'BANCONTACT'],
     ownerId: 'local-dev-owner',
     products: [],
     description: 'Local development establishment',
