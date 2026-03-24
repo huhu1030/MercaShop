@@ -60,8 +60,8 @@ export async function handleCardPayment(
 
 export async function handleCashPayment(tenantId: string, userEmail: string, order: Order & { establishmentId: string }): Promise<void> {
   await orderService.markUnpaidAndDecrementStock(order);
-  await orderService.notifyEstablishment(tenantId, order.establishmentId, order);
-  await notificationService.sendOrderConfirmation(userEmail, order);
+  orderService.notifyEstablishment(tenantId, order.establishmentId, order).catch((err) => console.error('Socket notification failed:', err));
+  notificationService.sendOrderConfirmation(userEmail, order).catch((err) => console.error('Order confirmation email failed:', err));
 }
 
 export async function handleWebhook(paymentId: string): Promise<{ status: string }> {
@@ -74,8 +74,8 @@ export async function handleWebhook(paymentId: string): Promise<{ status: string
 
   if (payment.status === 'paid') {
     await orderService.markPaidAndDecrementStock(order);
-    orderService.notifyRealtime(order);
-    await notificationService.sendOrderConfirmationToUser(order.userId, order);
+    try { orderService.notifyRealtime(order); } catch (err) { console.error('Realtime notification failed:', err); }
+    notificationService.sendOrderConfirmationToUser(order.userId, order).catch((err) => console.error('Order confirmation email failed:', err));
   }
 
   return { status: payment.status };

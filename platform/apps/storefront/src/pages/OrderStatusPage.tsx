@@ -1,4 +1,4 @@
-import { Badge, Box, Button, HStack, Separator, Spinner, Steps, Text, VStack } from '@chakra-ui/react';
+import { Badge, Box, Button, HStack, Separator, Spinner, Steps, Text, useBreakpointValue, VStack } from '@chakra-ui/react';
 import { OrderStatus } from '@mercashop/shared';
 import { getPaymentApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
@@ -35,6 +35,7 @@ function statusColor(status: OrderStatus) {
 
 export function OrderStatusPage() {
   const { orderId } = useParams<{ orderId: string }>();
+  const stepsOrientation = useBreakpointValue({ base: 'vertical', md: 'horizontal' }) ?? 'vertical';
   const [liveStatus, setLiveStatus] = useState<OrderStatus | null>(null);
 
   const { data, isLoading, error } = useQuery({
@@ -43,7 +44,7 @@ export function OrderStatusPage() {
       const response = await getPaymentApi().getPaymentStatus(orderId!);
       return response.data.order as Record<string, any>;
     },
-    enabled: !!orderId,
+    enabled: Boolean(orderId),
   });
 
   useEffect(() => {
@@ -98,10 +99,10 @@ export function OrderStatusPage() {
   }
 
   return (
-    <VStack align="stretch" gap={6}>
+    <VStack align="stretch" gap={6} maxW="3xl" mx="auto" w="100%">
       <VStack align="start" gap={2}>
         <Text fontSize="3xl" fontWeight="bold">
-          Order #{order._id}
+          Order #{String(order._id).slice(-6).toUpperCase()}
         </Text>
         <HStack>
           <Badge colorPalette={statusColor(status)} px={3} py={1} borderRadius="full">
@@ -113,8 +114,8 @@ export function OrderStatusPage() {
         </HStack>
       </VStack>
 
-      <Box p={5} borderWidth="1px" borderColor="blackAlpha.100" borderRadius="2xl" bg="white">
-        <Steps.Root step={currentStep} count={orderSteps.length} orientation="horizontal">
+      <Box p={5} borderWidth="1px" borderColor="blackAlpha.100" borderRadius="2xl" bg="white" overflowX="hidden">
+        <Steps.Root step={currentStep} count={orderSteps.length} orientation={stepsOrientation as 'vertical' | 'horizontal'}>
           <Steps.List>
             {orderSteps.map((step, index) => (
               <Steps.Item key={step} index={index}>
@@ -171,6 +172,20 @@ export function OrderStatusPage() {
                   .filter(Boolean)
                   .join(', ')}
               </Text>
+              {order.deliveryAddress.comment && (
+                <Text color="fg.muted" fontSize="sm">
+                  Note: {order.deliveryAddress.comment}
+                </Text>
+              )}
+            </VStack>
+          )}
+
+          {order.billingInformation && (
+            <VStack align="start" gap={1}>
+              <Text fontWeight="semibold">Contact information</Text>
+              {order.billingInformation.name && <Text color="fg.muted">{order.billingInformation.name}</Text>}
+              {order.billingInformation.email && <Text color="fg.muted">{order.billingInformation.email}</Text>}
+              {order.billingInformation.phone && <Text color="fg.muted">{order.billingInformation.phone}</Text>}
             </VStack>
           )}
         </VStack>

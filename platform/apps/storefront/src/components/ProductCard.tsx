@@ -34,9 +34,9 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card.Root overflow="hidden" h="100%" borderRadius="2xl" borderWidth="1px" borderColor="blackAlpha.100" bg="white" boxShadow="sm">
       {imageUrl ? (
-        <Image src={imageUrl} alt={product.name} h="160px" w="100%" objectFit="cover" />
+        <Image src={imageUrl} alt={product.name} h={{ base: '160px', md: '180px' }} w="100%" objectFit="cover" />
       ) : (
-        <Box h="160px" bgGradient="linear(to-br, blackAlpha.100, blackAlpha.200)" />
+        <Box h={{ base: '160px', md: '180px' }} bgGradient="linear(to-br, blackAlpha.100, blackAlpha.200)" />
       )}
 
       <Card.Body>

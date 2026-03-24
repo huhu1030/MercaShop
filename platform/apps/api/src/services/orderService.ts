@@ -73,12 +73,20 @@ export async function findByMolliePaymentId(molliePaymentId: string): Promise<Or
 export async function notifyEstablishment(tenantId: string, establishmentId: string, order: Order): Promise<void> {
   const establishment = await EstablishmentModel.findOne({ tenantId, _id: establishmentId });
   if (establishment) {
-    SocketServer.getInstance().sendOrders(order);
-    SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+    try {
+      SocketServer.getInstance().sendOrders(order);
+      SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+    } catch (err) {
+      console.error('Socket notification to establishment failed:', err);
+    }
   }
 }
 
 export function notifyRealtime(order: Order): void {
-  SocketServer.getInstance().sendOrders(order);
-  SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+  try {
+    SocketServer.getInstance().sendOrders(order);
+    SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+  } catch (err) {
+    console.error('Realtime socket notification failed:', err);
+  }
 }
