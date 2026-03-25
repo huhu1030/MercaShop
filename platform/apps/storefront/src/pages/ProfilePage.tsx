@@ -2,15 +2,10 @@ import { Button, Card, Center, Field, Input, Spinner, Text, VStack } from '@chak
 import { getCustomerProfileApi, getUserApi } from '@mercashop/shared/api-client';
 import type { IBillingInformation, IDeliveryAddress } from '@mercashop/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-
-interface ProfileFormState {
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
 
 interface UserProfile {
   firstName: string;
@@ -19,30 +14,27 @@ interface UserProfile {
   email: string;
 }
 
+interface PersonalInfoForm {
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
 export function ProfilePage() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<ProfileFormState>({
-    firstName: '',
-    lastName: '',
-    phone: '',
+
+  const personalForm = useForm<PersonalInfoForm>({
+    defaultValues: { firstName: '', lastName: '', phone: '' },
   });
 
-  const [billingForm, setBillingForm] = useState<IBillingInformation>({
-    name: '',
-    email: '',
-    phone: '',
-    vatNumber: '',
+  const billingForm = useForm<IBillingInformation>({
+    defaultValues: { name: '', email: '', phone: '', vatNumber: '' },
   });
 
-  const [deliveryForm, setDeliveryForm] = useState<IDeliveryAddress>({
-    street: '',
-    number: '',
-    zipCode: '',
-    city: '',
-    municipality: '',
-    comment: '',
+  const deliveryForm = useForm<IDeliveryAddress>({
+    defaultValues: { street: '', number: '', zipCode: '', city: '', municipality: '', comment: '' },
   });
 
   const { data, isLoading } = useQuery({
@@ -63,22 +55,22 @@ export function ProfilePage() {
 
   useEffect(() => {
     if (!data) return;
-    setForm({
+    personalForm.reset({
       firstName: data.firstName ?? '',
       lastName: data.lastName ?? '',
       phone: data.phone ?? '',
     });
-  }, [data]);
+  }, [data, personalForm.reset]);
 
   useEffect(() => {
     if (!profile) return;
-    setBillingForm({
+    billingForm.reset({
       name: profile.billingInformation?.name ?? '',
       email: profile.billingInformation?.email ?? '',
       phone: profile.billingInformation?.phone ?? '',
       vatNumber: profile.billingInformation?.vatNumber ?? '',
     });
-    setDeliveryForm({
+    deliveryForm.reset({
       street: profile.deliveryAddress?.street ?? '',
       number: profile.deliveryAddress?.number ?? '',
       zipCode: profile.deliveryAddress?.zipCode ?? '',
@@ -86,10 +78,10 @@ export function ProfilePage() {
       municipality: profile.deliveryAddress?.municipality ?? '',
       comment: profile.deliveryAddress?.comment ?? '',
     });
-  }, [profile]);
+  }, [profile, billingForm.reset, deliveryForm.reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (payload: ProfileFormState) => getUserApi().updateMe(payload),
+    mutationFn: (payload: PersonalInfoForm) => getUserApi().updateMe(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['user-profile'] });
     },
@@ -134,40 +126,42 @@ export function ProfilePage() {
           </Card.Header>
 
           <Card.Body>
-            <VStack align="stretch" gap={4}>
-              <Field.Root>
-                <Field.Label>Email</Field.Label>
-                <Input value={data?.email ?? ''} readOnly />
-              </Field.Root>
+            <form onSubmit={personalForm.handleSubmit((values) => updateMutation.mutate(values))}>
+              <VStack align="stretch" gap={4}>
+                <Field.Root>
+                  <Field.Label>Email</Field.Label>
+                  <Input value={data?.email ?? ''} readOnly />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>First name</Field.Label>
-                <Input value={form.firstName} onChange={(event) => setForm((current) => ({ ...current, firstName: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>First name</Field.Label>
+                  <Input {...personalForm.register('firstName')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Last name</Field.Label>
-                <Input value={form.lastName} onChange={(event) => setForm((current) => ({ ...current, lastName: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Last name</Field.Label>
+                  <Input {...personalForm.register('lastName')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Phone</Field.Label>
-                <Input value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Phone</Field.Label>
+                  <Input {...personalForm.register('phone')} />
+                </Field.Root>
 
-              {updateMutation.isError && (
-                <Text color="red.500">{updateMutation.error instanceof Error ? updateMutation.error.message : 'Profile update failed'}</Text>
-              )}
+                {updateMutation.isError && (
+                  <Text color="red.500">{updateMutation.error instanceof Error ? updateMutation.error.message : 'Profile update failed'}</Text>
+                )}
 
-              <VStack align="stretch" gap={3} pt={2}>
-                <Button colorPalette="green" onClick={() => updateMutation.mutate(form)} disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? <Spinner size="sm" /> : 'Save changes'}
-                </Button>
-                <Button variant="outline" onClick={handleLogout}>
-                  Logout
-                </Button>
+                <VStack align="stretch" gap={3} pt={2}>
+                  <Button type="submit" colorPalette="green" disabled={updateMutation.isPending}>
+                    {updateMutation.isPending ? <Spinner size="sm" /> : 'Save changes'}
+                  </Button>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </VStack>
               </VStack>
-            </VStack>
+            </form>
           </Card.Body>
         </Card.Root>
 
@@ -182,37 +176,39 @@ export function ProfilePage() {
           </Card.Header>
 
           <Card.Body>
-            <VStack align="stretch" gap={4}>
-              <Field.Root>
-                <Field.Label>Name</Field.Label>
-                <Input value={billingForm.name ?? ''} onChange={(event) => setBillingForm((current) => ({ ...current, name: event.target.value }))} />
-              </Field.Root>
+            <form onSubmit={billingForm.handleSubmit((values) => billingMutation.mutate(values))}>
+              <VStack align="stretch" gap={4}>
+                <Field.Root>
+                  <Field.Label>Name</Field.Label>
+                  <Input {...billingForm.register('name')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Email</Field.Label>
-                <Input value={billingForm.email ?? ''} onChange={(event) => setBillingForm((current) => ({ ...current, email: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Email</Field.Label>
+                  <Input {...billingForm.register('email')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Phone</Field.Label>
-                <Input value={billingForm.phone ?? ''} onChange={(event) => setBillingForm((current) => ({ ...current, phone: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Phone</Field.Label>
+                  <Input {...billingForm.register('phone')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>VAT Number</Field.Label>
-                <Input value={billingForm.vatNumber ?? ''} onChange={(event) => setBillingForm((current) => ({ ...current, vatNumber: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>VAT Number</Field.Label>
+                  <Input {...billingForm.register('vatNumber')} />
+                </Field.Root>
 
-              {billingMutation.isError && (
-                <Text color="red.500">{billingMutation.error instanceof Error ? billingMutation.error.message : 'Billing update failed'}</Text>
-              )}
+                {billingMutation.isError && (
+                  <Text color="red.500">{billingMutation.error instanceof Error ? billingMutation.error.message : 'Billing update failed'}</Text>
+                )}
 
-              <VStack align="stretch" gap={3} pt={2}>
-                <Button colorPalette="green" onClick={() => billingMutation.mutate(billingForm)} disabled={billingMutation.isPending}>
-                  {billingMutation.isPending ? <Spinner size="sm" /> : 'Save billing info'}
-                </Button>
+                <VStack align="stretch" gap={3} pt={2}>
+                  <Button type="submit" colorPalette="green" disabled={billingMutation.isPending}>
+                    {billingMutation.isPending ? <Spinner size="sm" /> : 'Save billing info'}
+                  </Button>
+                </VStack>
               </VStack>
-            </VStack>
+            </form>
           </Card.Body>
         </Card.Root>
 
@@ -227,47 +223,49 @@ export function ProfilePage() {
           </Card.Header>
 
           <Card.Body>
-            <VStack align="stretch" gap={4}>
-              <Field.Root>
-                <Field.Label>Street</Field.Label>
-                <Input value={deliveryForm.street ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, street: event.target.value }))} />
-              </Field.Root>
+            <form onSubmit={deliveryForm.handleSubmit((values) => deliveryMutation.mutate(values))}>
+              <VStack align="stretch" gap={4}>
+                <Field.Root>
+                  <Field.Label>Street</Field.Label>
+                  <Input {...deliveryForm.register('street')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Number</Field.Label>
-                <Input value={deliveryForm.number ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, number: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Number</Field.Label>
+                  <Input {...deliveryForm.register('number')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Zip Code</Field.Label>
-                <Input value={deliveryForm.zipCode ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, zipCode: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Zip Code</Field.Label>
+                  <Input {...deliveryForm.register('zipCode')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>City</Field.Label>
-                <Input value={deliveryForm.city ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, city: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>City</Field.Label>
+                  <Input {...deliveryForm.register('city')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Municipality</Field.Label>
-                <Input value={deliveryForm.municipality ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, municipality: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Municipality</Field.Label>
+                  <Input {...deliveryForm.register('municipality')} />
+                </Field.Root>
 
-              <Field.Root>
-                <Field.Label>Comment</Field.Label>
-                <Input value={deliveryForm.comment ?? ''} onChange={(event) => setDeliveryForm((current) => ({ ...current, comment: event.target.value }))} />
-              </Field.Root>
+                <Field.Root>
+                  <Field.Label>Comment</Field.Label>
+                  <Input {...deliveryForm.register('comment')} />
+                </Field.Root>
 
-              {deliveryMutation.isError && (
-                <Text color="red.500">{deliveryMutation.error instanceof Error ? deliveryMutation.error.message : 'Delivery address update failed'}</Text>
-              )}
+                {deliveryMutation.isError && (
+                  <Text color="red.500">{deliveryMutation.error instanceof Error ? deliveryMutation.error.message : 'Delivery address update failed'}</Text>
+                )}
 
-              <VStack align="stretch" gap={3} pt={2}>
-                <Button colorPalette="green" onClick={() => deliveryMutation.mutate(deliveryForm)} disabled={deliveryMutation.isPending}>
-                  {deliveryMutation.isPending ? <Spinner size="sm" /> : 'Save delivery address'}
-                </Button>
+                <VStack align="stretch" gap={3} pt={2}>
+                  <Button type="submit" colorPalette="green" disabled={deliveryMutation.isPending}>
+                    {deliveryMutation.isPending ? <Spinner size="sm" /> : 'Save delivery address'}
+                  </Button>
+                </VStack>
               </VStack>
-            </VStack>
+            </form>
           </Card.Body>
         </Card.Root>
       </VStack>
