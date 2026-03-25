@@ -120,7 +120,7 @@ export function AnalyticsPage() {
           <Text fontSize="sm" fontWeight="semibold" mb="4">
             Monthly Orders &amp; Revenue
           </Text>
-          <Chart.Root chart={chart}>
+          <Chart.Root chart={chart} maxH="300px">
             <ComposedChart data={chart.data} responsive>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="label" />
