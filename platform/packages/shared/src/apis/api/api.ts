@@ -15,6 +15,7 @@
 
 
 export * from './apis/analytics-api';
+export * from './apis/customer-profile-api';
 export * from './apis/establishment-api';
 export * from './apis/order-api';
 export * from './apis/payment-api';

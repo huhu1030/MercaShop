@@ -2,6 +2,7 @@
 .npmignore
 api.ts
 apis/analytics-api.ts
+apis/customer-profile-api.ts
 apis/establishment-api.ts
 apis/order-api.ts
 apis/payment-api.ts
@@ -36,6 +37,9 @@ models/get-products-by-establishment200-response.ts
 models/iaddress.ts
 models/ianalytics-response.ts
 models/ianalytics-summary.ts
+models/ibilling-information.ts
+models/icustomer-profile.ts
+models/idelivery-address.ts
 models/iestablishment-summary.ts
 models/imonthly-metric.ts
 models/index.ts
@@ -51,6 +55,9 @@ models/partial-create-tenant-body.ts
 models/payment-method.ts
 models/process-payment-request.ts
 models/process-payment200-response.ts
+models/update-customer-profile-body-billing-information.ts
+models/update-customer-profile-body-delivery-address.ts
+models/update-customer-profile-body.ts
 models/update-quantity-request.ts
 models/update-status-request.ts
 models/update-user-body.ts
