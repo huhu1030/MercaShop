@@ -1,6 +1,6 @@
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Flex, Heading, HStack, Separator, Switch, Text, VStack } from '@chakra-ui/react';
-import { ArrowLeftRight, BarChart3, LogOut, Package, PackagePlus, ShoppingCart } from 'lucide-react';
+import { AlertTriangle, ArrowLeftRight, BarChart3, LogOut, Package, PackagePlus, ShoppingCart } from 'lucide-react';
 import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
 import { isNotificationsEnabledAtom } from '../../store/atoms';
@@ -163,8 +163,16 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </VStack>
       </Box>
 
-      <Box as="main" flex={1} ml={SIDEBAR_WIDTH} p="2rem">
-        <Box maxW="75rem" mx="auto">
+      <Box as="main" flex={1} ml={SIDEBAR_WIDTH}>
+        {!isEstablishmentOpen && (
+          <Flex align="center" justify="center" gap={2} px={6} py={3} bg="red.500" color="white">
+            <AlertTriangle size={16} />
+            <Text fontSize="sm" fontWeight="medium">
+              Your store is currently closed. Customers cannot place orders.
+            </Text>
+          </Flex>
+        )}
+        <Box maxW="75rem" mx="auto" p="2rem">
           {children}
         </Box>
       </Box>
