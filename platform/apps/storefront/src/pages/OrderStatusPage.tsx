@@ -186,6 +186,7 @@ export function OrderStatusPage() {
               {order.billingInformation.name && <Text color="fg.muted">{order.billingInformation.name}</Text>}
               {order.billingInformation.email && <Text color="fg.muted">{order.billingInformation.email}</Text>}
               {order.billingInformation.phone && <Text color="fg.muted">{order.billingInformation.phone}</Text>}
+              {order.billingInformation.vatNumber && <Text color="fg.muted">{order.billingInformation.vatNumber}</Text>}
             </VStack>
           )}
 

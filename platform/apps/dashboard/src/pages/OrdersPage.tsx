@@ -77,6 +77,7 @@ interface Order {
     name?: string;
     email?: string;
     phone?: string;
+    vatNumber?: string;
   };
   paymentMethod?: string;
   isPaid?: boolean;
@@ -184,7 +185,7 @@ function OrderCard({ order }: { order: Order }) {
                     <Text fontWeight="bold">{formatCurrency(order.total)}</Text>
                   </HStack>
 
-                  {order.billingInformation && (order.billingInformation.name || order.billingInformation.email || order.billingInformation.phone) && (
+                  {order.billingInformation && (order.billingInformation.name || order.billingInformation.email || order.billingInformation.phone || order.billingInformation.vatNumber) && (
                     <>
                       <Separator />
                       <Text fontWeight="semibold">Customer</Text>
@@ -204,6 +205,12 @@ function OrderCard({ order }: { order: Order }) {
                         <HStack justify="space-between">
                           <Text color={Colors.text.muted} fontSize="sm">Phone</Text>
                           <Text fontSize="sm">{order.billingInformation.phone}</Text>
+                        </HStack>
+                      )}
+                      {order.billingInformation.vatNumber && (
+                        <HStack justify="space-between">
+                          <Text color={Colors.text.muted} fontSize="sm">VAT</Text>
+                          <Text fontSize="sm">{order.billingInformation.vatNumber}</Text>
                         </HStack>
                       )}
                     </>
