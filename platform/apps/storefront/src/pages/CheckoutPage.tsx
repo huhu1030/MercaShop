@@ -1,6 +1,7 @@
 import { Alert, Box, Button, Card, Grid, GridItem, Heading, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
 import { DeliveryMethod, PaymentMethod } from '@mercashop/shared';
-import { getOrderApi, getPaymentApi } from '@mercashop/shared/api-client';
+import { getCustomerProfileApi, getOrderApi, getPaymentApi } from '@mercashop/shared/api-client';
+import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Clock3, ShieldCheck, Store } from 'lucide-react';
 import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
@@ -15,6 +16,14 @@ export function CheckoutPage() {
   const { establishment, isLoading } = useEstablishment();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: profile } = useQuery({
+    queryKey: ['customer-profile'],
+    queryFn: async () => {
+      const response = await getCustomerProfileApi().getMyProfile();
+      return response.data;
+    },
+  });
 
   const handleSubmit = async (formData: CheckoutFormData) => {
     if (!establishment) return;
@@ -201,7 +210,7 @@ export function CheckoutPage() {
         </GridItem>
 
         <GridItem order={{ base: 1, xl: 2 }}>
-          <CheckoutForm establishment={establishment} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+          <CheckoutForm establishment={establishment} onSubmit={handleSubmit} isSubmitting={isSubmitting} profile={profile} />
         </GridItem>
       </Grid>
     </VStack>
