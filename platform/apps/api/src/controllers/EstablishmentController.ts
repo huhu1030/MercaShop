@@ -41,11 +41,26 @@ export class EstablishmentController extends Controller {
     @Request() req: ExpressRequest,
     @Body() body: { establishmentId: string; status: string },
   ): Promise<{ establishment: IEstablishmentSummary }> {
-    const establishment = await establishmentService.updateEstablishmentStatus(body.establishmentId, req.tenantId!, body.status);
-    if (!establishment) {
-      this.setStatus(404);
-      throw new Error('Establishment not found');
+    try {
+      const establishment = await establishmentService.updateEstablishmentStatus(
+        body.establishmentId,
+        req.tenantId!,
+        body.status,
+        req.firebaseUser!.uid,
+      );
+      if (!establishment) {
+        this.setStatus(404);
+        throw new Error('Establishment not found');
+      }
+      return { establishment: toSummary(establishment) };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '';
+      if (message === 'Invalid establishment status') {
+        this.setStatus(400);
+      } else if (message === 'Not authorized to update this establishment') {
+        this.setStatus(403);
+      }
+      throw error;
     }
-    return { establishment: toSummary(establishment) };
   }
 }
