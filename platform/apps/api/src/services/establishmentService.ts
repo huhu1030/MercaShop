@@ -1,5 +1,6 @@
-import { EstablishmentStatus } from '@mercashop/shared';
+import { EstablishmentStatus, UserRole } from '@mercashop/shared';
 import { EstablishmentModel } from '../models';
+import * as userService from './userService';
 
 export async function findEstablishments(tenantId: string) {
   return EstablishmentModel.find({ tenantId });
@@ -24,7 +25,11 @@ export async function updateEstablishmentStatus(
     return null;
   }
 
-  if (establishment.ownerId !== userId) {
+  const user = await userService.findUserByFirebaseUid(tenantId, userId);
+  const isOwner = establishment.ownerId === userId;
+  const isAdmin = user?.role === UserRole.ADMIN;
+
+  if (!isOwner && !isAdmin) {
     throw new Error('Not authorized to update this establishment');
   }
 
