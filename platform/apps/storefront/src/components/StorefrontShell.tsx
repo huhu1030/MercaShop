@@ -9,7 +9,7 @@ import type { NavVariant } from './DesktopNav';
 import { DesktopNav } from './DesktopNav';
 import { HeaderMenuDrawer } from './HeaderMenuDrawer';
 
-const NAV_VARIANT: NavVariant = 'pill';
+const NAV_VARIANT: NavVariant = 'icon-label';
 
 interface StorefrontShellProps {
   branding: ITenantBranding;
