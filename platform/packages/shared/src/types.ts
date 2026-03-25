@@ -1,4 +1,4 @@
-import { PaymentMethod } from './enums';
+import { PaymentMethod, EstablishmentStatus } from './enums';
 
 export interface ILocation {
   latitude: number;
@@ -66,7 +66,7 @@ export interface IEstablishmentSummary {
   _id: string;
   name: string;
   category: string;
-  status: string;
+  status: EstablishmentStatus;
   logo: string;
 }
 
@@ -76,7 +76,7 @@ export interface IPublicEstablishment {
   slug: string;
   logo: string;
   banner?: string;
-  status: string;
+  status: EstablishmentStatus;
   openingHours?: string;
   address: IAddress;
   paymentMethods: PaymentMethod[];
