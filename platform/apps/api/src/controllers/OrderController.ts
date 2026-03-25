@@ -11,6 +11,10 @@ interface CreateOrderBody {
   billingInformation?: Record<string, unknown>;
   paymentMethod: PaymentMethod;
   deliveryMethod?: string;
+  /**
+   * @maxLength 200
+   */
+  remark?: string;
 }
 
 @Route('api/orders')

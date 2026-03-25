@@ -16,10 +16,12 @@ interface CreateOrderData {
   billingInformation?: Record<string, unknown>;
   paymentMethod: PaymentMethod;
   deliveryMethod?: string;
+  remark?: string;
 }
 
 export async function createOrder(data: CreateOrderData): Promise<OrderDocument> {
-  return OrderModel.create(data);
+  const trimmedRemark = data.remark?.trim() || undefined;
+  return OrderModel.create({ ...data, remark: trimmedRemark });
 }
 
 export async function findOrderById(id: string, tenantId: string): Promise<OrderDocument | null> {

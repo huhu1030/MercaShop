@@ -18,4 +18,5 @@ export interface Order {
   total: number;
   orderLines: OrderLine[];
   mollieOrderId?: string;
+  remark?: string;
 }

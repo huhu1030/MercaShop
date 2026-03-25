@@ -17,6 +17,7 @@ export interface OrderDocument extends Document {
   isPaid: boolean;
   deliveryMethod: string;
   mollieOrderId?: string;
+  remark?: string;
 }
 
 const orderLineSchema = new Schema(
@@ -46,6 +47,7 @@ const orderSchema = new Schema<OrderDocument>(
     isPaid: { type: Boolean, default: false },
     deliveryMethod: { type: String, default: '' },
     mollieOrderId: { type: String, default: '' },
+    remark: { type: String, maxlength: 200 },
   },
   { timestamps: true },
 );
