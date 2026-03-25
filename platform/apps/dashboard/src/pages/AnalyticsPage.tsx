@@ -37,7 +37,7 @@ function fillMonthlyGaps(monthly: IAnalyticsResponse['monthly']): Array<{ label:
 }
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR' }).format(value);
+  return new Intl.NumberFormat('en-BE', { style: 'currency', currency: 'EUR' }).format(value);
 }
 
 export function AnalyticsPage() {
@@ -145,11 +145,11 @@ export function AnalyticsPage() {
             <Text fontSize="sm" fontWeight="semibold" mb="3">Best Sellers</Text>
             {isLoading ? (
               <Text color={Colors.text.muted}>Loading...</Text>
-            ) : analytics?.bestSellers.length === 0 ? (
+            ) : !analytics?.bestSellers?.length ? (
               <Text color={Colors.text.muted}>No data yet</Text>
             ) : (
               <VStack gap="2" align="stretch">
-                {analytics?.bestSellers.map((item, i) => (
+                {analytics.bestSellers.map((item, i) => (
                   <HStack key={item.productName} justify="space-between">
                     <Text fontSize="sm">
                       <Text as="span" fontWeight="bold" color={Colors.text.muted}>{i + 1}.</Text>{' '}
@@ -167,11 +167,11 @@ export function AnalyticsPage() {
             <Text fontSize="sm" fontWeight="semibold" mb="3">Least Sellers</Text>
             {isLoading ? (
               <Text color={Colors.text.muted}>Loading...</Text>
-            ) : analytics?.leastSellers.length === 0 ? (
+            ) : !analytics?.leastSellers?.length ? (
               <Text color={Colors.text.muted}>No data yet</Text>
             ) : (
               <VStack gap="2" align="stretch">
-                {analytics?.leastSellers.map((item, i) => (
+                {analytics.leastSellers.map((item, i) => (
                   <HStack key={item.productName} justify="space-between">
                     <Text fontSize="sm">
                       <Text as="span" fontWeight="bold" color={Colors.text.muted}>{i + 1}.</Text>{' '}
