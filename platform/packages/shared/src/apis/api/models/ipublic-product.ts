@@ -57,3 +57,4 @@ export interface IPublicProduct {
      */
     'category': string;
 }
+

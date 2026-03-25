@@ -1,6 +1,7 @@
 .gitignore
 .npmignore
 api.ts
+apis/analytics-api.ts
 apis/establishment-api.ts
 apis/order-api.ts
 apis/payment-api.ts
@@ -33,8 +34,12 @@ models/get-orders-by-establishment200-response.ts
 models/get-payment-status200-response.ts
 models/get-products-by-establishment200-response.ts
 models/iaddress.ts
+models/ianalytics-response.ts
+models/ianalytics-summary.ts
 models/iestablishment-summary.ts
+models/imonthly-metric.ts
 models/index.ts
+models/iproduct-sales.ts
 models/ipublic-establishment.ts
 models/ipublic-product.ts
 models/itenant-branding.ts

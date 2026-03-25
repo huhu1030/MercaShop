@@ -14,14 +14,29 @@
 
 
 
-export * from './apis/analytics-api';
-export * from './apis/establishment-api';
-export * from './apis/order-api';
-export * from './apis/payment-api';
-export * from './apis/product-api';
-export * from './apis/public-api';
-export * from './apis/tenant-api';
-export * from './apis/upload-api';
-export * from './apis/user-api';
-export * from './apis/webhook-api';
+/**
+ * 
+ * @export
+ * @interface IMonthlyMetric
+ */
+export interface IMonthlyMetric {
+    /**
+     * 
+     * @type {number}
+     * @memberof IMonthlyMetric
+     */
+    'month': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof IMonthlyMetric
+     */
+    'orderCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof IMonthlyMetric
+     */
+    'revenue': number;
+}
 

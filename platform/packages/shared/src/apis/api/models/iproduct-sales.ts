@@ -14,14 +14,23 @@
 
 
 
-export * from './apis/analytics-api';
-export * from './apis/establishment-api';
-export * from './apis/order-api';
-export * from './apis/payment-api';
-export * from './apis/product-api';
-export * from './apis/public-api';
-export * from './apis/tenant-api';
-export * from './apis/upload-api';
-export * from './apis/user-api';
-export * from './apis/webhook-api';
+/**
+ * 
+ * @export
+ * @interface IProductSales
+ */
+export interface IProductSales {
+    /**
+     * 
+     * @type {string}
+     * @memberof IProductSales
+     */
+    'productName': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof IProductSales
+     */
+    'quantitySold': number;
+}
 
