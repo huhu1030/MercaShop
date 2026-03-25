@@ -3,6 +3,7 @@ dist/
 .env
 .env.local
 *.log
+.superpowers/
 .DS_Store
 .idea/
 *.tsbuildinfo

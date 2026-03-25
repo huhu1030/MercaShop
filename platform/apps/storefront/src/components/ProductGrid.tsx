@@ -29,7 +29,7 @@ export function ProductGrid({
       display="grid"
       gridTemplateColumns={{
         base: '1fr',
-        sm: 'repeat(auto-fill, minmax(200px, 1fr))',
+        sm: 'repeat(auto-fill, minmax(240px, 1fr))',
       }}
       gap={6}
     >

@@ -21,6 +21,8 @@ import { WebhookController } from './../controllers/PaymentController';
 import { OrderController } from './../controllers/OrderController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { EstablishmentController } from './../controllers/EstablishmentController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AnalyticsController } from './../controllers/AnalyticsController';
 import { expressAuthentication } from './../auth/authentication';
 // @ts-ignore - no great way to install types from subpackage
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
@@ -182,6 +184,46 @@ const models: TsoaRoute.Models = {
             "category": {"dataType":"string","required":true},
             "status": {"dataType":"string","required":true},
             "logo": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAnalyticsSummary": {
+        "dataType": "refObject",
+        "properties": {
+            "totalOrders": {"dataType":"double","required":true},
+            "totalRevenue": {"dataType":"double","required":true},
+            "avgOrderValue": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IMonthlyMetric": {
+        "dataType": "refObject",
+        "properties": {
+            "month": {"dataType":"double","required":true},
+            "orderCount": {"dataType":"double","required":true},
+            "revenue": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IProductSales": {
+        "dataType": "refObject",
+        "properties": {
+            "productName": {"dataType":"string","required":true},
+            "quantitySold": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAnalyticsResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "summary": {"ref":"IAnalyticsSummary","required":true},
+            "monthly": {"dataType":"array","array":{"dataType":"refObject","ref":"IMonthlyMetric"},"required":true},
+            "bestSellers": {"dataType":"array","array":{"dataType":"refObject","ref":"IProductSales"},"required":true},
+            "leastSellers": {"dataType":"array","array":{"dataType":"refObject","ref":"IProductSales"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1087,6 +1129,40 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateStatus',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsAnalyticsController_getEstablishmentAnalytics: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                establishmentId: {"in":"path","name":"establishmentId","required":true,"dataType":"string"},
+                year: {"in":"query","name":"year","dataType":"double"},
+                limit: {"in":"query","name":"limit","dataType":"double"},
+        };
+        app.get('/api/analytics/establishment/:establishmentId',
+            authenticateMiddleware([{"BearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(AnalyticsController)),
+            ...(fetchMiddlewares<RequestHandler>(AnalyticsController.prototype.getEstablishmentAnalytics)),
+
+            async function AnalyticsController_getEstablishmentAnalytics(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsAnalyticsController_getEstablishmentAnalytics, request, response });
+
+                const controller = new AnalyticsController();
+
+              await templateService.apiHandler({
+                methodName: 'getEstablishmentAnalytics',
                 controller,
                 response,
                 next,
