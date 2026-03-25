@@ -96,6 +96,10 @@ export function ListPage() {
       header: 'Qty',
       meta: { align: 'right' },
     },
+    {
+      accessorKey: 'location',
+      header: 'Location',
+    },
   ];
 
   if (isLoading) return <LoadingScreen />;
