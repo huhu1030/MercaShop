@@ -24,7 +24,7 @@ function PillNav() {
             variant="ghost"
             color="currentColor"
             borderRadius="full"
-            bg={isActive ? 'whiteAlpha.400' : undefined}
+            bg={isActive ? 'whiteAlpha.400' : 'whiteAlpha.200'}
             _hover={{ bg: isActive ? 'whiteAlpha.400' : 'whiteAlpha.300' }}
             onClick={() => navigate(item.path)}
           >

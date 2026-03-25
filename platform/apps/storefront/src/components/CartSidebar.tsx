@@ -24,6 +24,7 @@ export function CartSidebar() {
       position="sticky"
       top={0}
       alignSelf="flex-start"
+      maxH="calc(100dvh - 120px)"
     >
       {expanded ? (
         <VStack align="stretch" gap={0} h="full">
