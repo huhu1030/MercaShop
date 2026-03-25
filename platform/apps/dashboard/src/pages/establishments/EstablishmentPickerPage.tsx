@@ -4,9 +4,11 @@ import { Box, Card, Heading, SimpleGrid, Text, VStack, HStack, Switch } from '@c
 import { Store } from 'lucide-react';
 import { getEstablishmentApi } from '@mercashop/shared/api-client';
 import { EstablishmentStatus } from '@mercashop/shared';
+import axios from 'axios';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Colors } from '../../constants/colors';
+import { toaster } from '../../components/ui/toaster';
 
 export function EstablishmentPickerPage() {
   const navigate = useNavigate();
@@ -22,6 +24,14 @@ export function EstablishmentPickerPage() {
       getEstablishmentApi().updateStatus({ establishmentId, status }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['establishments'] });
+    },
+    onError: (error) => {
+      const message = axios.isAxiosError(error) ? error.response?.data?.message : undefined;
+      toaster.create({
+        title: 'Failed to update status',
+        description: message || 'Something went wrong. Please try again.',
+        type: 'error',
+      });
     },
   });
 

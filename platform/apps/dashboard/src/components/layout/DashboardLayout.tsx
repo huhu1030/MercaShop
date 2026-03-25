@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { isNotificationsEnabledAtom } from '../../store/atoms';
 import { useOrderNotifications } from '../../hooks/useOrderNotifications';
 import { useEstablishmentId } from '../../hooks/useEstablishmentId';
+import { useEstablishmentStatus } from '../../hooks/useEstablishmentStatus';
 import { Colors } from '../../constants/colors';
 import type { ReactNode } from 'react';
 
@@ -42,6 +43,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   if (!result) return <Navigate to="/establishments" replace />;
   const { establishmentId } = result;
   const navItems = getNavItems(establishmentId);
+  const { isOpen: isEstablishmentOpen, toggleStatus, isPending: isStatusPending } = useEstablishmentStatus(establishmentId);
 
   const handleNotificationToggle = async () => {
     if (!isNotificationsEnabled) {
@@ -115,6 +117,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <Separator />
 
         <VStack gap="0.75rem" p="1rem" align="stretch">
+          <Switch.Root
+            checked={isEstablishmentOpen}
+            onCheckedChange={toggleStatus}
+            colorPalette={isEstablishmentOpen ? 'green' : 'gray'}
+            disabled={isStatusPending}
+            size="sm"
+          >
+            <Switch.HiddenInput />
+            <Switch.Control>
+              <Switch.Thumb />
+            </Switch.Control>
+            <Switch.Label>
+              <Text fontSize="sm" color={Colors.text.secondary}>
+                {isEstablishmentOpen ? 'Store open' : 'Store closed'}
+              </Text>
+            </Switch.Label>
+          </Switch.Root>
+
           <Switch.Root checked={isNotificationsEnabled} onCheckedChange={() => void handleNotificationToggle()} size="sm">
             <Switch.HiddenInput />
             <Switch.Control>

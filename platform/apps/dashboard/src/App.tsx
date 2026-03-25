@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import { LoadingScreen } from './components/ui/LoadingScreen';
+import { Toaster } from './components/ui/toaster';
 import { useTenant } from './hooks/useTenant';
 import { AuthProvider } from './hooks/useAuth';
 import { AppRoutes } from './AppRoutes';
@@ -14,6 +15,7 @@ export default function App() {
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
+      <Toaster />
     </AuthProvider>
   );
 }
