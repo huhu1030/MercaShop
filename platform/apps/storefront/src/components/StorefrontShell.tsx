@@ -1,8 +1,10 @@
-import { Box, Button, Flex, Heading, HStack, Image, Spacer, useDisclosure } from '@chakra-ui/react';
-import { Menu as MenuIcon } from 'lucide-react';
+import { Box, Button, Flex, Heading, HStack, Image, Spacer, Text, useDisclosure } from '@chakra-ui/react';
+import { AlertTriangle, Menu as MenuIcon } from 'lucide-react';
 import { ReactNode } from 'react';
 import type { ITenantBranding } from '@mercashop/shared';
+import { EstablishmentStatus } from '@mercashop/shared';
 import { useLocation } from 'react-router-dom';
+import { useEstablishment } from '../hooks/useEstablishment';
 import { CartDrawer } from './CartDrawer';
 import { CartIcon } from './CartIcon';
 import type { NavVariant } from './DesktopNav';
@@ -21,6 +23,8 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
   const { open: cartOpen, onOpen: onCartOpen, onClose: onCartClose } = useDisclosure();
   const { open: menuOpen, onOpen: onMenuOpen, onClose: onMenuClose } = useDisclosure();
   const isHomePage = location.pathname === '/';
+  const { establishment } = useEstablishment();
+  const isClosed = establishment?.status === EstablishmentStatus.CLOSED;
 
   return (
     <Flex direction="column" h="100dvh" overflow="hidden">
@@ -41,6 +45,14 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
           <CartIcon onDesktopOpen={isHomePage ? undefined : onCartOpen} />
         </HStack>
       </Flex>
+      {isClosed && (
+        <Flex align="center" justify="center" gap={2} px={6} py={3} bg="red.500" color="white" flexShrink={0}>
+          <AlertTriangle size={16} />
+          <Text fontSize="sm" fontWeight="medium">
+            This store is currently closed. Orders cannot be placed at this time.
+          </Text>
+        </Flex>
+      )}
       <Box as="main" p={6} flex="1" minH={0} overflowY={isHomePage ? 'hidden' : 'auto'}>
         {children}
       </Box>
