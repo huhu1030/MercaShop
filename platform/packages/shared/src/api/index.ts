@@ -5,6 +5,7 @@ export * from '../apis/api';
 export { initApiClient, getApiAxiosInstance, createApiConfiguration } from './api-client-factory';
 export {
   getAnalyticsApi,
+  getCustomerProfileApi,
   getEstablishmentApi,
   getOrderApi,
   getPaymentApi,
