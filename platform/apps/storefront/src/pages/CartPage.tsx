@@ -1,11 +1,15 @@
 import { Button, Heading, Text, VStack } from '@chakra-ui/react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { EstablishmentStatus } from '@mercashop/shared';
 import { OrderSummary } from '../components/OrderSummary';
 import { useCart } from '../hooks/useCart';
+import { useEstablishment } from '../hooks/useEstablishment';
 
 export function CartPage() {
   const { items, total, clearCart } = useCart();
   const navigate = useNavigate();
+  const { establishment } = useEstablishment();
+  const isClosed = establishment?.status === EstablishmentStatus.CLOSED;
 
   if (items.length === 0) {
     return (
@@ -32,8 +36,8 @@ export function CartPage() {
         <Button variant="outline" onClick={clearCart}>
           Clear cart
         </Button>
-        <Button colorPalette="green" onClick={() => navigate('/checkout')}>
-          Checkout
+        <Button colorPalette="green" disabled={isClosed} onClick={() => navigate('/checkout')}>
+          {isClosed ? 'Store closed' : 'Checkout'}
         </Button>
       </VStack>
     </VStack>

@@ -2,13 +2,17 @@ import { Box, Button, Circle, Flex, Heading, IconButton, Separator, Text, VStack
 import { useAtom } from 'jotai';
 import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { EstablishmentStatus } from '@mercashop/shared';
 import { useCart } from '../hooks/useCart';
+import { useEstablishment } from '../hooks/useEstablishment';
 import { sidebarExpandedAtom } from '../lib/sidebar-store';
 
 export function CartSidebar() {
   const { items, total, itemCount } = useCart();
   const [expanded, setExpanded] = useAtom(sidebarExpandedAtom);
   const navigate = useNavigate();
+  const { establishment } = useEstablishment();
+  const isClosed = establishment?.status === EstablishmentStatus.CLOSED;
 
   return (
     <Box
@@ -75,8 +79,8 @@ export function CartSidebar() {
               <Text fontWeight="semibold">Total</Text>
               <Text fontWeight="bold">€{total.toFixed(2)}</Text>
             </Flex>
-            <Button colorPalette="green" disabled={items.length === 0} onClick={() => navigate('/checkout')} width="full">
-              Checkout
+            <Button colorPalette="green" disabled={items.length === 0 || isClosed} onClick={() => navigate('/checkout')} width="full">
+              {isClosed ? 'Store closed' : 'Checkout'}
             </Button>
           </VStack>
         </VStack>
