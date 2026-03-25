@@ -1,5 +1,5 @@
 import { Box, Button, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
-import { PaymentMethod } from '@mercashop/shared';
+import { DeliveryMethod, PaymentMethod } from '@mercashop/shared';
 import { getPaymentApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { AlertTriangle } from 'lucide-react';
@@ -11,10 +11,10 @@ const POLL_INTERVAL_MS = 3000;
 const MAX_POLL_ATTEMPTS = 5;
 
 interface ConfirmationOrder {
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   isPaid: boolean;
   total: number;
-  deliveryMethod: string;
+  deliveryMethod: DeliveryMethod;
 }
 
 function AnimatedCheckmark() {
@@ -70,7 +70,7 @@ export function OrderConfirmationPage() {
   const [confirmationState, setConfirmationState] = useState<ConfirmationState>('verifying');
   const [pollExhausted, setPollExhausted] = useState(false);
 
-  const { data: order } = useQuery({
+  const { data: order, error } = useQuery({
     queryKey: ['order-confirmation', orderId],
     queryFn: async () => {
       const response = await getPaymentApi().getPaymentStatus(orderId!);
@@ -78,7 +78,7 @@ export function OrderConfirmationPage() {
     },
     enabled: Boolean(orderId),
     refetchInterval: (query) => {
-      const orderData = query.state.data as ConfirmationOrder | undefined;
+      const orderData = query.state.data;
       if (!orderData) return POLL_INTERVAL_MS;
 
       const isCashPayment = orderData.paymentMethod === PaymentMethod.CASH;
@@ -124,6 +124,42 @@ export function OrderConfirmationPage() {
     return value.replace(/_/g, ' ');
   }
 
+  if (error) {
+    return (
+      <VStack gap={6} maxW="3xl" mx="auto" w="100%" py={{ base: 10, md: 20 }}>
+        <Box
+          p={{ base: 8, md: 12 }}
+          borderRadius="3xl"
+          borderWidth="1px"
+          borderColor="blackAlpha.100"
+          bg="white"
+          boxShadow="sm"
+          w="100%"
+        >
+          <VStack gap={5}>
+            <Box color="red.500">
+              <AlertTriangle size={48} />
+            </Box>
+            <Text fontSize="xl" fontWeight="semibold">
+              Could not load your order
+            </Text>
+            <Text color="fg.muted" textAlign="center" maxW="md">
+              Something went wrong while loading your order details. Your order was placed — you can track it below.
+            </Text>
+            <HStack gap={3} pt={2}>
+              <Button asChild colorPalette="green" size="lg">
+                <RouterLink to={trackerPath}>Track my order</RouterLink>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <RouterLink to="/">Back to shop</RouterLink>
+              </Button>
+            </HStack>
+          </VStack>
+        </Box>
+      </VStack>
+    );
+  }
+
   if (confirmationState === 'verifying') {
     return (
       <VStack gap={6} maxW="3xl" mx="auto" w="100%" py={{ base: 10, md: 20 }}>
@@ -139,10 +175,10 @@ export function OrderConfirmationPage() {
           <VStack gap={5}>
             <Spinner size="xl" color="green.500" />
             <Text fontSize="xl" fontWeight="semibold">
-              Verifying your payment...
+              Loading your order...
             </Text>
             <Text color="fg.muted" textAlign="center">
-              Please wait while we confirm your payment with our provider.
+              Please wait while we confirm your order details.
             </Text>
           </VStack>
         </Box>

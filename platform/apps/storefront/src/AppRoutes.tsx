@@ -3,6 +3,7 @@ import { AuthGate } from './components/AuthGate';
 import { HomePage } from './pages/HomePage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
+import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 import { OrderStatusPage } from './pages/OrderStatusPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ProfilePage } from './pages/ProfilePage';
@@ -37,6 +38,14 @@ export function AppRoutes() {
         element={
           <AuthGate>
             <OrderStatusPage />
+          </AuthGate>
+        }
+      />
+      <Route
+        path="/order/:orderId/confirmation"
+        element={
+          <AuthGate>
+            <OrderConfirmationPage />
           </AuthGate>
         }
       />

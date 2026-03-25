@@ -10,7 +10,7 @@ function buildRedirectUrl(tenantDomains: string[], orderId: string): string {
   const storefrontDomain = tenantDomains.find((d) => !d.startsWith('dashboard.'));
   if (!storefrontDomain) throw new Error('No storefront domain configured for tenant');
   const protocol = storefrontDomain.startsWith('localhost') ? 'http' : 'https';
-  return `${protocol}://${storefrontDomain}/order/${orderId}/status`;
+  return `${protocol}://${storefrontDomain}/order/${orderId}/confirmation`;
 }
 
 export async function processPayment(

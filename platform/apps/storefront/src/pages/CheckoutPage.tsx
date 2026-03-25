@@ -70,7 +70,7 @@ export function CheckoutPage() {
         return;
       }
 
-      navigate(`/order/${orderId}/status`);
+      navigate(`/order/${orderId}/confirmation`, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Checkout failed');
     } finally {
