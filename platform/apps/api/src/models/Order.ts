@@ -52,5 +52,6 @@ const orderSchema = new Schema<OrderDocument>(
 
 orderSchema.index({ tenantId: 1, establishmentId: 1 });
 orderSchema.index({ tenantId: 1, userId: 1 });
+orderSchema.index({ tenantId: 1, establishmentId: 1, orderDate: 1 });
 
 export const OrderModel = model<OrderDocument>('Order', orderSchema);
