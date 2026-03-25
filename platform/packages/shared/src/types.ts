@@ -27,6 +27,12 @@ export interface IBillingInformation {
   name?: string;
   email?: string;
   phone?: string;
+  vatNumber?: string;
+}
+
+export interface ICustomerProfile {
+  billingInformation: IBillingInformation;
+  deliveryAddress: IDeliveryAddress;
 }
 
 export interface IOrderLine {
