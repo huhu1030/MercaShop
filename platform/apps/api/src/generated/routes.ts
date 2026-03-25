@@ -22,6 +22,8 @@ import { OrderController } from './../controllers/OrderController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { EstablishmentController } from './../controllers/EstablishmentController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { CustomerProfileController } from './../controllers/CustomerProfileController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AnalyticsController } from './../controllers/AnalyticsController';
 import { expressAuthentication } from './../auth/authentication';
 // @ts-ignore - no great way to install types from subpackage
@@ -185,6 +187,48 @@ const models: TsoaRoute.Models = {
             "category": {"dataType":"string","required":true},
             "status": {"dataType":"string","required":true},
             "logo": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IBillingInformation": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string"},
+            "email": {"dataType":"string"},
+            "phone": {"dataType":"string"},
+            "vatNumber": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IDeliveryAddress": {
+        "dataType": "refObject",
+        "properties": {
+            "street": {"dataType":"string"},
+            "number": {"dataType":"string"},
+            "zipCode": {"dataType":"string"},
+            "city": {"dataType":"string"},
+            "municipality": {"dataType":"string"},
+            "comment": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ICustomerProfile": {
+        "dataType": "refObject",
+        "properties": {
+            "billingInformation": {"ref":"IBillingInformation","required":true},
+            "deliveryAddress": {"ref":"IDeliveryAddress","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateCustomerProfileBody": {
+        "dataType": "refObject",
+        "properties": {
+            "billingInformation": {"dataType":"nestedObjectLiteral","nestedProperties":{"vatNumber":{"dataType":"string"},"phone":{"dataType":"string"},"email":{"dataType":"string"},"name":{"dataType":"string"}}},
+            "deliveryAddress": {"dataType":"nestedObjectLiteral","nestedProperties":{"comment":{"dataType":"string"},"municipality":{"dataType":"string"},"city":{"dataType":"string"},"zipCode":{"dataType":"string"},"number":{"dataType":"string"},"street":{"dataType":"string"}}},
         },
         "additionalProperties": false,
     },
@@ -1130,6 +1174,69 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'updateStatus',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsCustomerProfileController_getMyProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+        };
+        app.get('/api/customer-profile/me',
+            authenticateMiddleware([{"BearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerProfileController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerProfileController.prototype.getMyProfile)),
+
+            async function CustomerProfileController_getMyProfile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsCustomerProfileController_getMyProfile, request, response });
+
+                const controller = new CustomerProfileController();
+
+              await templateService.apiHandler({
+                methodName: 'getMyProfile',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsCustomerProfileController_updateMyProfile: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateCustomerProfileBody"},
+        };
+        app.put('/api/customer-profile/me',
+            authenticateMiddleware([{"BearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerProfileController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerProfileController.prototype.updateMyProfile)),
+
+            async function CustomerProfileController_updateMyProfile(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsCustomerProfileController_updateMyProfile, request, response });
+
+                const controller = new CustomerProfileController();
+
+              await templateService.apiHandler({
+                methodName: 'updateMyProfile',
                 controller,
                 response,
                 next,
