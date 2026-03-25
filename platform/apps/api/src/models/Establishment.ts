@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import { EstablishmentStatus } from '@mercashop/shared';
 
 export interface EstablishmentDocument extends Document {
   tenantId: string;
@@ -22,7 +23,7 @@ export interface EstablishmentDocument extends Document {
   mode?: string;
   slug: string;
   paymentMethods: string[];
-  status: string;
+  status: EstablishmentStatus;
   openingHours?: string;
   location: { latitude: number; longitude: number };
 }
@@ -63,7 +64,7 @@ const establishmentSchema = new Schema<EstablishmentDocument>(
     mode: { type: String, default: '' },
     slug: { type: String, required: true },
     paymentMethods: { type: [String], default: ['CARD', 'CASH'] },
-    status: { type: String, default: 'OPEN' },
+    status: { type: String, enum: Object.values(EstablishmentStatus), default: EstablishmentStatus.OPEN },
     openingHours: { type: String, default: '' },
     location: { type: locationSchema, required: true },
   },
