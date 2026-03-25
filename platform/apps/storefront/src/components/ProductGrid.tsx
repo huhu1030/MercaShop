@@ -1,4 +1,4 @@
-import { SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import { Box, Text, VStack } from '@chakra-ui/react';
 import type { IPublicProduct } from '@mercashop/shared';
 import { ProductCard } from './ProductCard';
 
@@ -25,10 +25,17 @@ export function ProductGrid({
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }} gap={6}>
+    <Box
+      display="grid"
+      gridTemplateColumns={{
+        base: '1fr',
+        sm: 'repeat(auto-fill, minmax(200px, 1fr))',
+      }}
+      gap={6}
+    >
       {products.map((product) => (
         <ProductCard key={product._id} product={product} />
       ))}
-    </SimpleGrid>
+    </Box>
   );
 }
