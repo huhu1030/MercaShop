@@ -29,7 +29,7 @@ export class PaymentController extends Controller {
       );
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : '';
-      if (message === 'Order not found') {
+      if (message === 'Order not found' || message === 'Establishment not found') {
         this.setStatus(404);
       } else if (message === 'Establishment is currently closed') {
         this.setStatus(400);

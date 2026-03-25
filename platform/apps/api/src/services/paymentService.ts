@@ -33,7 +33,10 @@ export async function processPayment(
     _id: order.establishmentId,
     tenantId,
   });
-  if (!establishment || establishment.status !== EstablishmentStatus.OPEN) {
+  if (!establishment) {
+    throw new Error('Establishment not found');
+  }
+  if (establishment.status !== EstablishmentStatus.OPEN) {
     throw new Error('Establishment is currently closed');
   }
 
