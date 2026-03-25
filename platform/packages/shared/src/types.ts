@@ -85,3 +85,27 @@ export interface IPublicProduct {
   photo?: string;
   category: string;
 }
+
+export interface IMonthlyMetric {
+  month: number;
+  orderCount: number;
+  revenue: number;
+}
+
+export interface IProductSales {
+  productName: string;
+  quantitySold: number;
+}
+
+export interface IAnalyticsSummary {
+  totalOrders: number;
+  totalRevenue: number;
+  avgOrderValue: number;
+}
+
+export interface IAnalyticsResponse {
+  summary: IAnalyticsSummary;
+  monthly: IMonthlyMetric[];
+  bestSellers: IProductSales[];
+  leastSellers: IProductSales[];
+}
