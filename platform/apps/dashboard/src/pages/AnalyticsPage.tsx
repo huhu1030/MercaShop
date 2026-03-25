@@ -1,16 +1,7 @@
 import { useState } from 'react';
 import { Box, Card, HStack, Text, VStack } from '@chakra-ui/react';
 import { Chart, useChart } from '@chakra-ui/charts';
-import {
-  Bar,
-  CartesianGrid,
-  ComposedChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { Bar, CartesianGrid, ComposedChart, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { getAnalyticsApi } from '@mercashop/shared/api-client';
 import { IAnalyticsResponse } from '@mercashop/shared';
@@ -63,15 +54,13 @@ export function AnalyticsPage() {
 
   return (
     <VStack gap="1.25rem" align="stretch">
-      <PageHeader
-        breadcrumbs={[{ label: 'Analytics' }]}
-        title="Analytics"
-        description={`Year-to-date overview for ${year}.`}
-      />
+      <PageHeader breadcrumbs={[{ label: 'Analytics' }]} title="Analytics" description={`Year-to-date overview for ${year}.`} />
 
       {/* Limit selector */}
       <HStack>
-        <Text fontSize="sm" color={Colors.text.secondary}>Show top/bottom:</Text>
+        <Text fontSize="sm" color={Colors.text.secondary}>
+          Show top/bottom:
+        </Text>
         {LIMIT_OPTIONS.map((opt) => (
           <Box
             key={opt}
@@ -95,7 +84,9 @@ export function AnalyticsPage() {
       <HStack gap="1rem">
         <Card.Root flex="1">
           <Card.Body>
-            <Text fontSize="xs" color={Colors.text.muted}>Total Orders</Text>
+            <Text fontSize="xs" color={Colors.text.muted}>
+              Total Orders
+            </Text>
             <Text fontSize="2xl" fontWeight="bold">
               {isLoading ? '—' : (analytics?.summary.totalOrders ?? 0)}
             </Text>
@@ -103,7 +94,9 @@ export function AnalyticsPage() {
         </Card.Root>
         <Card.Root flex="1">
           <Card.Body>
-            <Text fontSize="xs" color={Colors.text.muted}>Total Revenue</Text>
+            <Text fontSize="xs" color={Colors.text.muted}>
+              Total Revenue
+            </Text>
             <Text fontSize="2xl" fontWeight="bold">
               {isLoading ? '—' : formatCurrency(analytics?.summary.totalRevenue ?? 0)}
             </Text>
@@ -111,7 +104,9 @@ export function AnalyticsPage() {
         </Card.Root>
         <Card.Root flex="1">
           <Card.Body>
-            <Text fontSize="xs" color={Colors.text.muted}>Avg Order Value</Text>
+            <Text fontSize="xs" color={Colors.text.muted}>
+              Avg Order Value
+            </Text>
             <Text fontSize="2xl" fontWeight="bold">
               {isLoading ? '—' : formatCurrency(analytics?.summary.avgOrderValue ?? 0)}
             </Text>
@@ -122,9 +117,11 @@ export function AnalyticsPage() {
       {/* Monthly Chart */}
       <Card.Root>
         <Card.Body>
-          <Text fontSize="sm" fontWeight="semibold" mb="4">Monthly Orders &amp; Revenue</Text>
+          <Text fontSize="sm" fontWeight="semibold" mb="4">
+            Monthly Orders &amp; Revenue
+          </Text>
           <Chart.Root chart={chart}>
-            <ComposedChart data={chart.data}>
+            <ComposedChart data={chart.data} responsive>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="label" />
               <YAxis yAxisId="left" />
@@ -132,7 +129,7 @@ export function AnalyticsPage() {
               <Tooltip />
               <Legend />
               <Bar yAxisId="left" dataKey="orderCount" name="Orders" fill={chart.color(Colors.brand.primarySolid)} radius={[4, 4, 0, 0]} />
-              <Line yAxisId="right" dataKey="revenue" name="Revenue (€)" stroke={chart.color('green.solid')} strokeWidth={2} dot={{ r: 4 }} />
+              <Bar yAxisId="right" dataKey="revenue" name="Revenue (€)" fill={chart.color('green.solid')} />
             </ComposedChart>
           </Chart.Root>
         </Card.Body>
@@ -142,7 +139,9 @@ export function AnalyticsPage() {
       <HStack gap="1rem" align="start">
         <Card.Root flex="1">
           <Card.Body>
-            <Text fontSize="sm" fontWeight="semibold" mb="3">Best Sellers</Text>
+            <Text fontSize="sm" fontWeight="semibold" mb="3">
+              Best Sellers
+            </Text>
             {isLoading ? (
               <Text color={Colors.text.muted}>Loading...</Text>
             ) : !analytics?.bestSellers?.length ? (
@@ -152,10 +151,14 @@ export function AnalyticsPage() {
                 {analytics.bestSellers.map((item, i) => (
                   <HStack key={item.productName} justify="space-between">
                     <Text fontSize="sm">
-                      <Text as="span" fontWeight="bold" color={Colors.text.muted}>{i + 1}.</Text>{' '}
+                      <Text as="span" fontWeight="bold" color={Colors.text.muted}>
+                        {i + 1}.
+                      </Text>{' '}
                       {item.productName}
                     </Text>
-                    <Text fontSize="sm" fontWeight="semibold">{item.quantitySold} sold</Text>
+                    <Text fontSize="sm" fontWeight="semibold">
+                      {item.quantitySold} sold
+                    </Text>
                   </HStack>
                 ))}
               </VStack>
@@ -164,7 +167,9 @@ export function AnalyticsPage() {
         </Card.Root>
         <Card.Root flex="1">
           <Card.Body>
-            <Text fontSize="sm" fontWeight="semibold" mb="3">Least Sellers</Text>
+            <Text fontSize="sm" fontWeight="semibold" mb="3">
+              Least Sellers
+            </Text>
             {isLoading ? (
               <Text color={Colors.text.muted}>Loading...</Text>
             ) : !analytics?.leastSellers?.length ? (
@@ -174,10 +179,14 @@ export function AnalyticsPage() {
                 {analytics.leastSellers.map((item, i) => (
                   <HStack key={item.productName} justify="space-between">
                     <Text fontSize="sm">
-                      <Text as="span" fontWeight="bold" color={Colors.text.muted}>{i + 1}.</Text>{' '}
+                      <Text as="span" fontWeight="bold" color={Colors.text.muted}>
+                        {i + 1}.
+                      </Text>{' '}
                       {item.productName}
                     </Text>
-                    <Text fontSize="sm" fontWeight="semibold">{item.quantitySold} sold</Text>
+                    <Text fontSize="sm" fontWeight="semibold">
+                      {item.quantitySold} sold
+                    </Text>
                   </HStack>
                 ))}
               </VStack>
