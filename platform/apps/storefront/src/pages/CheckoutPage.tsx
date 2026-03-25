@@ -165,9 +165,9 @@ export function CheckoutPage() {
         />
 
         <VStack align="stretch" gap={5} position="relative">
-          <Button variant="ghost" alignSelf="start" onClick={() => navigate('/cart')} px={0} _hover={{ bg: 'transparent', color: 'green.700' }}>
+          <Button variant="ghost" alignSelf="start" onClick={() => navigate(-1)} px={0} _hover={{ bg: 'transparent', color: 'green.700' }}>
             <ArrowLeft size={16} />
-            Back to cart
+            Back
           </Button>
 
           <VStack align="start" gap={2}>

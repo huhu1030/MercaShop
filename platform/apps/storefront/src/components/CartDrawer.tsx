@@ -1,4 +1,4 @@
-import { Button, Drawer, HStack, Text, VStack } from '@chakra-ui/react';
+import { Button, CloseButton, Drawer, HStack, Text, VStack } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { OrderSummary } from './OrderSummary';
@@ -14,7 +14,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <Drawer.Root
-      size={'lg'}
+      size={{ base: 'full', md: 'lg' }}
       open={isOpen}
       placement="end"
       onOpenChange={(details) => {
@@ -32,7 +32,9 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <Drawer.Title>Cart</Drawer.Title>
                 <Text color="fg.muted">Review your order before checkout.</Text>
               </VStack>
-              <Drawer.CloseTrigger />
+              <Drawer.CloseTrigger asChild>
+                <CloseButton size="lg" />
+              </Drawer.CloseTrigger>
             </HStack>
           </Drawer.Header>
 

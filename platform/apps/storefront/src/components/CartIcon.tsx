@@ -1,16 +1,13 @@
-import { Box, Circle, IconButton, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Circle, IconButton } from '@chakra-ui/react';
 import { ShoppingCart } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 
 interface CartIconProps {
-  onDesktopOpen?: () => void;
+  onOpen: () => void;
 }
 
-export function CartIcon({ onDesktopOpen }: CartIconProps) {
+export function CartIcon({ onOpen }: CartIconProps) {
   const { itemCount } = useCart();
-  const navigate = useNavigate();
-  const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
 
   return (
     <Box position="relative">
@@ -19,19 +16,7 @@ export function CartIcon({ onDesktopOpen }: CartIconProps) {
         aria-label="Open cart"
         variant="ghost"
         color="currentColor"
-        onClick={() => {
-          if (isMobile) {
-            navigate('/cart');
-            return;
-          }
-
-          if (onDesktopOpen) {
-            onDesktopOpen();
-            return;
-          }
-
-          navigate('/cart');
-        }}
+        onClick={onOpen}
       >
         <ShoppingCart size={20} />
       </IconButton>

@@ -42,7 +42,7 @@ export function StorefrontShell({ branding, children }: StorefrontShellProps) {
         </Box>
         <Spacer />
         <HStack gap={1} align="center">
-          <CartIcon onDesktopOpen={isHomePage ? undefined : onCartOpen} />
+          <CartIcon onOpen={onCartOpen} />
         </HStack>
       </Flex>
       {isClosed && (
