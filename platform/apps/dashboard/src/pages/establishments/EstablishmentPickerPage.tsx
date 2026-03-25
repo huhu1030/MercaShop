@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Box, Card, Heading, SimpleGrid, Text, VStack, Badge } from '@chakra-ui/react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Box, Card, Heading, SimpleGrid, Text, VStack, HStack, Switch } from '@chakra-ui/react';
 import { Store } from 'lucide-react';
 import { getEstablishmentApi } from '@mercashop/shared/api-client';
+import { EstablishmentStatus } from '@mercashop/shared';
 import { LoadingScreen } from '../../components/ui/LoadingScreen';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Colors } from '../../constants/colors';
@@ -13,6 +14,27 @@ export function EstablishmentPickerPage() {
     queryKey: ['establishments'],
     queryFn: () => getEstablishmentApi().getEstablishments(),
   });
+
+  const queryClient = useQueryClient();
+
+  const statusMutation = useMutation({
+    mutationFn: ({ establishmentId, status }: { establishmentId: string; status: string }) =>
+      getEstablishmentApi().updateStatus({ establishmentId, status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['establishments'] });
+    },
+  });
+
+  const handleToggleStatus = (establishmentId: string, currentStatus: string) => {
+    const newStatus = currentStatus === EstablishmentStatus.OPEN ? EstablishmentStatus.CLOSED : EstablishmentStatus.OPEN;
+
+    if (newStatus === EstablishmentStatus.CLOSED) {
+      const confirmed = window.confirm("Are you sure? Customers won't be able to place orders while closed.");
+      if (!confirmed) return;
+    }
+
+    statusMutation.mutate({ establishmentId, status: newStatus });
+  };
 
   if (isLoading) return <LoadingScreen />;
 
@@ -45,13 +67,30 @@ export function EstablishmentPickerPage() {
               >
                 <Card.Body>
                   <VStack align="start" gap="0.5rem">
-                    <Heading size="md">{establishment.name}</Heading>
+                    <HStack justify="space-between" w="full">
+                      <Heading size="md">{establishment.name}</Heading>
+                      <HStack gap={2} onClick={(e) => e.stopPropagation()}>
+                        <Text fontSize="xs" color={Colors.text.muted}>
+                          {establishment.status === EstablishmentStatus.OPEN ? 'Open' : 'Closed'}
+                        </Text>
+                        <Switch.Root
+                          checked={establishment.status === EstablishmentStatus.OPEN}
+                          onCheckedChange={() => handleToggleStatus(establishment._id, establishment.status)}
+                          colorPalette={establishment.status === EstablishmentStatus.OPEN ? 'green' : 'gray'}
+                          disabled={statusMutation.isPending}
+                        >
+                          <Switch.HiddenInput />
+                          <Switch.Control>
+                            <Switch.Thumb />
+                          </Switch.Control>
+                        </Switch.Root>
+                      </HStack>
+                    </HStack>
                     {establishment.category && (
                       <Text fontSize="sm" color={Colors.text.muted}>
                         {establishment.category}
                       </Text>
                     )}
-                    <Badge colorPalette={establishment.status === 'OPEN' ? 'green' : 'gray'}>{establishment.status}</Badge>
                   </VStack>
                 </Card.Body>
               </Card.Root>
