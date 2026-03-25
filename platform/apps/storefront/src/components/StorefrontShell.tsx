@@ -5,7 +5,8 @@ import type { ITenantBranding } from '@mercashop/shared';
 import { useLocation } from 'react-router-dom';
 import { CartDrawer } from './CartDrawer';
 import { CartIcon } from './CartIcon';
-import { DesktopNav, type NavVariant } from './DesktopNav';
+import type { NavVariant } from './DesktopNav';
+import { DesktopNav } from './DesktopNav';
 import { HeaderMenuDrawer } from './HeaderMenuDrawer';
 
 const NAV_VARIANT: NavVariant = 'pill';
