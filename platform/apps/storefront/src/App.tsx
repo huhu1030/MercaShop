@@ -5,6 +5,7 @@ import { LoadingScreen } from './components/LoadingScreen';
 import { StoreNotFound } from './components/StoreNotFound';
 import { AuthProvider } from './context/AuthContext';
 import { AppRoutes } from './AppRoutes';
+import { Toaster } from './components/ui/toaster.tsx';
 
 export default function App() {
   const { branding, loading, error } = useBranding();
@@ -18,6 +19,7 @@ export default function App() {
         <StorefrontShell branding={branding}>
           <AppRoutes />
         </StorefrontShell>
+        <Toaster />
       </BrowserRouter>
     </AuthProvider>
   );

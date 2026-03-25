@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { AuthGate } from './components/AuthGate';
 import { HomePage } from './pages/HomePage';
 import { CheckoutPage } from './pages/CheckoutPage';

@@ -6,7 +6,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
-import { toaster } from './toaster';
+import { toaster } from './ui/toaster.tsx';
 
 export interface CheckoutFormData {
   deliveryMethod: DeliveryMethod;

@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ChakraProvider, defaultSystem, Toaster, Toast } from '@chakra-ui/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import { initApiClient } from '@mercashop/shared/api-client';
 import { getFirebaseAuth } from './lib/firebase';
 import App from './App';
-import { toaster } from './components/toaster';
 
 const auth = getFirebaseAuth();
 
@@ -36,16 +35,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={defaultSystem}>
         <App />
-        <Toaster toaster={toaster}>
-          {(toast) => (
-            <Toast.Root>
-              <Toast.Indicator />
-              <Toast.Title>{toast.title}</Toast.Title>
-              {toast.description && <Toast.Description>{toast.description}</Toast.Description>}
-              <Toast.CloseTrigger />
-            </Toast.Root>
-          )}
-        </Toaster>
       </ChakraProvider>
     </QueryClientProvider>
   </React.StrictMode>,
