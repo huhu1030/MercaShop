@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 
 interface CartIconProps {
-  onDesktopOpen: () => void;
+  onDesktopOpen?: () => void;
 }
 
 export function CartIcon({ onDesktopOpen }: CartIconProps) {
@@ -25,7 +25,12 @@ export function CartIcon({ onDesktopOpen }: CartIconProps) {
             return;
           }
 
-          onDesktopOpen();
+          if (onDesktopOpen) {
+            onDesktopOpen();
+            return;
+          }
+
+          navigate('/cart');
         }}
       >
         <ShoppingCart size={20} />
