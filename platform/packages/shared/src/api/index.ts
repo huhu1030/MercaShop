@@ -4,6 +4,7 @@ export * from '../apis/api';
 // Centralized API client factory
 export { initApiClient, getApiAxiosInstance, createApiConfiguration } from './api-client-factory';
 export {
+  getAnalyticsApi,
   getEstablishmentApi,
   getOrderApi,
   getPaymentApi,

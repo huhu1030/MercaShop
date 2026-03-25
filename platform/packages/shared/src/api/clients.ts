@@ -1,8 +1,9 @@
 import type { AxiosInstance } from 'axios';
 import type { Configuration } from '../apis/api/configuration';
-import { EstablishmentApi, OrderApi, PaymentApi, ProductApi, PublicApi, TenantApi, UploadApi, UserApi, WebhookApi } from '../apis/api/api';
+import { AnalyticsApi, EstablishmentApi, OrderApi, PaymentApi, ProductApi, PublicApi, TenantApi, UploadApi, UserApi, WebhookApi } from '../apis/api/api';
 import { createApiConfiguration, getApiAxiosInstance } from './api-client-factory';
 
+let analyticsApi: AnalyticsApi | null = null;
 let establishmentApi: EstablishmentApi | null = null;
 let orderApi: OrderApi | null = null;
 let paymentApi: PaymentApi | null = null;
@@ -19,6 +20,11 @@ function createInstance<T>(ApiClass: ApiConstructor<T>): T {
   const config = createApiConfiguration();
   const axiosInstance = getApiAxiosInstance();
   return new ApiClass(config, undefined, axiosInstance);
+}
+
+export function getAnalyticsApi(): AnalyticsApi {
+  if (!analyticsApi) analyticsApi = createInstance(AnalyticsApi);
+  return analyticsApi;
 }
 
 export function getEstablishmentApi(): EstablishmentApi {
@@ -67,6 +73,7 @@ export function getWebhookApi(): WebhookApi {
 }
 
 export function resetApiClients(): void {
+  analyticsApi = null;
   establishmentApi = null;
   orderApi = null;
   paymentApi = null;
