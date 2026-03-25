@@ -27,9 +27,12 @@ export class PaymentController extends Controller {
         body.paymentMethod,
         tenantDomains,
       );
-    } catch (error: any) {
-      if (error.message === 'Order not found') {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '';
+      if (message === 'Order not found') {
         this.setStatus(404);
+      } else if (message === 'Establishment is currently closed') {
+        this.setStatus(400);
       }
       throw error;
     }

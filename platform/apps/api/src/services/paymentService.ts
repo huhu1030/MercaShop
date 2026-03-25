@@ -5,6 +5,8 @@ import * as notificationService from './notificationService';
 import { getCurrentDateTimeEuro } from '../utils/date';
 import type { Order } from '../types/order';
 import { PaymentMethod } from '../types/order';
+import { EstablishmentModel } from '../models';
+import { EstablishmentStatus } from '@mercashop/shared';
 
 function buildRedirectUrl(tenantDomains: string[], orderId: string): string {
   const storefrontDomain = tenantDomains.find((d) => !d.startsWith('dashboard.'));
@@ -24,6 +26,15 @@ export async function processPayment(
   const order = await orderService.findOrderById(orderId, tenantId);
   if (!order) {
     throw new Error('Order not found');
+  }
+
+  // Guard: verify establishment is still open
+  const establishment = await EstablishmentModel.findOne({
+    _id: order.establishmentId,
+    tenantId,
+  });
+  if (!establishment || establishment.status !== EstablishmentStatus.OPEN) {
+    throw new Error('Establishment is currently closed');
   }
 
   const user = await userService.findUserByFirebaseUid(tenantId, firebaseUid);
