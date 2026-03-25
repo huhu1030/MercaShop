@@ -188,6 +188,15 @@ export function OrderStatusPage() {
               {order.billingInformation.phone && <Text color="fg.muted">{order.billingInformation.phone}</Text>}
             </VStack>
           )}
+
+          {order.remark && (
+            <VStack align="start" gap={1}>
+              <Text fontWeight="semibold">Remark</Text>
+              <Text color="fg.muted" fontSize="sm">
+                {order.remark}
+              </Text>
+            </VStack>
+          )}
         </VStack>
       </Box>
     </VStack>

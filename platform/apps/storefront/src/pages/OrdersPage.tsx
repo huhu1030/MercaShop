@@ -76,6 +76,7 @@ interface Order {
   paymentMethod?: string;
   isPaid?: boolean;
   createdAt?: string;
+  remark?: string;
 }
 
 function OrderCard({ order }: { order: Order }) {
@@ -186,6 +187,18 @@ function OrderCard({ order }: { order: Order }) {
                           </Badge>
                         </HStack>
                       </HStack>
+                    </>
+                  )}
+
+                  {order.remark && (
+                    <>
+                      <Separator />
+                      <VStack align="start" gap={1}>
+                        <Text fontWeight="semibold">Remark</Text>
+                        <Text color="fg.muted" fontSize="sm">
+                          {order.remark}
+                        </Text>
+                      </VStack>
                     </>
                   )}
                 </VStack>

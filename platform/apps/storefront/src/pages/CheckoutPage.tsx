@@ -38,6 +38,7 @@ export function CheckoutPage() {
         deliveryMethod: formData.deliveryMethod,
         deliveryAddress: formData.deliveryMethod === DeliveryMethod.DELIVERY ? formData.deliveryAddress : undefined,
         billingInformation: formData.billingInformation,
+        remark: formData.remark?.trim() || undefined,
       });
 
       const orderId = orderResponse.data.order?._id;

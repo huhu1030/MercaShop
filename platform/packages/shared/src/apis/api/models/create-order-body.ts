@@ -68,6 +68,12 @@ export interface CreateOrderBody {
      * @memberof CreateOrderBody
      */
     'deliveryMethod'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateOrderBody
+     */
+    'remark'?: string;
 }
 
 

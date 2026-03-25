@@ -172,6 +172,7 @@ const models: TsoaRoute.Models = {
             "billingInformation": {"ref":"Record_string.unknown_"},
             "paymentMethod": {"ref":"PaymentMethod","required":true},
             "deliveryMethod": {"dataType":"string"},
+            "remark": {"dataType":"string","validators":{"maxLength":{"value":200}}},
         },
         "additionalProperties": false,
     },

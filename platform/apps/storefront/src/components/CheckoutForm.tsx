@@ -1,6 +1,6 @@
 import { Box, Button, Card, Field, Grid, GridItem, HStack, Input, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
 import { DeliveryMethod, PaymentMethod, type IBillingInformation, type IDeliveryAddress, type IPublicEstablishment } from '@mercashop/shared';
-import { CreditCard, MapPin, UserRound } from 'lucide-react';
+import { CreditCard, MapPin, MessageSquareText, UserRound } from 'lucide-react';
 import { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
@@ -11,6 +11,7 @@ export interface CheckoutFormData {
   deliveryAddress: IDeliveryAddress;
   billingInformation: IBillingInformation;
   paymentMethod: PaymentMethod;
+  remark: string;
 }
 
 interface CheckoutFormProps {
@@ -69,6 +70,7 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting }: Checkout
         phone: '',
       },
       paymentMethod: establishment.paymentMethods[0] ?? PaymentMethod.CARD,
+      remark: '',
     },
   });
 
@@ -204,6 +206,24 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting }: Checkout
               </Field.Root>
             </GridItem>
           </Grid>
+        </SectionCard>
+
+        <SectionCard
+          icon={<MessageSquareText size={18} />}
+          title="Order remark"
+          description="Add a note for the establishment, e.g. special requests or delivery instructions."
+        >
+          <Field.Root>
+            <Field.Label>Remark (optional)</Field.Label>
+            <Textarea
+              placeholder="Any special requests?"
+              maxLength={200}
+              {...register('remark')}
+            />
+            <Text fontSize="xs" color="fg.muted" textAlign="right">
+              {watch('remark')?.length ?? 0}/200
+            </Text>
+          </Field.Root>
         </SectionCard>
 
         <SectionCard icon={<CreditCard size={18} />} title="Payment" description="Select the payment method supported by this establishment.">

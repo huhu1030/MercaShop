@@ -81,6 +81,7 @@ interface Order {
   paymentMethod?: string;
   isPaid?: boolean;
   createdAt: string;
+  remark?: string;
 }
 
 function OrderCard({ order }: { order: Order }) {
@@ -247,6 +248,18 @@ function OrderCard({ order }: { order: Order }) {
                           </Badge>
                         </HStack>
                       </HStack>
+                    </>
+                  )}
+
+                  {order.remark && (
+                    <>
+                      <Separator />
+                      <VStack align="start" gap="0.25rem">
+                        <Text fontWeight="semibold">Customer remark</Text>
+                        <Text color={Colors.text.muted} fontSize="sm">
+                          {order.remark}
+                        </Text>
+                      </VStack>
                     </>
                   )}
                 </VStack>
