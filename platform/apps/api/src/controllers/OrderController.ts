@@ -23,13 +23,23 @@ export class OrderController extends Controller {
   @Post('')
   @Security('BearerAuth')
   public async createOrder(@Request() req: ExpressRequest, @Body() body: CreateOrderBody): Promise<{ order: any }> {
-    const order = await orderService.createOrder({
-      tenantId: req.tenantId!,
-      userId: req.firebaseUser!.uid,
-      ...body,
-    });
-    this.setStatus(201);
-    return { order };
+    try {
+      const order = await orderService.createOrder({
+        tenantId: req.tenantId!,
+        userId: req.firebaseUser!.uid,
+        ...body,
+      });
+      this.setStatus(201);
+      return { order };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Order creation failed';
+      if (message === 'Establishment not found') {
+        this.setStatus(404);
+      } else if (message === 'Establishment is currently closed') {
+        this.setStatus(400);
+      }
+      throw error;
+    }
   }
 
   @Get('{id}')

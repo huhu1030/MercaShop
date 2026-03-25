@@ -5,6 +5,7 @@ import SocketServer from './socketServer';
 import type { Order, OrderLine } from '../types/order';
 import type { PaymentMethod } from '../types/order';
 import type { OrderDocument } from '../models/Order';
+import { EstablishmentStatus } from '@mercashop/shared';
 
 interface CreateOrderData {
   tenantId: string;
@@ -20,6 +21,19 @@ interface CreateOrderData {
 }
 
 export async function createOrder(data: CreateOrderData): Promise<OrderDocument> {
+  const establishment = await EstablishmentModel.findOne({
+    _id: data.establishmentId,
+    tenantId: data.tenantId,
+  });
+
+  if (!establishment) {
+    throw new Error('Establishment not found');
+  }
+
+  if (establishment.status !== EstablishmentStatus.OPEN) {
+    throw new Error('Establishment is currently closed');
+  }
+
   const trimmedRemark = data.remark?.trim() || undefined;
   return OrderModel.create({ ...data, remark: trimmedRemark });
 }
