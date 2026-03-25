@@ -13,7 +13,7 @@ export function CartSidebar() {
   return (
     <Box
       flexShrink={0}
-      flexBasis={expanded ? '300px' : '48px'}
+      flexBasis={expanded ? '400px' : '48px'}
       transition="flex-basis 0.2s ease"
       overflow="hidden"
       borderRadius="2xl"
@@ -35,12 +35,7 @@ export function CartSidebar() {
                 {itemCount}
               </Circle>
             </Flex>
-            <IconButton
-              aria-label="Collapse cart"
-              variant="ghost"
-              size="sm"
-              onClick={() => setExpanded(false)}
-            >
+            <IconButton aria-label="Collapse cart" variant="ghost" size="sm" onClick={() => setExpanded(false)}>
               <ChevronRight />
             </IconButton>
           </Flex>
@@ -80,39 +75,20 @@ export function CartSidebar() {
               <Text fontWeight="semibold">Total</Text>
               <Text fontWeight="bold">€{total.toFixed(2)}</Text>
             </Flex>
-            <Button
-              colorPalette="green"
-              disabled={items.length === 0}
-              onClick={() => navigate('/checkout')}
-              width="full"
-            >
+            <Button colorPalette="green" disabled={items.length === 0} onClick={() => navigate('/checkout')} width="full">
               Checkout
             </Button>
           </VStack>
         </VStack>
       ) : (
         <VStack align="center" gap={3} py={3} h="full">
-          <IconButton
-            aria-label="Expand cart"
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpanded(true)}
-          >
+          <IconButton aria-label="Expand cart" variant="ghost" size="sm" onClick={() => setExpanded(true)}>
             <ChevronLeft />
           </IconButton>
           <Box position="relative">
             <ShoppingCart size={20} />
             {itemCount > 0 && (
-              <Circle
-                size="16px"
-                bg="green.500"
-                color="white"
-                fontSize="10px"
-                fontWeight="bold"
-                position="absolute"
-                top="-6px"
-                right="-8px"
-              >
+              <Circle size="16px" bg="green.500" color="white" fontSize="10px" fontWeight="bold" position="absolute" top="-6px" right="-8px">
                 {itemCount}
               </Circle>
             )}
