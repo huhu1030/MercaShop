@@ -1,5 +1,6 @@
 import { Box, Button, Card, Field, Grid, GridItem, HStack, Input, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
-import { DeliveryMethod, PaymentMethod, type IBillingInformation, type IDeliveryAddress, type IPublicEstablishment } from '@mercashop/shared';
+import { DeliveryMethod, PaymentMethod, type IBillingInformation, type ICustomerProfile, type IDeliveryAddress, type IPublicEstablishment } from '@mercashop/shared';
+import { getCustomerProfileApi } from '@mercashop/shared/api-client';
 import { CreditCard, MapPin, MessageSquareText, UserRound } from 'lucide-react';
 import { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,6 +19,7 @@ interface CheckoutFormProps {
   establishment: IPublicEstablishment;
   onSubmit: (data: CheckoutFormData) => void | Promise<void>;
   isSubmitting: boolean;
+  profile?: ICustomerProfile;
 }
 
 function SectionCard({ icon, title, description, children }: { icon: ReactNode; title: string; description: string; children: ReactNode }) {
@@ -45,29 +47,31 @@ function SectionCard({ icon, title, description, children }: { icon: ReactNode; 
   );
 }
 
-export function CheckoutForm({ establishment, onSubmit, isSubmitting }: CheckoutFormProps) {
+export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }: CheckoutFormProps) {
   const { user } = useAuth();
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<CheckoutFormData>({
     defaultValues: {
       deliveryMethod: DeliveryMethod.PICKUP,
       deliveryAddress: {
-        street: '',
-        number: '',
-        zipCode: '',
-        city: '',
-        municipality: '',
-        comment: '',
+        street: profile?.deliveryAddress?.street ?? '',
+        number: profile?.deliveryAddress?.number ?? '',
+        zipCode: profile?.deliveryAddress?.zipCode ?? '',
+        city: profile?.deliveryAddress?.city ?? '',
+        municipality: profile?.deliveryAddress?.municipality ?? '',
+        comment: profile?.deliveryAddress?.comment ?? '',
       },
       billingInformation: {
-        name: user?.displayName ?? '',
-        email: user?.email ?? '',
-        phone: '',
+        name: profile?.billingInformation?.name || (user?.displayName ?? ''),
+        email: profile?.billingInformation?.email || (user?.email ?? ''),
+        phone: profile?.billingInformation?.phone ?? '',
+        vatNumber: profile?.billingInformation?.vatNumber ?? '',
       },
       paymentMethod: establishment.paymentMethods[0] ?? PaymentMethod.CARD,
       remark: '',
@@ -78,9 +82,27 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting }: Checkout
   const paymentMethod = watch('paymentMethod');
 
   useEffect(() => {
-    setValue('billingInformation.email', user?.email ?? '');
-    setValue('billingInformation.name', user?.displayName ?? '');
-  }, [setValue, user?.displayName, user?.email]);
+    if (!profile) return;
+    reset({
+      deliveryMethod: DeliveryMethod.PICKUP,
+      deliveryAddress: {
+        street: profile.deliveryAddress?.street ?? '',
+        number: profile.deliveryAddress?.number ?? '',
+        zipCode: profile.deliveryAddress?.zipCode ?? '',
+        city: profile.deliveryAddress?.city ?? '',
+        municipality: profile.deliveryAddress?.municipality ?? '',
+        comment: profile.deliveryAddress?.comment ?? '',
+      },
+      billingInformation: {
+        name: profile.billingInformation?.name || (user?.displayName ?? ''),
+        email: profile.billingInformation?.email || (user?.email ?? ''),
+        phone: profile.billingInformation?.phone ?? '',
+        vatNumber: profile.billingInformation?.vatNumber ?? '',
+      },
+      paymentMethod: establishment.paymentMethods[0] ?? PaymentMethod.CARD,
+      remark: '',
+    });
+  }, [profile, reset, user?.displayName, user?.email, establishment.paymentMethods]);
 
   useEffect(() => {
     if (!establishment.paymentMethods.includes(paymentMethod)) {
@@ -177,6 +199,19 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting }: Checkout
                   </Field.Root>
                 </GridItem>
               </Grid>
+
+              {deliveryMethod === DeliveryMethod.DELIVERY && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    const address = watch('deliveryAddress');
+                    await getCustomerProfileApi().updateMyProfile({ deliveryAddress: address });
+                  }}
+                >
+                  Save to profile
+                </Button>
+              )}
             </VStack>
           )}
         </SectionCard>
@@ -205,7 +240,24 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting }: Checkout
                 <Input placeholder="+32 ..." {...register('billingInformation.phone', { required: true })} />
               </Field.Root>
             </GridItem>
+            <GridItem colSpan={{ base: 1, md: 2 }}>
+              <Field.Root>
+                <Field.Label>VAT number</Field.Label>
+                <Input placeholder="BE0123456789" {...register('billingInformation.vatNumber')} />
+              </Field.Root>
+            </GridItem>
           </Grid>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              const billing = watch('billingInformation');
+              await getCustomerProfileApi().updateMyProfile({ billingInformation: billing });
+            }}
+          >
+            Save to profile
+          </Button>
         </SectionCard>
 
         <SectionCard
