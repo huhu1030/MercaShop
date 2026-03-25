@@ -1,5 +1,6 @@
 import { Alert, Box, Button, Card, Grid, GridItem, Heading, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
-import { DeliveryMethod, PaymentMethod } from '@mercashop/shared';
+import { DeliveryMethod, EstablishmentStatus, PaymentMethod } from '@mercashop/shared';
+import axios from 'axios';
 import { getCustomerProfileApi, getOrderApi, getPaymentApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Clock3, ShieldCheck, Store } from 'lucide-react';
@@ -72,7 +73,8 @@ export function CheckoutPage() {
 
       navigate(`/order/${orderId}/confirmation`, { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Checkout failed');
+      const message = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
+      setError(message || 'Checkout failed');
     } finally {
       setIsSubmitting(false);
     }
@@ -115,6 +117,22 @@ export function CheckoutPage() {
                 We&apos;re loading the latest store and payment details.
               </Text>
             </VStack>
+          </VStack>
+        </Card.Body>
+      </Card.Root>
+    );
+  }
+
+  if (establishment.status === EstablishmentStatus.CLOSED) {
+    return (
+      <Card.Root maxW="2xl" mx="auto" borderRadius="3xl" borderWidth="1px" borderColor="blackAlpha.100" bg="white" boxShadow="sm">
+        <Card.Body p={{ base: 6, md: 8 }}>
+          <VStack align="stretch" gap={5}>
+            <Heading size="lg">Store is currently closed</Heading>
+            <Text color="fg.muted">This store is not accepting orders right now. Please check back later.</Text>
+            <Button asChild alignSelf="start" colorPalette="green" size="lg">
+              <RouterLink to="/">Back to store</RouterLink>
+            </Button>
           </VStack>
         </Card.Body>
       </Card.Root>
