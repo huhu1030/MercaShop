@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import humanizeString from 'humanize-string';
 
 const orderSteps = [OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERED];
 
@@ -154,7 +155,7 @@ export function OrderStatusPage() {
           {order.deliveryMethod && (
             <HStack justify="space-between">
               <Text fontWeight="semibold">Delivery method</Text>
-              <Text>{order.deliveryMethod}</Text>
+              <Text>{humanizeString(order.deliveryMethod)}</Text>
             </HStack>
           )}
 

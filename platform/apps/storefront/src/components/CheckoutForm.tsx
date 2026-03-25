@@ -1,17 +1,26 @@
-import { Box, Button, Card, Field, Grid, GridItem, HStack, Input, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
-import { DeliveryMethod, PaymentMethod, type IBillingInformation, type ICustomerProfile, type IDeliveryAddress, type IPublicEstablishment } from '@mercashop/shared';
-import { getCustomerProfileApi } from '@mercashop/shared/api-client';
-import { CreditCard, MapPin, MessageSquareText, UserRound } from 'lucide-react';
-import { useEffect, type ReactNode } from 'react';
+import { Box, Button, Card, Field, HStack, Grid, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
+import type { ICustomerProfile, IPublicEstablishment } from '@mercashop/shared';
+import { DeliveryMethod, PaymentMethod } from '@mercashop/shared';
+import { CreditCard, MapPin, MessageSquareText } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
+import { type BillingInfoCardRef, BillingInfoCard } from './BillingInfoCard';
+import { type DeliveryAddressCardRef, DeliveryAddressCard } from './DeliveryAddressCard';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
-import { toaster } from './ui/toaster.tsx';
+import humanizeString from 'humanize-string';
+
+const deliveryMethods: string[] = Object.values(DeliveryMethod);
+
+function isDeliveryMethod(value: string | null): value is DeliveryMethod {
+  return value !== null && deliveryMethods.includes(value);
+}
 
 export interface CheckoutFormData {
   deliveryMethod: DeliveryMethod;
-  deliveryAddress: IDeliveryAddress;
-  billingInformation: IBillingInformation;
+  deliveryAddress: import('@mercashop/shared').IDeliveryAddress;
+  billingInformation: import('@mercashop/shared').IBillingInformation;
   paymentMethod: PaymentMethod;
   remark: string;
 }
@@ -21,6 +30,12 @@ interface CheckoutFormProps {
   onSubmit: (data: CheckoutFormData) => void | Promise<void>;
   isSubmitting: boolean;
   profile?: ICustomerProfile;
+}
+
+interface CheckoutMetaForm {
+  deliveryMethod: DeliveryMethod;
+  paymentMethod: PaymentMethod;
+  remark: string;
 }
 
 function SectionCard({ icon, title, description, children }: { icon: ReactNode; title: string; description: string; children: ReactNode }) {
@@ -50,78 +65,67 @@ function SectionCard({ icon, title, description, children }: { icon: ReactNode; 
 
 export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }: CheckoutFormProps) {
   const { user } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<CheckoutFormData>({
+  const billingRef = useRef<BillingInfoCardRef>(null);
+  const deliveryRef = useRef<DeliveryAddressCardRef>(null);
+
+  const metaForm = useForm<CheckoutMetaForm>({
     defaultValues: {
       deliveryMethod: DeliveryMethod.PICKUP,
-      deliveryAddress: {
-        street: profile?.deliveryAddress?.street ?? '',
-        number: profile?.deliveryAddress?.number ?? '',
-        zipCode: profile?.deliveryAddress?.zipCode ?? '',
-        city: profile?.deliveryAddress?.city ?? '',
-        municipality: profile?.deliveryAddress?.municipality ?? '',
-        comment: profile?.deliveryAddress?.comment ?? '',
-      },
-      billingInformation: {
-        name: profile?.billingInformation?.name || (user?.displayName ?? ''),
-        email: profile?.billingInformation?.email || (user?.email ?? ''),
-        phone: profile?.billingInformation?.phone ?? '',
-        vatNumber: profile?.billingInformation?.vatNumber ?? '',
-      },
       paymentMethod: establishment.paymentMethods[0] ?? PaymentMethod.CARD,
       remark: '',
     },
   });
 
-  const deliveryMethod = watch('deliveryMethod');
-  const paymentMethod = watch('paymentMethod');
-
-  useEffect(() => {
-    if (!profile) return;
-    reset({
-      deliveryMethod: DeliveryMethod.PICKUP,
-      deliveryAddress: {
-        street: profile.deliveryAddress?.street ?? '',
-        number: profile.deliveryAddress?.number ?? '',
-        zipCode: profile.deliveryAddress?.zipCode ?? '',
-        city: profile.deliveryAddress?.city ?? '',
-        municipality: profile.deliveryAddress?.municipality ?? '',
-        comment: profile.deliveryAddress?.comment ?? '',
-      },
-      billingInformation: {
-        name: profile.billingInformation?.name || (user?.displayName ?? ''),
-        email: profile.billingInformation?.email || (user?.email ?? ''),
-        phone: profile.billingInformation?.phone ?? '',
-        vatNumber: profile.billingInformation?.vatNumber ?? '',
-      },
-      paymentMethod: establishment.paymentMethods[0] ?? PaymentMethod.CARD,
-      remark: '',
-    });
-  }, [profile, reset, user?.displayName, user?.email, establishment.paymentMethods]);
+  const deliveryMethod = metaForm.watch('deliveryMethod');
+  const paymentMethod = metaForm.watch('paymentMethod');
 
   useEffect(() => {
     if (!establishment.paymentMethods.includes(paymentMethod)) {
-      setValue('paymentMethod', establishment.paymentMethods[0] ?? PaymentMethod.CARD);
+      metaForm.setValue('paymentMethod', establishment.paymentMethods[0] ?? PaymentMethod.CARD);
     }
-  }, [establishment.paymentMethods, paymentMethod, setValue]);
+  }, [establishment.paymentMethods, paymentMethod, metaForm.setValue]);
+
+  const billingDefaults = {
+    name: profile?.billingInformation?.name || (user?.displayName ?? ''),
+    email: profile?.billingInformation?.email || (user?.email ?? ''),
+    phone: profile?.billingInformation?.phone ?? '',
+    vatNumber: profile?.billingInformation?.vatNumber ?? '',
+  };
+
+  const handleSubmit = async (meta: CheckoutMetaForm) => {
+    const billingValid = await billingRef.current?.trigger();
+    const deliveryValid = meta.deliveryMethod === DeliveryMethod.DELIVERY ? await deliveryRef.current?.trigger() : true;
+
+    if (!billingValid || !deliveryValid) return;
+
+    await onSubmit({
+      deliveryMethod: meta.deliveryMethod,
+      paymentMethod: meta.paymentMethod,
+      remark: meta.remark,
+      billingInformation: billingRef.current!.getValues(),
+      deliveryAddress: deliveryRef.current?.getValues() ?? {},
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={metaForm.handleSubmit(handleSubmit)}>
       <VStack align="stretch" gap={6}>
         <SectionCard
           icon={<MapPin size={18} />}
           title="Delivery details"
           description="Choose how you want to receive the order and confirm the address when needed."
         >
-          <Field.Root required invalid={!!errors.deliveryMethod}>
+          <Field.Root required invalid={Boolean(metaForm.formState.errors.deliveryMethod)}>
             <Field.Label>Delivery method</Field.Label>
-            <RadioGroup.Root value={deliveryMethod} onValueChange={(details) => setValue('deliveryMethod', details.value as DeliveryMethod)}>
+            <RadioGroup.Root
+              colorPalette={'green'}
+              value={deliveryMethod}
+              onValueChange={(details) => {
+                if (isDeliveryMethod(details.value)) {
+                  metaForm.setValue('deliveryMethod', details.value);
+                }
+              }}
+            >
               <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={3}>
                 {[DeliveryMethod.PICKUP, DeliveryMethod.DELIVERY].map((method) => (
                   <RadioGroup.Item
@@ -129,7 +133,6 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
                     value={method}
                     p={4}
                     borderWidth="1px"
-                    borderColor="blackAlpha.200"
                     borderRadius="xl"
                     bg="white"
                     _checked={{
@@ -141,14 +144,16 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
                     <RadioGroup.ItemHiddenInput />
                     <HStack justify="space-between" align="start" gap={4}>
                       <VStack align="start" gap={1}>
-                        <Text fontWeight="semibold">{method === DeliveryMethod.PICKUP ? 'Pickup' : 'Delivery'}</Text>
+                        <Text fontWeight="semibold">{humanizeString(method)}</Text>
                         <Text color="fg.muted" fontSize="sm">
                           {method === DeliveryMethod.PICKUP
                             ? 'Collect your order from the establishment.'
                             : 'Have the order brought to your address.'}
                         </Text>
                       </VStack>
-                      <RadioGroup.ItemControl />
+                      <RadioGroup.ItemControl>
+                        <RadioGroup.ItemIndicator />
+                      </RadioGroup.ItemControl>
                     </HStack>
                   </RadioGroup.Item>
                 ))}
@@ -157,119 +162,11 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
           </Field.Root>
 
           {deliveryMethod === DeliveryMethod.DELIVERY && (
-            <VStack align="stretch" gap={4}>
-              <Text fontSize="sm" fontWeight="medium" color="fg.muted">
-                Delivery address
-              </Text>
-
-              <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-                <GridItem>
-                  <Field.Root required invalid={!!errors.deliveryAddress?.street}>
-                    <Field.Label>Street</Field.Label>
-                    <Input placeholder="Main Street" {...register('deliveryAddress.street', { required: true })} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem>
-                  <Field.Root required invalid={!!errors.deliveryAddress?.number}>
-                    <Field.Label>Number</Field.Label>
-                    <Input placeholder="12A" {...register('deliveryAddress.number', { required: true })} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem>
-                  <Field.Root required invalid={!!errors.deliveryAddress?.zipCode}>
-                    <Field.Label>Zip code</Field.Label>
-                    <Input placeholder="1000" {...register('deliveryAddress.zipCode', { required: true })} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem>
-                  <Field.Root required invalid={!!errors.deliveryAddress?.city}>
-                    <Field.Label>City</Field.Label>
-                    <Input placeholder="Brussels" {...register('deliveryAddress.city', { required: true })} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={{ base: 1, md: 2 }}>
-                  <Field.Root required invalid={!!errors.deliveryAddress?.municipality}>
-                    <Field.Label>Municipality</Field.Label>
-                    <Input placeholder="Brussels" {...register('deliveryAddress.municipality', { required: true })} />
-                  </Field.Root>
-                </GridItem>
-                <GridItem colSpan={{ base: 1, md: 2 }}>
-                  <Field.Root>
-                    <Field.Label>Comment</Field.Label>
-                    <Textarea placeholder="Door code, floor, delivery notes..." {...register('deliveryAddress.comment')} />
-                  </Field.Root>
-                </GridItem>
-              </Grid>
-
-              {deliveryMethod === DeliveryMethod.DELIVERY && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      const address = watch('deliveryAddress');
-                      await getCustomerProfileApi().updateMyProfile({ deliveryAddress: address });
-                      toaster.success({ title: 'Delivery address saved to profile' });
-                    } catch {
-                      toaster.error({ title: 'Failed to save delivery address' });
-                    }
-                  }}
-                >
-                  Save to profile
-                </Button>
-              )}
-            </VStack>
+            <DeliveryAddressCard ref={deliveryRef} defaultValues={profile?.deliveryAddress} required />
           )}
         </SectionCard>
 
-        <SectionCard
-          icon={<UserRound size={18} />}
-          title="Billing information"
-          description="Use the contact details we should attach to the order and payment."
-        >
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-            <GridItem colSpan={{ base: 1, md: 2 }}>
-              <Field.Root required invalid={!!errors.billingInformation?.name}>
-                <Field.Label>Name</Field.Label>
-                <Input placeholder="Your full name" {...register('billingInformation.name', { required: true })} />
-              </Field.Root>
-            </GridItem>
-            <GridItem>
-              <Field.Root required invalid={!!errors.billingInformation?.email}>
-                <Field.Label>Email</Field.Label>
-                <Input type="email" placeholder="name@example.com" {...register('billingInformation.email', { required: true })} />
-              </Field.Root>
-            </GridItem>
-            <GridItem>
-              <Field.Root required invalid={!!errors.billingInformation?.phone}>
-                <Field.Label>Phone</Field.Label>
-                <Input placeholder="+32 ..." {...register('billingInformation.phone', { required: true })} />
-              </Field.Root>
-            </GridItem>
-            <GridItem colSpan={{ base: 1, md: 2 }}>
-              <Field.Root>
-                <Field.Label>VAT number</Field.Label>
-                <Input placeholder="BE0123456789" {...register('billingInformation.vatNumber')} />
-              </Field.Root>
-            </GridItem>
-          </Grid>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={async () => {
-              try {
-                const billing = watch('billingInformation');
-                await getCustomerProfileApi().updateMyProfile({ billingInformation: billing });
-                toaster.success({ title: 'Billing info saved to profile' });
-              } catch {
-                toaster.error({ title: 'Failed to save billing info' });
-              }
-            }}
-          >
-            Save to profile
-          </Button>
-        </SectionCard>
+        <BillingInfoCard ref={billingRef} defaultValues={billingDefaults} required />
 
         <SectionCard
           icon={<MessageSquareText size={18} />}
@@ -278,13 +175,9 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
         >
           <Field.Root>
             <Field.Label>Remark (optional)</Field.Label>
-            <Textarea
-              placeholder="Any special requests?"
-              maxLength={200}
-              {...register('remark')}
-            />
+            <Textarea placeholder="Any special requests?" maxLength={200} {...metaForm.register('remark')} />
             <Text fontSize="xs" color="fg.muted" textAlign="right">
-              {watch('remark')?.length ?? 0}/200
+              {metaForm.watch('remark')?.length ?? 0}/200
             </Text>
           </Field.Root>
         </SectionCard>
@@ -295,7 +188,7 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
             <PaymentMethodSelector
               methods={establishment.paymentMethods}
               value={paymentMethod}
-              onChange={(method) => setValue('paymentMethod', method as PaymentMethod)}
+              onChange={(method) => metaForm.setValue('paymentMethod', method as PaymentMethod)}
             />
           </Field.Root>
 
