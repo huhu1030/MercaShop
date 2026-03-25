@@ -6,12 +6,14 @@ interface ProductGridProps {
   products: IPublicProduct[];
   emptyTitle?: string;
   emptyDescription?: string;
+  disabled?: boolean;
 }
 
 export function ProductGrid({
   products,
   emptyTitle = 'No products available yet.',
   emptyDescription = 'Check back shortly for the latest menu items.',
+  disabled,
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
@@ -34,7 +36,7 @@ export function ProductGrid({
       gap={6}
     >
       {products.map((product) => (
-        <ProductCard key={product._id} product={product} />
+        <ProductCard key={product._id} product={product} disabled={disabled} />
       ))}
     </Box>
   );

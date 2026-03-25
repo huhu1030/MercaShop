@@ -1,4 +1,5 @@
 import { Box, Flex, Heading, Spinner, Text, useBreakpointValue, VStack } from '@chakra-ui/react';
+import { EstablishmentStatus } from '@mercashop/shared';
 import { useEffect, useMemo, useState } from 'react';
 import { CartSidebar } from '../components/CartSidebar';
 import { CategoryFilterBar } from '../components/CategoryFilterBar';
@@ -11,6 +12,7 @@ export function HomePage() {
   const { products, isLoading: productsLoading } = useProducts(establishment?._id);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const isDesktop = useBreakpointValue({ base: false, md: true }) ?? false;
+  const isClosed = establishment?.status === EstablishmentStatus.CLOSED;
 
   const categories = useMemo(
     () => Array.from(new Set(products.map((product) => product.category?.trim()).filter((category): category is string => !!category))),
@@ -52,6 +54,7 @@ export function HomePage() {
             products={filteredProducts}
             emptyTitle={selectedCategory ? `No products in ${selectedCategory}.` : undefined}
             emptyDescription={selectedCategory ? 'Try another category or switch back to all products.' : undefined}
+            disabled={isClosed}
           />
         </Box>
         {isDesktop && <CartSidebar />}

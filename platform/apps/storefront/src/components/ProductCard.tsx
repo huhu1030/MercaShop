@@ -6,6 +6,7 @@ import { useCart } from '../hooks/useCart';
 
 interface ProductCardProps {
   product: IPublicProduct;
+  disabled?: boolean;
 }
 
 function getProductImageUrl(photo?: string) {
@@ -26,7 +27,7 @@ function formatPrice(price: number) {
   }).format(price);
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, disabled }: ProductCardProps) {
   const { addItem } = useCart();
   const imageUrl = getProductImageUrl(product.photo);
   const [quantity, setQuantity] = useState(1);
@@ -67,6 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 aria-label={`Decrease quantity for ${product.name}`}
                 size="sm"
                 variant="outline"
+                disabled={disabled}
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
               >
                 <Minus size={16} />
@@ -78,6 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 aria-label={`Increase quantity for ${product.name}`}
                 size="sm"
                 variant="outline"
+                disabled={disabled}
                 onClick={() => setQuantity((current) => current + 1)}
               >
                 <Plus size={16} />
@@ -85,8 +88,8 @@ export function ProductCard({ product }: ProductCardProps) {
             </HStack>
           </HStack>
 
-          <Button width="full" colorPalette="green" onClick={() => addItem(product, quantity)}>
-            Add {quantity} to cart
+          <Button width="full" colorPalette="green" disabled={disabled} onClick={() => addItem(product, quantity)}>
+            {disabled ? 'Store closed' : `Add ${quantity} to cart`}
           </Button>
         </VStack>
       </Card.Footer>
