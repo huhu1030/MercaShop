@@ -6,6 +6,7 @@ import { useEffect, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
+import { toaster } from './toaster';
 
 export interface CheckoutFormData {
   deliveryMethod: DeliveryMethod;
@@ -205,8 +206,13 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
                   variant="outline"
                   size="sm"
                   onClick={async () => {
-                    const address = watch('deliveryAddress');
-                    await getCustomerProfileApi().updateMyProfile({ deliveryAddress: address });
+                    try {
+                      const address = watch('deliveryAddress');
+                      await getCustomerProfileApi().updateMyProfile({ deliveryAddress: address });
+                      toaster.success({ title: 'Delivery address saved to profile' });
+                    } catch {
+                      toaster.error({ title: 'Failed to save delivery address' });
+                    }
                   }}
                 >
                   Save to profile
@@ -252,8 +258,13 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
             variant="outline"
             size="sm"
             onClick={async () => {
-              const billing = watch('billingInformation');
-              await getCustomerProfileApi().updateMyProfile({ billingInformation: billing });
+              try {
+                const billing = watch('billingInformation');
+                await getCustomerProfileApi().updateMyProfile({ billingInformation: billing });
+                toaster.success({ title: 'Billing info saved to profile' });
+              } catch {
+                toaster.error({ title: 'Failed to save billing info' });
+              }
             }}
           >
             Save to profile
