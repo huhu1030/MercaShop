@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { EstablishmentStatus } from './establishment-status';
+// May contain unused imports in some cases
+// @ts-ignore
 import { IAddress } from './iaddress';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -58,10 +61,10 @@ export interface IPublicEstablishment {
     'banner'?: string;
     /**
      * 
-     * @type {string}
+     * @type {EstablishmentStatus}
      * @memberof IPublicEstablishment
      */
-    'status': string;
+    'status': EstablishmentStatus;
     /**
      * 
      * @type {string}
@@ -87,4 +90,6 @@ export interface IPublicEstablishment {
      */
     'description'?: string;
 }
+
+
 

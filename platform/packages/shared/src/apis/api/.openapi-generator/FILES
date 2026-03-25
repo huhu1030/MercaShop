@@ -29,6 +29,7 @@ models/create-tenant200-response.ts
 models/create-user-body.ts
 models/create-user200-response.ts
 models/delete-me200-response.ts
+models/establishment-status.ts
 models/get-establishment200-response.ts
 models/get-establishments200-response.ts
 models/get-orders-by-establishment200-response.ts

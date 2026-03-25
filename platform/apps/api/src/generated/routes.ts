@@ -96,6 +96,11 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contact":{"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}}}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "EstablishmentStatus": {
+        "dataType": "refEnum",
+        "enums": ["OPEN","CLOSED"],
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IAddress": {
         "dataType": "refObject",
         "properties": {
@@ -122,7 +127,7 @@ const models: TsoaRoute.Models = {
             "slug": {"dataType":"string","required":true},
             "logo": {"dataType":"string","required":true},
             "banner": {"dataType":"string"},
-            "status": {"dataType":"string","required":true},
+            "status": {"ref":"EstablishmentStatus","required":true},
             "openingHours": {"dataType":"string"},
             "address": {"ref":"IAddress","required":true},
             "paymentMethods": {"dataType":"array","array":{"dataType":"refEnum","ref":"PaymentMethod"},"required":true},
@@ -185,7 +190,7 @@ const models: TsoaRoute.Models = {
             "_id": {"dataType":"string","required":true},
             "name": {"dataType":"string","required":true},
             "category": {"dataType":"string","required":true},
-            "status": {"dataType":"string","required":true},
+            "status": {"ref":"EstablishmentStatus","required":true},
             "logo": {"dataType":"string","required":true},
         },
         "additionalProperties": false,

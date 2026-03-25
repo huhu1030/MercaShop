@@ -10,6 +10,7 @@ export * from './create-tenant-body-contact';
 export * from './create-user200-response';
 export * from './create-user-body';
 export * from './delete-me200-response';
+export * from './establishment-status';
 export * from './get-establishment200-response';
 export * from './get-establishments200-response';
 export * from './get-orders-by-establishment200-response';

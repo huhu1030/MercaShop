@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { EstablishmentStatus } from './establishment-status';
 
 /**
  * 
@@ -40,10 +43,10 @@ export interface IEstablishmentSummary {
     'category': string;
     /**
      * 
-     * @type {string}
+     * @type {EstablishmentStatus}
      * @memberof IEstablishmentSummary
      */
-    'status': string;
+    'status': EstablishmentStatus;
     /**
      * 
      * @type {string}
@@ -51,4 +54,6 @@ export interface IEstablishmentSummary {
      */
     'logo': string;
 }
+
+
 
