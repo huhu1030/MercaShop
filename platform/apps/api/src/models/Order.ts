@@ -7,7 +7,17 @@ export interface OrderDocument extends Document {
   orderDate: number;
   status: string;
   orderLines: Array<{
-    item: { _id: string; name: string; quantity: number; price?: number };
+    item: {
+      _id: string;
+      name: string;
+      quantity: number;
+      price?: number;
+      selectedOptions?: Array<{
+        name: string;
+        choices: Array<{ name: string; quantity: number; extraPrice: number }>;
+      }>;
+      optionsTotalPrice?: number;
+    };
   }>;
   establishmentId: string;
   total: number;
@@ -20,6 +30,23 @@ export interface OrderDocument extends Document {
   remark?: string;
 }
 
+const selectedChoiceSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    extraPrice: { type: Number, required: true },
+  },
+  { _id: false },
+);
+
+const selectedOptionGroupSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    choices: { type: [selectedChoiceSchema], required: true },
+  },
+  { _id: false },
+);
+
 const orderLineSchema = new Schema(
   {
     item: {
@@ -27,6 +54,8 @@ const orderLineSchema = new Schema(
       name: { type: String, required: true },
       quantity: { type: Number, required: true },
       price: { type: Number },
+      selectedOptions: { type: [selectedOptionGroupSchema], default: undefined },
+      optionsTotalPrice: { type: Number },
     },
   },
   { _id: false },

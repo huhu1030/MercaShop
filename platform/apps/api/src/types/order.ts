@@ -1,10 +1,13 @@
 export { PaymentMethod } from '@mercashop/shared';
+import type { ISelectedOptionGroup } from '@mercashop/shared';
 
 export interface OrderLineItem {
   _id: string;
   name: string;
   quantity: number;
   price?: number;
+  selectedOptions?: ISelectedOptionGroup[];
+  optionsTotalPrice?: number;
 }
 
 export interface OrderLine {
