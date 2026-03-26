@@ -11,7 +11,42 @@ export interface ProductDocument extends Document {
   quantity: number;
   serialNumber?: string;
   photo?: string;
+  optionGroups: Array<{
+    name: string;
+    required: boolean;
+    selectionMode: 'exactlyOne' | 'upToN' | 'anyNumber';
+    maxSelections?: number;
+    choices: Array<{
+      name: string;
+      extraPrice: number;
+      maxQuantity: number;
+    }>;
+  }>;
 }
+
+const optionChoiceSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    extraPrice: { type: Number, required: true, default: 0 },
+    maxQuantity: { type: Number, required: true, default: 1 },
+  },
+  { _id: false },
+);
+
+const optionGroupSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    required: { type: Boolean, required: true, default: false },
+    selectionMode: {
+      type: String,
+      enum: ['exactlyOne', 'upToN', 'anyNumber'],
+      required: true,
+    },
+    maxSelections: { type: Number },
+    choices: { type: [optionChoiceSchema], required: true },
+  },
+  { _id: false },
+);
 
 const productSchema = new Schema<ProductDocument>(
   {
@@ -25,6 +60,7 @@ const productSchema = new Schema<ProductDocument>(
     quantity: { type: Number, default: 0 },
     serialNumber: { type: String, default: '' },
     photo: { type: String, default: '' },
+    optionGroups: { type: [optionGroupSchema], default: [] },
   },
   { timestamps: true },
 );
