@@ -3,6 +3,11 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import type { CartItem } from '../lib/cart-store';
 
+function cartItemDisplayKey(item: CartItem): string {
+  if (!item.selectedOptions || item.selectedOptions.length === 0) return item._id;
+  return `${item._id}:${JSON.stringify(item.selectedOptions)}`;
+}
+
 interface OrderSummaryProps {
   items: CartItem[];
   total: number;
@@ -50,26 +55,26 @@ export function OrderSummary({ items, total, readOnly = false }: OrderSummaryPro
           </HStack>
 
           {items.map((item, index) => (
-            <VStack key={item._id} align="stretch" gap={3}>
+            <VStack key={cartItemDisplayKey(item)} align="stretch" gap={3}>
               <HStack justify="space-between" align="start">
                 <VStack align="start" gap={1}>
                   <Text fontWeight="semibold">{item.name}</Text>
                   <HStack gap={2} wrap="wrap">
                     <Text color="fg.muted" fontSize="sm">
-                      {formatPrice(item.price)} each
+                      {formatPrice(item.price + (item.optionsTotalPrice ?? 0))} each
                     </Text>
                     <Badge variant="outline" borderRadius="full">
                       Qty {item.quantity}
                     </Badge>
                   </HStack>
                 </VStack>
-                <Text fontWeight="semibold">{formatPrice(item.price * item.quantity)}</Text>
+                <Text fontWeight="semibold">{formatPrice((item.price + (item.optionsTotalPrice ?? 0)) * item.quantity)}</Text>
               </HStack>
 
               {!readOnly && (
                 <HStack justify="space-between">
                   <HStack gap={2}>
-                    <IconButton aria-label={`Decrease quantity for ${item.name}`} size="sm" variant="outline" onClick={() => decrementItem(item._id)}>
+                    <IconButton aria-label={`Decrease quantity for ${item.name}`} size="sm" variant="outline" onClick={() => decrementItem(item._id, item.selectedOptions)}>
                       <Minus size={16} />
                     </IconButton>
                     <Box minW={10} px={3} py={1} borderWidth="1px" borderColor="blackAlpha.200" borderRadius="lg" textAlign="center">
@@ -82,7 +87,7 @@ export function OrderSummary({ items, total, readOnly = false }: OrderSummaryPro
                     </IconButton>
                   </HStack>
 
-                  <Button size="sm" variant="ghost" colorPalette="red" onClick={() => removeItem(item._id)}>
+                  <Button size="sm" variant="ghost" colorPalette="red" onClick={() => removeItem(item._id, item.selectedOptions)}>
                     <Trash2 size={16} />
                     Remove
                   </Button>

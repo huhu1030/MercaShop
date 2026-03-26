@@ -1,12 +1,19 @@
 import { atom } from 'jotai';
 import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
+export interface CartItemSelectedOption {
+  name: string;
+  choices: Array<{ name: string; quantity: number; extraPrice: number }>;
+}
+
 export interface CartItem {
   _id: string;
   name: string;
   price: number;
   quantity: number;
   photo?: string;
+  selectedOptions?: CartItemSelectedOption[];
+  optionsTotalPrice?: number;
 }
 
 const memoryStorage = new Map<string, string>();
@@ -61,7 +68,7 @@ export const cartAtom = atomWithStorage<CartItem[]>('mercashop-cart', [], cartSt
 
 export const cartTotalAtom = atom((get) => {
   const items = get(cartAtom);
-  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return items.reduce((sum, item) => sum + (item.price + (item.optionsTotalPrice ?? 0)) * item.quantity, 0);
 });
 
 export const cartItemCountAtom = atom((get) => {
