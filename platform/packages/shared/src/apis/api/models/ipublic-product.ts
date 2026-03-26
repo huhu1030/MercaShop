@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { IOptionGroup } from './ioption-group';
 
 /**
  * 
@@ -56,5 +59,11 @@ export interface IPublicProduct {
      * @memberof IPublicProduct
      */
     'category': string;
+    /**
+     * 
+     * @type {Array<IOptionGroup>}
+     * @memberof IPublicProduct
+     */
+    'optionGroups': Array<IOptionGroup>;
 }
 

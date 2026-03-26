@@ -30,6 +30,8 @@ import { DeleteMe200Response } from '../models';
 // @ts-ignore
 import { GetProductsByEstablishment200Response } from '../models';
 // @ts-ignore
+import { UpdateProductBody } from '../models';
+// @ts-ignore
 import { UpdateProductQuantityBody } from '../models';
 /**
  * ProductApi - axios parameter creator
@@ -190,6 +192,49 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @param {string} id 
+         * @param {UpdateProductBody} updateProductBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateProduct: async (id: string, updateProductBody: UpdateProductBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('updateProduct', 'id', id)
+            // verify required parameter 'updateProductBody' is not null or undefined
+            assertParamExists('updateProduct', 'updateProductBody', updateProductBody)
+            const localVarPath = `/api/products/{id}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateProductBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} id 
          * @param {UpdateProductQuantityBody} updateProductQuantityBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -291,6 +336,19 @@ export const ProductApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
+         * @param {UpdateProductBody} updateProductBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateProduct(id: string, updateProductBody: UpdateProductBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateProduct200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateProduct(id, updateProductBody, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ProductApi.updateProduct']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} id 
          * @param {UpdateProductQuantityBody} updateProductQuantityBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -346,6 +404,16 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
          */
         getProductsByEstablishment(establishmentId: string, options?: any): AxiosPromise<GetProductsByEstablishment200Response> {
             return localVarFp.getProductsByEstablishment(establishmentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} id 
+         * @param {UpdateProductBody} updateProductBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateProduct(id: string, updateProductBody: UpdateProductBody, options?: any): AxiosPromise<CreateProduct200Response> {
+            return localVarFp.updateProduct(id, updateProductBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -409,6 +477,18 @@ export class ProductApi extends BaseAPI {
      */
     public getProductsByEstablishment(establishmentId: string, options?: RawAxiosRequestConfig) {
         return ProductApiFp(this.configuration).getProductsByEstablishment(establishmentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} id 
+     * @param {UpdateProductBody} updateProductBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
+    public updateProduct(id: string, updateProductBody: UpdateProductBody, options?: RawAxiosRequestConfig) {
+        return ProductApiFp(this.configuration).updateProduct(id, updateProductBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

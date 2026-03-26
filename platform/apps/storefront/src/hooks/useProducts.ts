@@ -10,6 +10,7 @@ function normalizeProduct(product: IPublicProduct): IPublicProduct {
     price: product.price,
     photo: product.photo,
     category: product.category,
+    optionGroups: product.optionGroups ?? [],
   };
 }
 

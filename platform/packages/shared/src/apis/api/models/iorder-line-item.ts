@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { ISelectedOptionGroup } from './iselected-option-group';
 
 /**
  * 
@@ -20,6 +23,18 @@
  * @interface IOrderLineItem
  */
 export interface IOrderLineItem {
+    /**
+     * 
+     * @type {number}
+     * @memberof IOrderLineItem
+     */
+    'optionsTotalPrice'?: number;
+    /**
+     * 
+     * @type {Array<ISelectedOptionGroup>}
+     * @memberof IOrderLineItem
+     */
+    'selectedOptions'?: Array<ISelectedOptionGroup>;
     /**
      * 
      * @type {number}

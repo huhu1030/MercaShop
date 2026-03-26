@@ -20,61 +20,55 @@ import { OptionGroupBody } from './option-group-body';
 /**
  * 
  * @export
- * @interface CreateProductBody
+ * @interface UpdateProductBody
  */
-export interface CreateProductBody {
+export interface UpdateProductBody {
     /**
      * 
      * @type {string}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
-    'name': string;
+    'name'?: string;
     /**
      * 
      * @type {string}
-     * @memberof CreateProductBody
-     */
-    'establishmentId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
     'description'?: string;
     /**
      * 
      * @type {string}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
-    'category': string;
+    'category'?: string;
     /**
      * 
      * @type {number}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
-    'price': number;
+    'price'?: number;
     /**
      * 
      * @type {string}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
     'location'?: string;
     /**
      * 
      * @type {number}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
     'quantity'?: number;
     /**
      * 
      * @type {string}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
     'serialNumber'?: string;
     /**
      * 
      * @type {Array<OptionGroupBody>}
-     * @memberof CreateProductBody
+     * @memberof UpdateProductBody
      */
     'optionGroups'?: Array<OptionGroupBody>;
 }
