@@ -1,19 +1,7 @@
 import { Controller, Get, Post, Put, Route, Tags, Query, Body, Path, Security } from 'tsoa';
 import { ITenantConfig } from '@mercashop/shared';
 import * as tenantService from '../services/tenantService';
-
-interface CreateTenantBody {
-  name: string;
-  slug: string;
-  domains: string[];
-  branding: { logo: string; primaryColor: string; appName: string };
-  contact: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-  };
-}
+import type { CreateTenantBody } from '../dtos/tenant.dto';
 
 @Route('api/tenants')
 @Tags('Tenant')

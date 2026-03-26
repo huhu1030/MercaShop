@@ -1,19 +1,7 @@
 import { TenantModel } from '../models';
 import { createIdentityPlatformTenant, deleteIdentityPlatformTenant } from './identityPlatformService';
 import type { ITenantConfig } from '@mercashop/shared';
-
-interface CreateTenantData {
-  name: string;
-  slug: string;
-  domains: string[];
-  branding: { logo: string; primaryColor: string; appName: string };
-  contact: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-  };
-}
+import type { CreateTenantBody } from '../dtos/tenant.dto';
 
 export async function getTenantConfig(domain: string): Promise<ITenantConfig | null> {
   const tenant = await TenantModel.findOne({ domains: domain, isActive: true });
@@ -26,7 +14,7 @@ export async function getTenantConfig(domain: string): Promise<ITenantConfig | n
   };
 }
 
-export async function createTenant(data: CreateTenantData) {
+export async function createTenant(data: CreateTenantBody) {
   let ipTenantId: string | undefined;
   try {
     ipTenantId = await createIdentityPlatformTenant(data.name);
@@ -42,6 +30,6 @@ export async function createTenant(data: CreateTenantData) {
   }
 }
 
-export async function updateTenant(id: string, data: Partial<CreateTenantData>) {
+export async function updateTenant(id: string, data: Partial<CreateTenantBody>) {
   return TenantModel.findByIdAndUpdate(id, data, { new: true });
 }
