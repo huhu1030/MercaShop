@@ -1,19 +1,8 @@
 import { ProductModel } from '../models';
+import type { CreateProductBody } from '../dtos/product.dto';
 
-interface CreateProductData {
-  tenantId: string;
-  name: string;
-  establishmentId: string;
-  description?: string;
-  category: string;
-  price: number;
-  location?: string;
-  quantity?: number;
-  serialNumber?: string;
-}
-
-export async function createProduct(data: CreateProductData) {
-  return ProductModel.create(data);
+export async function createProduct(tenantId: string, body: CreateProductBody) {
+  return ProductModel.create({ tenantId, ...body });
 }
 
 export async function findProductById(id: string, tenantId: string) {
