@@ -71,6 +71,35 @@ export function OrderSummary({ items, total, readOnly = false }: OrderSummaryPro
                 <Text fontWeight="semibold">{formatPrice((item.price + (item.optionsTotalPrice ?? 0)) * item.quantity)}</Text>
               </HStack>
 
+              {item.selectedOptions && item.selectedOptions.length > 0 && (
+                <VStack align="start" gap={2} pl={2}>
+                  {item.selectedOptions.map((group) => (
+                    <VStack key={group.name} align="start" gap={1}>
+                      <Text fontSize="xs" color="fg.muted" fontWeight="medium">
+                        {group.name}
+                      </Text>
+                      <HStack gap={1} wrap="wrap">
+                        {group.choices.map((choice) => (
+                          <Badge
+                            key={choice.name}
+                            colorPalette={choice.extraPrice > 0 ? 'green' : 'gray'}
+                            variant="subtle"
+                            px={2}
+                            py={0.5}
+                            borderRadius="full"
+                            fontSize="xs"
+                          >
+                            {choice.name}
+                            {choice.extraPrice > 0 && ` +${formatPrice(choice.extraPrice)}`}
+                            {choice.quantity > 1 && ` ×${choice.quantity}`}
+                          </Badge>
+                        ))}
+                      </HStack>
+                    </VStack>
+                  ))}
+                </VStack>
+              )}
+
               {!readOnly && (
                 <HStack justify="space-between">
                   <HStack gap={2}>

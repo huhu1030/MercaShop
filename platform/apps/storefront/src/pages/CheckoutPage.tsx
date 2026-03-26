@@ -41,6 +41,8 @@ export function CheckoutPage() {
             name: item.name,
             quantity: item.quantity,
             price: item.price,
+            ...(item.selectedOptions && { selectedOptions: item.selectedOptions }),
+            ...(item.optionsTotalPrice && { optionsTotalPrice: item.optionsTotalPrice }),
           },
         })),
         total,
