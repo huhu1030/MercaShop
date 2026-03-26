@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Box, Card, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Card, HStack, IconButton, Text, VStack } from '@chakra-ui/react';
 import { Chart, useChart } from '@chakra-ui/charts';
 import { Bar, CartesianGrid, ComposedChart, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { getAnalyticsApi } from '@mercashop/shared/api-client';
 import { IAnalyticsResponse } from '@mercashop/shared';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { useEstablishmentId } from '../hooks/useEstablishmentId';
 import { Colors } from '../constants/colors';
@@ -13,10 +14,11 @@ const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 
 const LIMIT_OPTIONS = [5, 10, 20] as const;
 
-function fillMonthlyGaps(monthly: IAnalyticsResponse['monthly']): Array<{ label: string; orderCount: number; revenue: number }> {
-  const currentMonth = new Date().getMonth() + 1;
+function fillMonthlyGaps(monthly: IAnalyticsResponse['monthly'], year: number): Array<{ label: string; orderCount: number; revenue: number }> {
+  const currentYear = new Date().getFullYear();
+  const monthCount = year < currentYear ? 12 : new Date().getMonth() + 1;
   const byMonth = new Map(monthly.map((m) => [m.month, m]));
-  return Array.from({ length: currentMonth }, (_, i) => {
+  return Array.from({ length: monthCount }, (_, i) => {
     const month = i + 1;
     const entry = byMonth.get(month);
     return {
@@ -34,7 +36,8 @@ function formatCurrency(value: number): string {
 export function AnalyticsPage() {
   const { establishmentId } = useEstablishmentId()!;
   const [limit, setLimit] = useState<number>(5);
-  const year = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+  const [year, setYear] = useState<number>(currentYear);
 
   const { data, isLoading } = useQuery({
     queryKey: ['analytics', establishmentId, year, limit],
@@ -42,7 +45,7 @@ export function AnalyticsPage() {
   });
 
   const analytics = data?.data;
-  const monthlyData = analytics ? fillMonthlyGaps(analytics.monthly) : [];
+  const monthlyData = analytics ? fillMonthlyGaps(analytics.monthly, year) : [];
 
   const chart = useChart({
     data: monthlyData,
@@ -54,7 +57,20 @@ export function AnalyticsPage() {
 
   return (
     <VStack gap="1.25rem" align="stretch">
-      <PageHeader breadcrumbs={[{ label: 'Analytics' }]} title="Analytics" description={`Year-to-date overview for ${year}.`} />
+      <PageHeader breadcrumbs={[{ label: 'Analytics' }]} title="Analytics" description={`${year === currentYear ? 'Year-to-date overview' : 'Yearly overview'} for ${year}.`} />
+
+      {/* Year navigation */}
+      <HStack>
+        <IconButton aria-label="Previous year" variant="ghost" size="sm" onClick={() => setYear((y) => y - 1)}>
+          <ChevronLeft />
+        </IconButton>
+        <Text fontSize="sm" fontWeight="semibold" minW="3rem" textAlign="center">
+          {year}
+        </Text>
+        <IconButton aria-label="Next year" variant="ghost" size="sm" onClick={() => setYear((y) => y + 1)} disabled={year >= currentYear}>
+          <ChevronRight />
+        </IconButton>
+      </HStack>
 
       {/* Limit selector */}
       <HStack>
