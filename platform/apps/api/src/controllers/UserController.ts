@@ -1,18 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Route, Tags, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
+import type { CreateUserBody, UpdateUserBody } from '../dtos/user.dto';
 import * as userService from '../services/userService';
-
-interface CreateUserBody {
-  firstName: string;
-  lastName: string;
-  phone?: string;
-}
-
-interface UpdateUserBody {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-}
 
 @Route('api/users')
 @Tags('User')
@@ -28,14 +17,7 @@ export class UserController extends Controller {
       return { user: existing };
     }
 
-    const user = await userService.createUser({
-      tenantId: tenantId!,
-      firebaseUid: uid,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: email.toLowerCase(),
-      phone: body.phone ?? '',
-    });
+    const user = await userService.createUser(tenantId!, uid, email.toLowerCase(), body);
 
     this.setStatus(201);
     return { user };

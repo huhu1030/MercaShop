@@ -1,30 +1,22 @@
 import { UserModel } from '../models';
 import { firebaseAuth } from '../config/firebase';
-
-interface CreateUserData {
-  tenantId: string;
-  firebaseUid: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
-
-interface UpdateUserData {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-}
+import type { CreateUserBody, UpdateUserBody } from '../dtos/user.dto';
 
 export async function findUserByFirebaseUid(tenantId: string, firebaseUid: string) {
   return UserModel.findOne({ tenantId, firebaseUid });
 }
 
-export async function createUser(data: CreateUserData) {
-  return UserModel.create(data);
+export async function createUser(tenantId: string, firebaseUid: string, email: string, body: CreateUserBody) {
+  return UserModel.create({
+    tenantId,
+    firebaseUid,
+    email,
+    ...body,
+    phone: body.phone ?? '',
+  });
 }
 
-export async function updateUser(tenantId: string, firebaseUid: string, data: UpdateUserData) {
+export async function updateUser(tenantId: string, firebaseUid: string, data: UpdateUserBody) {
   return UserModel.findOneAndUpdate({ tenantId, firebaseUid }, data, { new: true });
 }
 
