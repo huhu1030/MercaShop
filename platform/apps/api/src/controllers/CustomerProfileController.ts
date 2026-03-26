@@ -2,23 +2,7 @@ import { Controller, Get, Put, Route, Tags, Body, Security, Request } from 'tsoa
 import type { Request as ExpressRequest } from 'express';
 import type { ICustomerProfile } from '@mercashop/shared';
 import * as customerProfileService from '../services/customerProfileService';
-
-interface UpdateCustomerProfileBody {
-  billingInformation?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    vatNumber?: string;
-  };
-  deliveryAddress?: {
-    street?: string;
-    number?: string;
-    zipCode?: string;
-    city?: string;
-    municipality?: string;
-    comment?: string;
-  };
-}
+import type { UpdateCustomerProfileBody } from '../dtos/customer-profile.dto';
 
 @Route('api/customer-profile')
 @Tags('CustomerProfile')

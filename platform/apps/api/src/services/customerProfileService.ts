@@ -1,22 +1,6 @@
 import { CustomerProfileModel, type CustomerProfileDocument } from '../models/CustomerProfile';
 import type { ICustomerProfile } from '@mercashop/shared';
-
-interface UpdateProfileData {
-  billingInformation?: {
-    name?: string;
-    email?: string;
-    phone?: string;
-    vatNumber?: string;
-  };
-  deliveryAddress?: {
-    street?: string;
-    number?: string;
-    zipCode?: string;
-    city?: string;
-    municipality?: string;
-    comment?: string;
-  };
-}
+import type { UpdateCustomerProfileBody } from '../dtos/customer-profile.dto';
 
 function toProfileResponse(doc: CustomerProfileDocument): ICustomerProfile {
   return {
@@ -45,7 +29,7 @@ export async function getOrCreateProfile(tenantId: string, userId: string): Prom
   return toProfileResponse(profile);
 }
 
-export async function updateProfile(tenantId: string, userId: string, data: UpdateProfileData): Promise<ICustomerProfile> {
+export async function updateProfile(tenantId: string, userId: string, data: UpdateCustomerProfileBody): Promise<ICustomerProfile> {
   const updateFields: Record<string, string> = {};
 
   if (data.billingInformation) {
