@@ -3,27 +3,14 @@ import { OrderModel, ProductModel, EstablishmentModel } from '../models';
 import { withTransaction } from '../utils/transaction';
 import SocketServer from './socketServer';
 import type { Order, OrderLine } from '../types/order';
-import type { PaymentMethod } from '../types/order';
 import type { OrderDocument } from '../models/Order';
 import { EstablishmentStatus } from '@mercashop/shared';
+import type { CreateOrderBody } from '../dtos/order.dto';
 
-interface CreateOrderData {
-  tenantId: string;
-  userId: string;
-  establishmentId: string;
-  orderLines: Array<{ item: { _id: string; name: string; quantity: number; price?: number } }>;
-  total: number;
-  deliveryAddress?: Record<string, unknown>;
-  billingInformation?: Record<string, unknown>;
-  paymentMethod: PaymentMethod;
-  deliveryMethod?: string;
-  remark?: string;
-}
-
-export async function createOrder(data: CreateOrderData): Promise<OrderDocument> {
+export async function createOrder(tenantId: string, userId: string, body: CreateOrderBody): Promise<OrderDocument> {
   const establishment = await EstablishmentModel.findOne({
-    _id: data.establishmentId,
-    tenantId: data.tenantId,
+    _id: body.establishmentId,
+    tenantId,
   });
 
   if (!establishment) {
@@ -34,8 +21,8 @@ export async function createOrder(data: CreateOrderData): Promise<OrderDocument>
     throw new Error('Establishment is currently closed');
   }
 
-  const trimmedRemark = data.remark?.trim() || undefined;
-  return OrderModel.create({ ...data, remark: trimmedRemark });
+  const trimmedRemark = body.remark?.trim() || undefined;
+  return OrderModel.create({ tenantId, userId, ...body, remark: trimmedRemark });
 }
 
 export async function findOrderById(id: string, tenantId: string): Promise<OrderDocument | null> {

@@ -1,21 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { PaymentMethod } from '../types/order';
 import * as orderService from '../services/orderService';
-
-interface CreateOrderBody {
-  establishmentId: string;
-  orderLines: Array<{ item: { _id: string; name: string; quantity: number; price?: number } }>;
-  total: number;
-  deliveryAddress?: Record<string, unknown>;
-  billingInformation?: Record<string, unknown>;
-  paymentMethod: PaymentMethod;
-  deliveryMethod?: string;
-  /**
-   * @maxLength 200
-   */
-  remark?: string;
-}
+import type { CreateOrderBody, UpdateOrderStatusBody } from '../dtos/order.dto';
 
 @Route('api/orders')
 @Tags('Order')
@@ -24,11 +10,7 @@ export class OrderController extends Controller {
   @Security('BearerAuth')
   public async createOrder(@Request() req: ExpressRequest, @Body() body: CreateOrderBody): Promise<{ order: any }> {
     try {
-      const order = await orderService.createOrder({
-        tenantId: req.tenantId!,
-        userId: req.firebaseUser!.uid,
-        ...body,
-      });
+      const order = await orderService.createOrder(req.tenantId!, req.firebaseUser!.uid, body);
       this.setStatus(201);
       return { order };
     } catch (error: unknown) {
@@ -69,7 +51,7 @@ export class OrderController extends Controller {
 
   @Patch('{id}/status')
   @Security('BearerAuth')
-  public async updateOrderStatus(@Request() req: ExpressRequest, @Path() id: string, @Body() body: { status: string }): Promise<{ order: any }> {
+  public async updateOrderStatus(@Request() req: ExpressRequest, @Path() id: string, @Body() body: UpdateOrderStatusBody): Promise<{ order: any }> {
     const order = await orderService.updateOrderStatus(id, req.tenantId!, body.status);
     if (!order) {
       this.setStatus(404);
