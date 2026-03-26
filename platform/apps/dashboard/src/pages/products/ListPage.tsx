@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Badge, Box, Button, Card, CloseButton, HStack, Image, Input, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Inbox, LayoutGrid, Rows3 } from 'lucide-react';
+import { Inbox, LayoutGrid, Pencil, Rows3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingScreen } from '../../components/ui/LoadingScreen.tsx';
 import { DataTable } from '../../components/ui/DataTable.tsx';
 import { EmptyState } from '../../components/ui/EmptyState.tsx';
@@ -22,6 +23,7 @@ interface Product {
 
 export function ListPage() {
   const { establishmentId } = useEstablishmentId()!;
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [view, setView] = useState<'table' | 'grid'>('table');
@@ -99,6 +101,21 @@ export function ListPage() {
     {
       accessorKey: 'location',
       header: 'Location',
+    },
+    {
+      id: 'actions',
+      header: '',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => navigate(`/establishments/${establishmentId}/products/${row.original._id}/edit`)}
+          aria-label={`Edit ${row.original.name}`}
+        >
+          <Pencil size="1rem" />
+        </Button>
+      ),
     },
   ];
 
@@ -199,6 +216,14 @@ export function ListPage() {
                     <Text color={Colors.text.secondary}>Quantity</Text>
                     <Text fontWeight="medium">{product.quantity}</Text>
                   </HStack>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/establishments/${establishmentId}/products/${product._id}/edit`)}
+                  >
+                    <Pencil size="1rem" />
+                    Edit
+                  </Button>
                 </VStack>
               </Card.Body>
             </Card.Root>

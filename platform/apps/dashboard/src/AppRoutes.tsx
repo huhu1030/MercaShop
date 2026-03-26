@@ -4,6 +4,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { LoginPage } from './pages/LoginPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { CreatePage } from './pages/products/CreatePage.tsx';
+import { EditPage } from './pages/products/EditPage.tsx';
 import { ListPage } from './pages/products/ListPage.tsx';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { EstablishmentPickerPage } from './pages/establishments/EstablishmentPickerPage';
@@ -49,6 +50,14 @@ export function AppRoutes() {
         element={
           <DashboardRoute>
             <CreatePage />
+          </DashboardRoute>
+        }
+      />
+      <Route
+        path="/establishments/:establishmentId/products/:id/edit"
+        element={
+          <DashboardRoute>
+            <EditPage />
           </DashboardRoute>
         }
       />
