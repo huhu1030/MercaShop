@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Delete, Patch, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import type { CreateProductBody, UpdateProductQuantityBody } from '../dtos/product.dto';
+import type { CreateProductBody, UpdateProductBody, UpdateProductQuantityBody } from '../dtos/product.dto';
 import * as productService from '../services/productService';
 
 @Route('api/products')
@@ -37,6 +37,21 @@ export class ProductController extends Controller {
   public async deleteProduct(@Request() req: ExpressRequest, @Path() id: string): Promise<{ message: string }> {
     await productService.deleteProduct(id, req.tenantId!);
     return { message: 'Product deleted' };
+  }
+
+  @Patch('{id}')
+  @Security('BearerAuth')
+  public async updateProduct(
+    @Request() req: ExpressRequest,
+    @Path() id: string,
+    @Body() body: UpdateProductBody,
+  ): Promise<{ product: any }> {
+    const product = await productService.updateProduct(id, req.tenantId!, body);
+    if (!product) {
+      this.setStatus(404);
+      throw new Error('Product not found');
+    }
+    return { product };
   }
 
   @Patch('{id}/quantity')

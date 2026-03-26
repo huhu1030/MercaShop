@@ -1,5 +1,6 @@
 import { ProductModel } from '../models';
-import type { CreateProductBody } from '../dtos/product.dto';
+import type { ProductDocument } from '../models/Product';
+import type { CreateProductBody, UpdateProductBody } from '../dtos/product.dto';
 
 export async function createProduct(tenantId: string, body: CreateProductBody) {
   return ProductModel.create({ tenantId, ...body });
@@ -19,6 +20,14 @@ export async function deleteProduct(id: string, tenantId: string) {
 
 export async function updateProductQuantity(id: string, tenantId: string, quantity: number) {
   return ProductModel.findOneAndUpdate({ _id: id, tenantId }, { quantity }, { new: true });
+}
+
+export async function updateProduct(
+  id: string,
+  tenantId: string,
+  body: UpdateProductBody,
+): Promise<ProductDocument | null> {
+  return ProductModel.findOneAndUpdate({ _id: id, tenantId }, { $set: body }, { new: true });
 }
 
 export async function updateProductPhoto(productId: string, tenantId: string, url: string) {
