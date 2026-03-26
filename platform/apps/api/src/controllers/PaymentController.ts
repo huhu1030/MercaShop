@@ -1,6 +1,6 @@
 import { Controller, Post, Get, Route, Tags, Path, Body, Security, Request } from 'tsoa';
 import type { Request as ExpressRequest } from 'express';
-import { PaymentMethod } from '../types/order';
+import type { ProcessPaymentBody, MollieWebhookBody } from '../dtos/payment.dto';
 import * as paymentService from '../services/paymentService';
 import * as orderService from '../services/orderService';
 
@@ -11,7 +11,7 @@ export class PaymentController extends Controller {
   @Security('BearerAuth')
   public async processPayment(
     @Request() req: ExpressRequest,
-    @Body() body: { orderId: string; paymentMethod: PaymentMethod },
+    @Body() body: ProcessPaymentBody,
   ): Promise<{ checkoutUrl?: string; message?: string }> {
     try {
       if (!req.tenant) {
@@ -54,7 +54,7 @@ export class PaymentController extends Controller {
 @Tags('Webhook')
 export class WebhookController extends Controller {
   @Post('')
-  public async mollieWebhook(@Body() body: { id: string }): Promise<{ status: string }> {
+  public async mollieWebhook(@Body() body: MollieWebhookBody): Promise<{ status: string }> {
     return paymentService.handleWebhook(body.id);
   }
 }

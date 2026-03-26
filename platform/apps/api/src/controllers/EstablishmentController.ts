@@ -3,6 +3,7 @@ import type { Request as ExpressRequest } from 'express';
 import * as establishmentService from '../services/establishmentService';
 import type { IEstablishmentSummary } from '@mercashop/shared';
 import type { EstablishmentDocument } from '../models/Establishment';
+import type { UpdateEstablishmentStatusBody } from '../dtos/establishment.dto';
 
 function toSummary(doc: EstablishmentDocument): IEstablishmentSummary {
   return {
@@ -39,7 +40,7 @@ export class EstablishmentController extends Controller {
   @Security('BearerAuth')
   public async updateStatus(
     @Request() req: ExpressRequest,
-    @Body() body: { establishmentId: string; status: string },
+    @Body() body: UpdateEstablishmentStatusBody,
   ): Promise<{ establishment: IEstablishmentSummary }> {
     try {
       const establishment = await establishmentService.updateEstablishmentStatus(
