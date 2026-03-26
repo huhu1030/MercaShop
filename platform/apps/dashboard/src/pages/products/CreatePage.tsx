@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, Field, FileUpload, Input, Text, VStack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { getProductApi, getUploadApi } from '@mercashop/shared/api-client';
+import type { IOptionGroup } from '@mercashop/shared';
 import { PageHeader } from '../../components/ui/PageHeader.tsx';
 import { Colors } from '../../constants/colors.ts';
 import { useEstablishmentId } from '../../hooks/useEstablishmentId';
 import { Upload, X } from 'lucide-react';
+import { OptionGroupDrawer } from '../../components/products/OptionGroupDrawer';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
@@ -22,6 +25,8 @@ type ProductFormValues = z.infer<typeof productSchema>;
 
 export function CreatePage() {
   const { establishmentId } = useEstablishmentId()!;
+  const [optionGroups, setOptionGroups] = useState<IOptionGroup[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -49,6 +54,7 @@ export function CreatePage() {
       const createResponse = await getProductApi().createProduct({
         ...productValues,
         establishmentId,
+        ...(optionGroups.length > 0 ? { optionGroups } : {}),
       });
 
       const productId = createResponse.data.product?._id as string | undefined;
@@ -227,11 +233,22 @@ export function CreatePage() {
             {errors.picture && <Field.ErrorText>{errors.picture.message}</Field.ErrorText>}
           </Field.Root>
 
+          <Button variant="outline" onClick={() => setDrawerOpen(true)}>
+            Manage Options ({optionGroups.length} groups)
+          </Button>
+
           <Button type="submit" colorPalette="purple" loading={mutation.isPending} loadingText="Creating...">
             Add Product
           </Button>
         </VStack>
       </Box>
+
+      <OptionGroupDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        optionGroups={optionGroups}
+        onChange={setOptionGroups}
+      />
     </VStack>
   );
 }
