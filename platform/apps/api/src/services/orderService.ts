@@ -6,6 +6,7 @@ import type { Order, OrderLine } from '../types/order';
 import type { OrderDocument } from '../models/Order';
 import { EstablishmentStatus } from '@mercashop/shared';
 import type { CreateOrderBody } from '../dtos/order.dto';
+import { validateAndSnapshotOptions } from '../utils/validateOrderOptions';
 
 export async function createOrder(tenantId: string, userId: string, body: CreateOrderBody): Promise<OrderDocument> {
   const establishment = await EstablishmentModel.findOne({
@@ -21,8 +22,46 @@ export async function createOrder(tenantId: string, userId: string, body: Create
     throw new Error('Establishment is currently closed');
   }
 
+  // Validate and snapshot options for each order line
+  const processedOrderLines = await Promise.all(
+    body.orderLines.map(async (line) => {
+      const product = await ProductModel.findOne({ _id: line.item._id, tenantId });
+      if (!product) {
+        throw new Error(`Product "${line.item.name}" not found`);
+      }
+
+      const clientSelections = line.item.selectedOptions ?? [];
+      const { selectedOptions, optionsTotalPrice } = validateAndSnapshotOptions(
+        product.optionGroups ?? [],
+        clientSelections,
+      );
+
+      return {
+        item: {
+          _id: line.item._id,
+          name: line.item.name,
+          quantity: line.item.quantity,
+          price: product.price,
+          ...(selectedOptions.length > 0 && { selectedOptions }),
+          ...(optionsTotalPrice > 0 && { optionsTotalPrice }),
+        },
+      };
+    }),
+  );
+
   const trimmedRemark = body.remark?.trim() || undefined;
-  return OrderModel.create({ tenantId, userId, ...body, remark: trimmedRemark });
+  return OrderModel.create({
+    tenantId,
+    userId,
+    establishmentId: body.establishmentId,
+    orderLines: processedOrderLines,
+    total: body.total,
+    deliveryAddress: body.deliveryAddress,
+    billingInformation: body.billingInformation,
+    paymentMethod: body.paymentMethod,
+    deliveryMethod: body.deliveryMethod,
+    remark: trimmedRemark,
+  });
 }
 
 export async function findOrderById(id: string, tenantId: string): Promise<OrderDocument | null> {
