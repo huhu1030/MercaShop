@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError, ope
 // @ts-ignore
 import { MollieWebhook200Response } from '../models';
 // @ts-ignore
-import { MollieWebhookRequest } from '../models';
+import { MollieWebhookBody } from '../models';
 /**
  * WebhookApi - axios parameter creator
  * @export
@@ -33,13 +33,13 @@ export const WebhookApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
-         * @param {MollieWebhookRequest} mollieWebhookRequest 
+         * @param {MollieWebhookBody} mollieWebhookBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mollieWebhook: async (mollieWebhookRequest: MollieWebhookRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'mollieWebhookRequest' is not null or undefined
-            assertParamExists('mollieWebhook', 'mollieWebhookRequest', mollieWebhookRequest)
+        mollieWebhook: async (mollieWebhookBody: MollieWebhookBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'mollieWebhookBody' is not null or undefined
+            assertParamExists('mollieWebhook', 'mollieWebhookBody', mollieWebhookBody)
             const localVarPath = `/webhook`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -59,7 +59,7 @@ export const WebhookApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(mollieWebhookRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(mollieWebhookBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -78,12 +78,12 @@ export const WebhookApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {MollieWebhookRequest} mollieWebhookRequest 
+         * @param {MollieWebhookBody} mollieWebhookBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mollieWebhook(mollieWebhookRequest: MollieWebhookRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MollieWebhook200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mollieWebhook(mollieWebhookRequest, options);
+        async mollieWebhook(mollieWebhookBody: MollieWebhookBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MollieWebhook200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mollieWebhook(mollieWebhookBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['WebhookApi.mollieWebhook']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -100,12 +100,12 @@ export const WebhookApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
-         * @param {MollieWebhookRequest} mollieWebhookRequest 
+         * @param {MollieWebhookBody} mollieWebhookBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mollieWebhook(mollieWebhookRequest: MollieWebhookRequest, options?: any): AxiosPromise<MollieWebhook200Response> {
-            return localVarFp.mollieWebhook(mollieWebhookRequest, options).then((request) => request(axios, basePath));
+        mollieWebhook(mollieWebhookBody: MollieWebhookBody, options?: any): AxiosPromise<MollieWebhook200Response> {
+            return localVarFp.mollieWebhook(mollieWebhookBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -119,13 +119,13 @@ export const WebhookApiFactory = function (configuration?: Configuration, basePa
 export class WebhookApi extends BaseAPI {
     /**
      * 
-     * @param {MollieWebhookRequest} mollieWebhookRequest 
+     * @param {MollieWebhookBody} mollieWebhookBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof WebhookApi
      */
-    public mollieWebhook(mollieWebhookRequest: MollieWebhookRequest, options?: RawAxiosRequestConfig) {
-        return WebhookApiFp(this.configuration).mollieWebhook(mollieWebhookRequest, options).then((request) => request(this.axios, this.basePath));
+    public mollieWebhook(mollieWebhookBody: MollieWebhookBody, options?: RawAxiosRequestConfig) {
+        return WebhookApiFp(this.configuration).mollieWebhook(mollieWebhookBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { CreateOrderBodyOrderLinesInner } from './create-order-body-order-lines-inner';
+import { IOrderLine } from './iorder-line';
 // May contain unused imports in some cases
 // @ts-ignore
 import { PaymentMethod } from './payment-method';
@@ -34,10 +34,10 @@ export interface CreateOrderBody {
     'establishmentId': string;
     /**
      * 
-     * @type {Array<CreateOrderBodyOrderLinesInner>}
+     * @type {Array<IOrderLine>}
      * @memberof CreateOrderBody
      */
-    'orderLines': Array<CreateOrderBodyOrderLinesInner>;
+    'orderLines': Array<IOrderLine>;
     /**
      * 
      * @type {number}

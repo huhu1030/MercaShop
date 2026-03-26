@@ -30,7 +30,7 @@ import { DeleteMe200Response } from '../models';
 // @ts-ignore
 import { GetProductsByEstablishment200Response } from '../models';
 // @ts-ignore
-import { UpdateQuantityRequest } from '../models';
+import { UpdateProductQuantityBody } from '../models';
 /**
  * ProductApi - axios parameter creator
  * @export
@@ -190,15 +190,15 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @param {string} id 
-         * @param {UpdateQuantityRequest} updateQuantityRequest 
+         * @param {UpdateProductQuantityBody} updateProductQuantityBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateQuantity: async (id: string, updateQuantityRequest: UpdateQuantityRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateQuantity: async (id: string, updateProductQuantityBody: UpdateProductQuantityBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateQuantity', 'id', id)
-            // verify required parameter 'updateQuantityRequest' is not null or undefined
-            assertParamExists('updateQuantity', 'updateQuantityRequest', updateQuantityRequest)
+            // verify required parameter 'updateProductQuantityBody' is not null or undefined
+            assertParamExists('updateQuantity', 'updateProductQuantityBody', updateProductQuantityBody)
             const localVarPath = `/api/products/{id}/quantity`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -223,7 +223,7 @@ export const ProductApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updateQuantityRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updateProductQuantityBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -291,12 +291,12 @@ export const ProductApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
-         * @param {UpdateQuantityRequest} updateQuantityRequest 
+         * @param {UpdateProductQuantityBody} updateProductQuantityBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateQuantity(id: string, updateQuantityRequest: UpdateQuantityRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateProduct200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateQuantity(id, updateQuantityRequest, options);
+        async updateQuantity(id: string, updateProductQuantityBody: UpdateProductQuantityBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateProduct200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateQuantity(id, updateProductQuantityBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ProductApi.updateQuantity']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -350,12 +350,12 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @param {string} id 
-         * @param {UpdateQuantityRequest} updateQuantityRequest 
+         * @param {UpdateProductQuantityBody} updateProductQuantityBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateQuantity(id: string, updateQuantityRequest: UpdateQuantityRequest, options?: any): AxiosPromise<CreateProduct200Response> {
-            return localVarFp.updateQuantity(id, updateQuantityRequest, options).then((request) => request(axios, basePath));
+        updateQuantity(id: string, updateProductQuantityBody: UpdateProductQuantityBody, options?: any): AxiosPromise<CreateProduct200Response> {
+            return localVarFp.updateQuantity(id, updateProductQuantityBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -414,13 +414,13 @@ export class ProductApi extends BaseAPI {
     /**
      * 
      * @param {string} id 
-     * @param {UpdateQuantityRequest} updateQuantityRequest 
+     * @param {UpdateProductQuantityBody} updateProductQuantityBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ProductApi
      */
-    public updateQuantity(id: string, updateQuantityRequest: UpdateQuantityRequest, options?: RawAxiosRequestConfig) {
-        return ProductApiFp(this.configuration).updateQuantity(id, updateQuantityRequest, options).then((request) => request(this.axios, this.basePath));
+    public updateQuantity(id: string, updateProductQuantityBody: UpdateProductQuantityBody, options?: RawAxiosRequestConfig) {
+        return ProductApiFp(this.configuration).updateQuantity(id, updateProductQuantityBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

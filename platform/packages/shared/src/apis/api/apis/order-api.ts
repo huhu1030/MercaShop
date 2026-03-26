@@ -30,7 +30,7 @@ import { GetOrdersByEstablishment200Response } from '../models';
 // @ts-ignore
 import { GetPaymentStatus200Response } from '../models';
 // @ts-ignore
-import { MollieWebhook200Response } from '../models';
+import { UpdateOrderStatusBody } from '../models';
 /**
  * OrderApi - axios parameter creator
  * @export
@@ -227,15 +227,15 @@ export const OrderApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * 
          * @param {string} id 
-         * @param {MollieWebhook200Response} mollieWebhook200Response 
+         * @param {UpdateOrderStatusBody} updateOrderStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateOrderStatus: async (id: string, mollieWebhook200Response: MollieWebhook200Response, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateOrderStatus: async (id: string, updateOrderStatusBody: UpdateOrderStatusBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('updateOrderStatus', 'id', id)
-            // verify required parameter 'mollieWebhook200Response' is not null or undefined
-            assertParamExists('updateOrderStatus', 'mollieWebhook200Response', mollieWebhook200Response)
+            // verify required parameter 'updateOrderStatusBody' is not null or undefined
+            assertParamExists('updateOrderStatus', 'updateOrderStatusBody', updateOrderStatusBody)
             const localVarPath = `/api/orders/{id}/status`
                 .replace(`{${"id"}}`, encodeURIComponent(String(id)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -260,7 +260,7 @@ export const OrderApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(mollieWebhook200Response, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updateOrderStatusBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -340,12 +340,12 @@ export const OrderApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} id 
-         * @param {MollieWebhook200Response} mollieWebhook200Response 
+         * @param {UpdateOrderStatusBody} updateOrderStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateOrderStatus(id: string, mollieWebhook200Response: MollieWebhook200Response, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPaymentStatus200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateOrderStatus(id, mollieWebhook200Response, options);
+        async updateOrderStatus(id: string, updateOrderStatusBody: UpdateOrderStatusBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetPaymentStatus200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateOrderStatus(id, updateOrderStatusBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['OrderApi.updateOrderStatus']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -408,12 +408,12 @@ export const OrderApiFactory = function (configuration?: Configuration, basePath
         /**
          * 
          * @param {string} id 
-         * @param {MollieWebhook200Response} mollieWebhook200Response 
+         * @param {UpdateOrderStatusBody} updateOrderStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateOrderStatus(id: string, mollieWebhook200Response: MollieWebhook200Response, options?: any): AxiosPromise<GetPaymentStatus200Response> {
-            return localVarFp.updateOrderStatus(id, mollieWebhook200Response, options).then((request) => request(axios, basePath));
+        updateOrderStatus(id: string, updateOrderStatusBody: UpdateOrderStatusBody, options?: any): AxiosPromise<GetPaymentStatus200Response> {
+            return localVarFp.updateOrderStatus(id, updateOrderStatusBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -483,13 +483,13 @@ export class OrderApi extends BaseAPI {
     /**
      * 
      * @param {string} id 
-     * @param {MollieWebhook200Response} mollieWebhook200Response 
+     * @param {UpdateOrderStatusBody} updateOrderStatusBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrderApi
      */
-    public updateOrderStatus(id: string, mollieWebhook200Response: MollieWebhook200Response, options?: RawAxiosRequestConfig) {
-        return OrderApiFp(this.configuration).updateOrderStatus(id, mollieWebhook200Response, options).then((request) => request(this.axios, this.basePath));
+    public updateOrderStatus(id: string, updateOrderStatusBody: UpdateOrderStatusBody, options?: RawAxiosRequestConfig) {
+        return OrderApiFp(this.configuration).updateOrderStatus(id, updateOrderStatusBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

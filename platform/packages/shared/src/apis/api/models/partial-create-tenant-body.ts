@@ -15,10 +15,10 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { CreateTenantBodyBranding } from './create-tenant-body-branding';
+import { ITenantBranding } from './itenant-branding';
 // May contain unused imports in some cases
 // @ts-ignore
-import { CreateTenantBodyContact } from './create-tenant-body-contact';
+import { PartialCreateTenantBodyContact } from './partial-create-tenant-body-contact';
 
 /**
  * Make all properties in T optional
@@ -46,15 +46,15 @@ export interface PartialCreateTenantBody {
     'domains'?: Array<string>;
     /**
      * 
-     * @type {CreateTenantBodyBranding}
+     * @type {ITenantBranding}
      * @memberof PartialCreateTenantBody
      */
-    'branding'?: CreateTenantBodyBranding;
+    'branding'?: ITenantBranding;
     /**
      * 
-     * @type {CreateTenantBodyContact}
+     * @type {PartialCreateTenantBodyContact}
      * @memberof PartialCreateTenantBody
      */
-    'contact'?: CreateTenantBodyContact;
+    'contact'?: PartialCreateTenantBodyContact;
 }
 

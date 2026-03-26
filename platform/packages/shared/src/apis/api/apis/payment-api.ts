@@ -26,7 +26,7 @@ import { GetPaymentStatus200Response } from '../models';
 // @ts-ignore
 import { ProcessPayment200Response } from '../models';
 // @ts-ignore
-import { ProcessPaymentRequest } from '../models';
+import { ProcessPaymentBody } from '../models';
 /**
  * PaymentApi - axios parameter creator
  * @export
@@ -72,13 +72,13 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @param {ProcessPaymentRequest} processPaymentRequest 
+         * @param {ProcessPaymentBody} processPaymentBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        processPayment: async (processPaymentRequest: ProcessPaymentRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'processPaymentRequest' is not null or undefined
-            assertParamExists('processPayment', 'processPaymentRequest', processPaymentRequest)
+        processPayment: async (processPaymentBody: ProcessPaymentBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'processPaymentBody' is not null or undefined
+            assertParamExists('processPayment', 'processPaymentBody', processPaymentBody)
             const localVarPath = `/api/payments`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -102,7 +102,7 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(processPaymentRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(processPaymentBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -133,12 +133,12 @@ export const PaymentApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {ProcessPaymentRequest} processPaymentRequest 
+         * @param {ProcessPaymentBody} processPaymentBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async processPayment(processPaymentRequest: ProcessPaymentRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessPayment200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.processPayment(processPaymentRequest, options);
+        async processPayment(processPaymentBody: ProcessPaymentBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProcessPayment200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.processPayment(processPaymentBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['PaymentApi.processPayment']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -164,12 +164,12 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @param {ProcessPaymentRequest} processPaymentRequest 
+         * @param {ProcessPaymentBody} processPaymentBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        processPayment(processPaymentRequest: ProcessPaymentRequest, options?: any): AxiosPromise<ProcessPayment200Response> {
-            return localVarFp.processPayment(processPaymentRequest, options).then((request) => request(axios, basePath));
+        processPayment(processPaymentBody: ProcessPaymentBody, options?: any): AxiosPromise<ProcessPayment200Response> {
+            return localVarFp.processPayment(processPaymentBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -194,13 +194,13 @@ export class PaymentApi extends BaseAPI {
 
     /**
      * 
-     * @param {ProcessPaymentRequest} processPaymentRequest 
+     * @param {ProcessPaymentBody} processPaymentBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof PaymentApi
      */
-    public processPayment(processPaymentRequest: ProcessPaymentRequest, options?: RawAxiosRequestConfig) {
-        return PaymentApiFp(this.configuration).processPayment(processPaymentRequest, options).then((request) => request(this.axios, this.basePath));
+    public processPayment(processPaymentBody: ProcessPaymentBody, options?: RawAxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).processPayment(processPaymentBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -26,7 +26,7 @@ import { GetEstablishment200Response } from '../models';
 // @ts-ignore
 import { GetEstablishments200Response } from '../models';
 // @ts-ignore
-import { UpdateStatusRequest } from '../models';
+import { UpdateEstablishmentStatusBody } from '../models';
 /**
  * EstablishmentApi - axios parameter creator
  * @export
@@ -105,13 +105,13 @@ export const EstablishmentApiAxiosParamCreator = function (configuration?: Confi
         },
         /**
          * 
-         * @param {UpdateStatusRequest} updateStatusRequest 
+         * @param {UpdateEstablishmentStatusBody} updateEstablishmentStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateStatus: async (updateStatusRequest: UpdateStatusRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'updateStatusRequest' is not null or undefined
-            assertParamExists('updateStatus', 'updateStatusRequest', updateStatusRequest)
+        updateStatus: async (updateEstablishmentStatusBody: UpdateEstablishmentStatusBody, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'updateEstablishmentStatusBody' is not null or undefined
+            assertParamExists('updateStatus', 'updateEstablishmentStatusBody', updateEstablishmentStatusBody)
             const localVarPath = `/api/establishments/status`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -135,7 +135,7 @@ export const EstablishmentApiAxiosParamCreator = function (configuration?: Confi
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updateStatusRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updateEstablishmentStatusBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -177,12 +177,12 @@ export const EstablishmentApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {UpdateStatusRequest} updateStatusRequest 
+         * @param {UpdateEstablishmentStatusBody} updateEstablishmentStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateStatus(updateStatusRequest: UpdateStatusRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetEstablishment200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updateStatus(updateStatusRequest, options);
+        async updateStatus(updateEstablishmentStatusBody: UpdateEstablishmentStatusBody, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetEstablishment200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateStatus(updateEstablishmentStatusBody, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['EstablishmentApi.updateStatus']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -216,12 +216,12 @@ export const EstablishmentApiFactory = function (configuration?: Configuration, 
         },
         /**
          * 
-         * @param {UpdateStatusRequest} updateStatusRequest 
+         * @param {UpdateEstablishmentStatusBody} updateEstablishmentStatusBody 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateStatus(updateStatusRequest: UpdateStatusRequest, options?: any): AxiosPromise<GetEstablishment200Response> {
-            return localVarFp.updateStatus(updateStatusRequest, options).then((request) => request(axios, basePath));
+        updateStatus(updateEstablishmentStatusBody: UpdateEstablishmentStatusBody, options?: any): AxiosPromise<GetEstablishment200Response> {
+            return localVarFp.updateStatus(updateEstablishmentStatusBody, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -256,13 +256,13 @@ export class EstablishmentApi extends BaseAPI {
 
     /**
      * 
-     * @param {UpdateStatusRequest} updateStatusRequest 
+     * @param {UpdateEstablishmentStatusBody} updateEstablishmentStatusBody 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof EstablishmentApi
      */
-    public updateStatus(updateStatusRequest: UpdateStatusRequest, options?: RawAxiosRequestConfig) {
-        return EstablishmentApiFp(this.configuration).updateStatus(updateStatusRequest, options).then((request) => request(this.axios, this.basePath));
+    public updateStatus(updateEstablishmentStatusBody: UpdateEstablishmentStatusBody, options?: RawAxiosRequestConfig) {
+        return EstablishmentApiFp(this.configuration).updateStatus(updateEstablishmentStatusBody, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

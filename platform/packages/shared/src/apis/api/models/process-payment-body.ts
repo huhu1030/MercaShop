@@ -15,28 +15,27 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import { IBillingInformation } from './ibilling-information';
-// May contain unused imports in some cases
-// @ts-ignore
-import { IDeliveryAddress } from './idelivery-address';
+import { PaymentMethod } from './payment-method';
 
 /**
  * 
  * @export
- * @interface UpdateCustomerProfileBody
+ * @interface ProcessPaymentBody
  */
-export interface UpdateCustomerProfileBody {
+export interface ProcessPaymentBody {
     /**
      * 
-     * @type {IBillingInformation}
-     * @memberof UpdateCustomerProfileBody
+     * @type {string}
+     * @memberof ProcessPaymentBody
      */
-    'billingInformation'?: IBillingInformation;
+    'orderId': string;
     /**
      * 
-     * @type {IDeliveryAddress}
-     * @memberof UpdateCustomerProfileBody
+     * @type {PaymentMethod}
+     * @memberof ProcessPaymentBody
      */
-    'deliveryAddress'?: IDeliveryAddress;
+    'paymentMethod': PaymentMethod;
 }
+
+
 

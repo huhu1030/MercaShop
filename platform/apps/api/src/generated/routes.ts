@@ -40,8 +40,8 @@ const models: TsoaRoute.Models = {
     "CreateUserBody": {
         "dataType": "refObject",
         "properties": {
-            "firstName": {"dataType":"string","required":true},
-            "lastName": {"dataType":"string","required":true},
+            "firstName": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "lastName": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
             "phone": {"dataType":"string"},
         },
         "additionalProperties": false,
@@ -82,18 +82,18 @@ const models: TsoaRoute.Models = {
     "CreateTenantBody": {
         "dataType": "refObject",
         "properties": {
-            "name": {"dataType":"string","required":true},
-            "slug": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true,"validators":{"minLength":{"value":1},"maxLength":{"value":100}}},
+            "slug": {"dataType":"string","required":true,"validators":{"minLength":{"value":1},"maxLength":{"value":50}}},
             "domains": {"dataType":"array","array":{"dataType":"string"},"required":true},
-            "branding": {"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}},"required":true},
-            "contact": {"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}},"required":true},
+            "branding": {"ref":"ITenantBranding","required":true},
+            "contact": {"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},"firstName":{"dataType":"string","required":true,"validators":{"minLength":{"value":1}}}},"required":true},
         },
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "Partial_CreateTenantBody_": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string"},"slug":{"dataType":"string"},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"dataType":"nestedObjectLiteral","nestedProperties":{"appName":{"dataType":"string","required":true},"primaryColor":{"dataType":"string","required":true},"logo":{"dataType":"string","required":true}}},"contact":{"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}}}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","validators":{"minLength":{"value":1},"maxLength":{"value":100}}},"slug":{"dataType":"string","validators":{"minLength":{"value":1},"maxLength":{"value":50}}},"domains":{"dataType":"array","array":{"dataType":"string"}},"branding":{"ref":"ITenantBranding"},"contact":{"dataType":"nestedObjectLiteral","nestedProperties":{"phone":{"dataType":"string"},"email":{"dataType":"string","required":true},"lastName":{"dataType":"string","required":true},"firstName":{"dataType":"string","required":true}}}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "EstablishmentStatus": {
@@ -152,14 +152,47 @@ const models: TsoaRoute.Models = {
     "CreateProductBody": {
         "dataType": "refObject",
         "properties": {
-            "name": {"dataType":"string","required":true},
-            "establishmentId": {"dataType":"string","required":true},
-            "description": {"dataType":"string"},
-            "category": {"dataType":"string","required":true},
-            "price": {"dataType":"double","required":true},
+            "name": {"dataType":"string","required":true,"validators":{"minLength":{"value":1},"maxLength":{"value":200}}},
+            "establishmentId": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "description": {"dataType":"string","validators":{"maxLength":{"value":2000}}},
+            "category": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "price": {"dataType":"double","required":true,"validators":{"minimum":{"value":0}}},
             "location": {"dataType":"string"},
-            "quantity": {"dataType":"double"},
+            "quantity": {"dataType":"integer","validators":{"minimum":{"value":0}}},
             "serialNumber": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateProductQuantityBody": {
+        "dataType": "refObject",
+        "properties": {
+            "quantity": {"dataType":"integer","required":true,"validators":{"minimum":{"value":0}}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ProcessPaymentBody": {
+        "dataType": "refObject",
+        "properties": {
+            "orderId": {"dataType":"string","required":true},
+            "paymentMethod": {"ref":"PaymentMethod","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "MollieWebhookBody": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IOrderLine": {
+        "dataType": "refObject",
+        "properties": {
+            "item": {"dataType":"nestedObjectLiteral","nestedProperties":{"price":{"dataType":"double"},"quantity":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"_id":{"dataType":"string","required":true}},"required":true},
         },
         "additionalProperties": false,
     },
@@ -172,14 +205,22 @@ const models: TsoaRoute.Models = {
     "CreateOrderBody": {
         "dataType": "refObject",
         "properties": {
-            "establishmentId": {"dataType":"string","required":true},
-            "orderLines": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"item":{"dataType":"nestedObjectLiteral","nestedProperties":{"price":{"dataType":"double"},"quantity":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"_id":{"dataType":"string","required":true}},"required":true}}},"required":true},
-            "total": {"dataType":"double","required":true},
+            "establishmentId": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "orderLines": {"dataType":"array","array":{"dataType":"refObject","ref":"IOrderLine"},"required":true},
+            "total": {"dataType":"double","required":true,"validators":{"minimum":{"value":0}}},
             "deliveryAddress": {"ref":"Record_string.unknown_"},
             "billingInformation": {"ref":"Record_string.unknown_"},
             "paymentMethod": {"ref":"PaymentMethod","required":true},
             "deliveryMethod": {"dataType":"string"},
             "remark": {"dataType":"string","validators":{"maxLength":{"value":200}}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateOrderStatusBody": {
+        "dataType": "refObject",
+        "properties": {
+            "status": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -192,6 +233,15 @@ const models: TsoaRoute.Models = {
             "category": {"dataType":"string","required":true},
             "status": {"ref":"EstablishmentStatus","required":true},
             "logo": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateEstablishmentStatusBody": {
+        "dataType": "refObject",
+        "properties": {
+            "establishmentId": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "status": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -232,8 +282,8 @@ const models: TsoaRoute.Models = {
     "UpdateCustomerProfileBody": {
         "dataType": "refObject",
         "properties": {
-            "billingInformation": {"dataType":"nestedObjectLiteral","nestedProperties":{"vatNumber":{"dataType":"string"},"phone":{"dataType":"string"},"email":{"dataType":"string"},"name":{"dataType":"string"}}},
-            "deliveryAddress": {"dataType":"nestedObjectLiteral","nestedProperties":{"comment":{"dataType":"string"},"municipality":{"dataType":"string"},"city":{"dataType":"string"},"zipCode":{"dataType":"string"},"number":{"dataType":"string"},"street":{"dataType":"string"}}},
+            "billingInformation": {"ref":"IBillingInformation"},
+            "deliveryAddress": {"ref":"IDeliveryAddress"},
         },
         "additionalProperties": false,
     },
@@ -778,7 +828,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsProductController_updateQuantity: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"quantity":{"dataType":"double","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateProductQuantityBody"},
         };
         app.patch('/api/products/:id/quantity',
             authenticateMiddleware([{"BearerAuth":[]}]),
@@ -810,7 +860,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsPaymentController_processPayment: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"paymentMethod":{"ref":"PaymentMethod","required":true},"orderId":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"ProcessPaymentBody"},
         };
         app.post('/api/payments',
             authenticateMiddleware([{"BearerAuth":[]}]),
@@ -873,7 +923,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsWebhookController_mollieWebhook: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"id":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"MollieWebhookBody"},
         };
         app.post('/webhook',
             ...(fetchMiddlewares<RequestHandler>(WebhookController)),
@@ -1033,7 +1083,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         const argsOrderController_updateOrderStatus: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"status":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateOrderStatusBody"},
         };
         app.patch('/api/orders/:id/status',
             authenticateMiddleware([{"BearerAuth":[]}]),
@@ -1160,7 +1210,7 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsEstablishmentController_updateStatus: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
-                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"status":{"dataType":"string","required":true},"establishmentId":{"dataType":"string","required":true}}},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateEstablishmentStatusBody"},
         };
         app.patch('/api/establishments/status',
             authenticateMiddleware([{"BearerAuth":[]}]),
