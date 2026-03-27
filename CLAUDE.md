@@ -127,13 +127,23 @@ Firebase Auth SDK on the frontend, Firebase Admin SDK on the backend. Each tenan
 - `OWNER` — establishment owner
 - `USER` — customer
 
-### Environment Variables
+### Environment Variables (MANDATORY)
 
-Environment variables are accessed directly via `import.meta.env` at the app entry point (`main.tsx`).
+**All environment variables MUST be accessed via `@mercashop/shared/config/environment`**. Never use `import.meta.env` directly elsewhere.
+
+```typescript
+// Correct - use environment config
+import { environment } from '@mercashop/shared/config/environment';
+const apiUrl = environment.API_URL;
+
+// Wrong - direct env access
+const apiUrl = import.meta.env.VITE_API_URL;
+```
 
 **Required variables** (in each app's `.env`):
 - `VITE_API_URL` — Backend API URL
 - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET` — Firebase config
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID` — Firebase (dashboard only)
 
 ## Common Commands
 
