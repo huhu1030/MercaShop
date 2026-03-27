@@ -1,20 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
-import {
-  Badge,
-  Box,
-  Button,
-  CloseButton,
-  Dialog,
-  HStack,
-  IconButton,
-  Image,
-  Portal,
-  Text,
-  VStack,
-  Wrap,
-} from '@chakra-ui/react';
+import { useCallback, useMemo, useState } from 'react';
+import { Badge, Box, Button, CloseButton, Dialog, HStack, IconButton, Image, Portal, Text, VStack, Wrap } from '@chakra-ui/react';
 import { Minus, Plus } from 'lucide-react';
-import type { IPublicProduct, IOptionGroup, IOptionChoice } from '@mercashop/shared';
+import type { IOptionChoice, IOptionGroup, IPublicProduct } from '@mercashop/shared';
 import { useCart } from '../hooks/useCart';
 import type { CartItemSelectedOption } from '../lib/cart-store';
 
@@ -144,9 +131,7 @@ export function ProductOptionsDialog({ product, isOpen, onClose, disabled }: Pro
   }, [selectedOptions, product.optionGroups]);
 
   const allRequiredValid = useMemo(() => {
-    return product.optionGroups.every((group) =>
-      isGroupValid(group, selectedOptions.get(group.name)),
-    );
+    return product.optionGroups.every((group) => isGroupValid(group, selectedOptions.get(group.name)));
   }, [selectedOptions, product.optionGroups]);
 
   const unitTotal = product.price + optionsTotalPrice;
@@ -201,9 +186,7 @@ export function ProductOptionsDialog({ product, isOpen, onClose, disabled }: Pro
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content borderRadius={{ base: '0', md: '2xl' }}>
-            {imageUrl && (
-              <Image src={imageUrl} alt={product.name} h="180px" w="100%" objectFit="cover" />
-            )}
+            {imageUrl && <Image src={imageUrl} alt={product.name} h="180px" w="100%" objectFit="cover" />}
 
             <Dialog.Header>
               <VStack align="stretch" gap={1}>
@@ -246,10 +229,7 @@ export function ProductOptionsDialog({ product, isOpen, onClose, disabled }: Pro
                           const isSelected = groupSelections?.has(choice.name) ?? false;
                           const choiceQty = groupSelections?.get(choice.name) ?? 0;
                           const showStepper = isSelected && choice.maxQuantity > 1;
-                          const label =
-                            choice.extraPrice > 0
-                              ? `${choice.name} +${formatPrice(choice.extraPrice)}`
-                              : choice.name;
+                          const label = choice.extraPrice > 0 ? `${choice.name} +${formatPrice(choice.extraPrice)}` : choice.name;
 
                           return (
                             <HStack key={choice.name} gap={1}>
@@ -326,13 +306,7 @@ export function ProductOptionsDialog({ product, isOpen, onClose, disabled }: Pro
                   </HStack>
                 </HStack>
 
-                <Button
-                  width="full"
-                  colorPalette="green"
-                  size="lg"
-                  disabled={disabled || !allRequiredValid}
-                  onClick={handleAddToCart}
-                >
+                <Button width="full" colorPalette="green" size="lg" disabled={disabled || !allRequiredValid} onClick={handleAddToCart}>
                   Add {quantity} to cart — {formatPrice(unitTotal * quantity)}
                 </Button>
               </VStack>
