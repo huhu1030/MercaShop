@@ -1,6 +1,11 @@
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { env } from '../config/env';
+import { socketAuth } from '../middleware/socketAuth';
+import { EstablishmentModel } from '../models/Establishment';
+import { UserRole } from '@mercashop/shared';
+import type { Order } from '../types/order';
+import * as userService from './userService';
 
 class SocketServer {
   private static instance: SocketServer;
@@ -10,6 +15,7 @@ class SocketServer {
     this.io = new Server(server, {
       cors: { origin: env.corsOrigins, methods: ['POST', 'GET'], credentials: true },
     });
+    this.io.use(socketAuth);
     this.initListeners();
   }
 
@@ -23,20 +29,39 @@ class SocketServer {
 
   private initListeners(): void {
     this.io.on('connection', (socket: Socket) => {
-      console.log(`Connected: ${socket.id}`);
-      socket.on('join-order', (orderId: string) => {
-        socket.join(`order:${orderId}`);
+      const { tenantId, uid } = socket.data as { tenantId: string; uid: string };
+      console.log(`Connected: ${socket.id} (uid: ${uid}, tenant: ${tenantId})`);
+
+      // Auto-join user room for storefront order updates
+      socket.join(`tenant:${tenantId}:user:${uid}`);
+
+      // Dashboard joins establishment room — verify establishment exists in tenant and user is not a regular customer
+      socket.on('join-establishment', async (establishmentId: string) => {
+        const [establishment, user] = await Promise.all([
+          EstablishmentModel.findOne({ _id: establishmentId, tenantId }),
+          userService.findUserByFirebaseUid(tenantId, uid),
+        ]);
+
+        if (!establishment || !user) return;
+
+        if (user.role === UserRole.USER) {
+          console.warn(`Socket ${socket.id}: unauthorized join-establishment attempt for ${establishmentId}`);
+          return;
+        }
+
+        socket.join(`tenant:${tenantId}:establishment:${establishmentId}`);
       });
+
       socket.on('disconnect', () => console.log(`Disconnected: ${socket.id}`));
     });
   }
 
-  sendOrders(data: unknown): void {
-    this.io.emit('newOrders', data);
+  sendNewOrder(tenantId: string, establishmentId: string, data: Order): void {
+    this.io.to(`tenant:${tenantId}:establishment:${establishmentId}`).emit('newOrders', data);
   }
 
-  sendOrderUpdate(orderId: string, data: Record<string, unknown>): void {
-    this.io.to(`order:${orderId}`).emit('order-updated', data);
+  sendOrderUpdate(tenantId: string, userId: string, data: Order): void {
+    this.io.to(`tenant:${tenantId}:user:${userId}`).emit('order-updated', data);
   }
 }
 

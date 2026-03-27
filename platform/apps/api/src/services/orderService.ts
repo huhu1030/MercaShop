@@ -116,8 +116,9 @@ export async function notifyEstablishment(tenantId: string, establishmentId: str
   const establishment = await EstablishmentModel.findOne({ tenantId, _id: establishmentId });
   if (establishment) {
     try {
-      SocketServer.getInstance().sendOrders(order);
-      SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+      const socket = SocketServer.getInstance();
+      socket.sendNewOrder(tenantId, establishmentId, order);
+      socket.sendOrderUpdate(tenantId, order.userId, order);
     } catch (err) {
       console.error('Socket notification to establishment failed:', err);
     }
@@ -126,8 +127,9 @@ export async function notifyEstablishment(tenantId: string, establishmentId: str
 
 export function notifyRealtime(order: Order): void {
   try {
-    SocketServer.getInstance().sendOrders(order);
-    SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+    const socket = SocketServer.getInstance();
+    socket.sendNewOrder(order.tenantId, order.establishmentId, order);
+    socket.sendOrderUpdate(order.tenantId, order.userId, order);
   } catch (err) {
     console.error('Realtime socket notification failed:', err);
   }

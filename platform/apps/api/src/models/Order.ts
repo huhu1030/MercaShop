@@ -1,5 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
-import { PaymentMethod } from '../types/order';
+import { PaymentMethod } from '@mercashop/shared';
 
 export interface OrderDocument extends Document {
   tenantId: string;

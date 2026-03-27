@@ -1,19 +1,40 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useAuth } from './useAuth';
 
 interface NewOrderEvent {
   orderId: string;
 }
 
-export function useWebSocket(apiUrl: string) {
+export function useWebSocket(apiUrl: string, establishmentId: string) {
   const socketRef = useRef<Socket | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
-    socketRef.current = io(apiUrl);
+    if (!user) return;
+
+    let cancelled = false;
+
+    user.getIdToken().then((token) => {
+      if (cancelled) return;
+
+      const socket = io(apiUrl, {
+        transports: ['websocket'],
+        auth: { token },
+      });
+      socketRef.current = socket;
+
+      socket.on('connect', () => {
+        socket.emit('join-establishment', establishmentId);
+      });
+    });
+
     return () => {
+      cancelled = true;
       socketRef.current?.disconnect();
+      socketRef.current = null;
     };
-  }, [apiUrl]);
+  }, [apiUrl, establishmentId, user]);
 
   const onNewOrders = useCallback((callback: (data: NewOrderEvent) => void) => {
     socketRef.current?.on('newOrders', callback);

@@ -3,9 +3,10 @@ import type { IOrderLine } from '@mercashop/shared';
 import { OrderStatus } from '@mercashop/shared';
 import { getOrderApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { requestNotificationPermission } from '../lib/notifications';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-BE', {
@@ -204,7 +205,6 @@ function OrderCard({ order }: { order: Order }) {
 
 export function OrdersPage() {
   const { user } = useAuth();
-
   const { data, isLoading } = useQuery({
     queryKey: ['orders', user?.uid],
     queryFn: async () => {
@@ -215,6 +215,10 @@ export function OrdersPage() {
   });
 
   const orders = data ?? [];
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   if (isLoading) {
     return (

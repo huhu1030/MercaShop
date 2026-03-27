@@ -349,7 +349,7 @@ export function OrdersPage() {
     queryFn: () => getOrderApi().getOrdersByEstablishment(establishmentId),
   });
 
-  const { onNewOrders } = useWebSocket(environment.API_URL);
+  const { onNewOrders } = useWebSocket(environment.API_URL, establishmentId);
 
   useEffect(() => {
     const cleanup = onNewOrders(() => {

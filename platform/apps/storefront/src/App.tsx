@@ -4,6 +4,7 @@ import { StorefrontShell } from './components/StorefrontShell';
 import { LoadingScreen } from './components/LoadingScreen';
 import { StoreNotFound } from './components/StoreNotFound';
 import { AuthProvider } from './context/AuthContext';
+import { WebSocketProvider } from './context/WebSocketContext';
 import { AppRoutes } from './AppRoutes';
 import { Toaster } from './components/ui/toaster.tsx';
 
@@ -15,12 +16,14 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <StorefrontShell branding={branding}>
-          <AppRoutes />
-        </StorefrontShell>
-        <Toaster />
-      </BrowserRouter>
+      <WebSocketProvider>
+        <BrowserRouter>
+          <StorefrontShell branding={branding}>
+            <AppRoutes />
+          </StorefrontShell>
+          <Toaster />
+        </BrowserRouter>
+      </WebSocketProvider>
     </AuthProvider>
   );
 }
