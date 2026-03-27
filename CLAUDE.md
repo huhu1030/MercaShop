@@ -203,6 +203,8 @@ const { control, handleSubmit } = useForm<FormValues>({
 
 Single MongoDB database. Every document (except Tenant) has a `tenantId` field. Tenant resolved via middleware matching `Origin` or `x-tenant-id` header.
 
+**The tenant must NEVER be passed from client to server.** Always derive the tenant server-side — from the JWT `firebase.tenant` claim, the `Origin` header, or another server-controlled source. Never trust a client-supplied tenant ID.
+
 ### Backend API Development
 
 1. **Controllers** in `apps/api/src/controllers/` use TSOA decorators → auto-generate OpenAPI 3.0 spec and Express routes
@@ -243,11 +245,23 @@ export type { IMyType } from './types';
 import { MyEnum, type IMyType } from '@mercashop/shared';
 ```
 
+### WebSocket (Socket.io)
+
+Socket.io provides real-time order notifications. Connections are authenticated via middleware:
+
+1. Client passes Firebase ID token via `auth: { token }` on connect
+2. Server decodes the token with `firebaseAuth.verifyIdToken(token)`
+3. Tenant is extracted from the JWT claim `decoded.firebase.tenant` (the Identity Platform tenant ID) — **never from origin headers or client-supplied values**
+4. Tenant document is looked up by `identityPlatformTenantId` to resolve the app-level `tenantId`
+5. `socket.data.uid` and `socket.data.tenantId` are set for downstream use
+
+The storefront uses a `WebSocketProvider` context (inside `AuthProvider`) that holds a single connection across page navigations and auto-invalidates TanStack Query cache on `order-updated` events.
+
 ### Key Integrations
 
 - **Mollie** for payment processing
 - **Google Cloud Storage** for file uploads
-- **Socket.io** for real-time order notifications
+- **Socket.io** for real-time order notifications (see WebSocket section above)
 - **Email-templates + Nodemailer** for transactional emails
 - **Firebase Identity Platform** for per-tenant auth
 
