@@ -19,6 +19,7 @@ interface Product {
   price: number;
   quantity: number;
   photo?: string;
+  optionGroups?: Array<{ name: string }>;
 }
 
 export function ListPage() {
@@ -97,6 +98,20 @@ export function ListPage() {
       accessorKey: 'quantity',
       header: 'Qty',
       meta: { align: 'right' },
+    },
+    {
+      id: 'options',
+      header: 'Options',
+      cell: ({ row }) => {
+        const count = row.original.optionGroups?.length ?? 0;
+        return count > 0 ? (
+          <Badge colorPalette="purple" size="sm">
+            {count} {count === 1 ? 'group' : 'groups'}
+          </Badge>
+        ) : (
+          <Text color="fg.muted" fontSize="sm">—</Text>
+        );
+      },
     },
     {
       accessorKey: 'location',
@@ -215,6 +230,16 @@ export function ListPage() {
                   <HStack justify="space-between">
                     <Text color={Colors.text.secondary}>Quantity</Text>
                     <Text fontWeight="medium">{product.quantity}</Text>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text color={Colors.text.secondary}>Options</Text>
+                    {(product.optionGroups?.length ?? 0) > 0 ? (
+                      <Badge colorPalette="purple" size="sm">
+                        {product.optionGroups!.length} {product.optionGroups!.length === 1 ? 'group' : 'groups'}
+                      </Badge>
+                    ) : (
+                      <Text color="fg.muted" fontSize="sm">—</Text>
+                    )}
                   </HStack>
                   <Button
                     size="sm"
