@@ -114,13 +114,26 @@ const response = await fetch(`${API_URL}/orders?userId=${userId}`);
 - **Forms**: React Hook Form
 - **Routing**: React Router v7
 
-### Authentication
+### Authentication & Authorization
 
 Firebase Auth SDK on the frontend, Firebase Admin SDK on the backend. Each tenant has its own Firebase Identity Platform tenant ID (not standard Firebase Auth).
 
 - Token passed to API via Axios interceptor in the shared API client factory
 - 401 responses trigger automatic token refresh, then graceful sign-out on failure
 - Tenant config loaded via `useTenant` hook
+
+**Role hierarchy:**
+- `ADMIN` — full access
+- `OWNER` — establishment owner
+- `USER` — customer
+
+### Environment Variables
+
+Environment variables are accessed directly via `import.meta.env` at the app entry point (`main.tsx`).
+
+**Required variables** (in each app's `.env`):
+- `VITE_API_URL` — Backend API URL
+- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET` — Firebase config
 
 ## Common Commands
 
@@ -154,6 +167,26 @@ pnpm generate:api-spec      # Generate OpenAPI spec from TSOA controllers
 pnpm generate:api-client    # Regenerate TypeScript Axios client from spec
 ```
 
+## Form Development Pattern
+
+1. Define Zod schema (inline or co-located)
+2. Derive TypeScript type with `z.input<typeof schema>`
+3. Use `useForm` with `zodResolver(schema)`
+4. Use `Controller` for complex field types (file uploads, selects)
+
+```typescript
+const schema = z.object({
+  name: z.string().min(1, 'Required'),
+  price: z.coerce.number().min(0),
+});
+
+type FormValues = z.input<typeof schema>;
+
+const { control, handleSubmit } = useForm<FormValues>({
+  resolver: zodResolver(schema),
+});
+```
+
 ## Key Architecture Patterns
 
 ### Multi-Tenancy
@@ -183,6 +216,23 @@ When modifying backend controllers or DTOs:
 - `api/clients.ts` — Lazy-loaded API client singleton instances
 - `apis/api/` — Generated API client (do not edit manually)
 
+### Adding to Shared Package
+
+When adding types, enums, or API clients to `@mercashop/shared`:
+
+1. **Add code** to `packages/shared/src/` (types in `types.ts`, enums in `enums.ts`)
+2. **Export** from `packages/shared/src/index.ts`
+3. **Import in apps** using `@mercashop/shared` or `@mercashop/shared/api-client`
+
+```typescript
+// packages/shared/src/index.ts
+export { MyEnum } from './enums';
+export type { IMyType } from './types';
+
+// In app code
+import { MyEnum, type IMyType } from '@mercashop/shared';
+```
+
 ### Key Integrations
 
 - **Mollie** for payment processing
@@ -190,6 +240,17 @@ When modifying backend controllers or DTOs:
 - **Socket.io** for real-time order notifications
 - **Email-templates + Nodemailer** for transactional emails
 - **Firebase Identity Platform** for per-tenant auth
+
+### Deployment
+
+GCP Cloud Run via GitHub Actions. Each frontend app has its own Docker build and Cloud Run service:
+
+- Multi-stage Docker builds (Node 20 Alpine + pnpm 9 + Nginx)
+- Environment variables passed as Docker build args
+- Nginx serves the built SPA on port 8080
+- Auto-deploy on `main` branch CI success
+- Dockerfiles in `platform/docker/` (`dashboard.Dockerfile`, `storefront.Dockerfile`)
+- Workflows in `.github/workflows/` (`deploy-dashboard.yml`, `deploy-storefront.yml`)
 
 ## Code Style Rules
 
@@ -200,3 +261,11 @@ When modifying backend controllers or DTOs:
 - Use meaningful variable and function names
 - Comments only for business logic explanations, not obvious code
 - Clean Architecture principles — clarity and maintainability are priorities
+
+### ESLint Enforcement
+
+- **Generated API imports**: ESLint blocks direct imports from `apis/api/` except:
+  - `api/clients/` folder (allowed to import API classes)
+  - Type imports using `import type { ... }` (allowed everywhere)
+- **Type imports**: Use `import type` for all DTO/type imports
+- Run `pnpm lint --fix` to auto-fix many style issues
