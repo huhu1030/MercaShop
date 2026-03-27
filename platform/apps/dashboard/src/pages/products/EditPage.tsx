@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Box, Button, Field, Input, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Field, Grid, Input, Text, VStack } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { PageHeader } from '../../components/ui/PageHeader.tsx';
 import { Colors } from '../../constants/colors.ts';
 import { useEstablishmentId } from '../../hooks/useEstablishmentId';
 import { LoadingScreen } from '../../components/ui/LoadingScreen.tsx';
-import { OptionGroupDrawer } from '../../components/products/OptionGroupDrawer';
+import { OptionGroupPanel } from '../../components/products/OptionGroupPanel';
 
 const productSchema = z.object({
   name: z.string().min(1, 'Product name is required'),
@@ -28,7 +28,6 @@ export function EditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [optionGroups, setOptionGroups] = useState<IOptionGroup[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const {
     register,
@@ -78,7 +77,7 @@ export function EditPage() {
   if (isLoading) return <LoadingScreen />;
 
   return (
-    <VStack gap="1.25rem" align="stretch" maxW="31.25rem">
+    <VStack gap="1.25rem" align="stretch">
       <PageHeader
         breadcrumbs={[
           { label: 'Products', path: `/establishments/${establishmentId}/products` },
@@ -104,54 +103,60 @@ export function EditPage() {
         </Box>
       )}
 
-      <Box as="form" onSubmit={handleSubmit(onSubmit)}>
-        <VStack gap="1rem" align="stretch">
-          <Field.Root required invalid={Boolean(errors.name)}>
-            <Field.Label>Product Name</Field.Label>
-            <Input placeholder="e.g. Margherita Pizza" {...register('name')} />
-            {errors.name && <Field.ErrorText>{errors.name.message}</Field.ErrorText>}
-          </Field.Root>
+      <Grid templateColumns={{ base: '1fr', lg: '1fr 1fr' }} gap="2rem" alignItems="start">
+        <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+          <VStack gap="1rem" align="stretch">
+            <Text fontWeight="semibold" fontSize="lg">
+              Product Details
+            </Text>
 
-          <Field.Root required invalid={Boolean(errors.category)}>
-            <Field.Label>Category</Field.Label>
-            <Input placeholder="e.g. Pizza, Drinks" {...register('category')} />
-            {errors.category && <Field.ErrorText>{errors.category.message}</Field.ErrorText>}
-          </Field.Root>
+            <Field.Root required invalid={Boolean(errors.name)}>
+              <Field.Label>Product Name</Field.Label>
+              <Input placeholder="e.g. Margherita Pizza" {...register('name')} />
+              {errors.name && <Field.ErrorText>{errors.name.message}</Field.ErrorText>}
+            </Field.Root>
 
-          <Field.Root required invalid={Boolean(errors.price)}>
-            <Field.Label>Price (&euro;)</Field.Label>
-            <Input type="number" step="0.01" min="0" placeholder="0.00" {...register('price')} />
-            {errors.price && <Field.ErrorText>{errors.price.message}</Field.ErrorText>}
-          </Field.Root>
+            <Field.Root required invalid={Boolean(errors.category)}>
+              <Field.Label>Category</Field.Label>
+              <Input placeholder="e.g. Pizza, Drinks" {...register('category')} />
+              {errors.category && <Field.ErrorText>{errors.category.message}</Field.ErrorText>}
+            </Field.Root>
 
-          <Field.Root invalid={Boolean(errors.quantity)}>
-            <Field.Label>Quantity</Field.Label>
-            <Input type="number" min="0" placeholder="0" {...register('quantity')} />
-            {errors.quantity && <Field.ErrorText>{errors.quantity.message}</Field.ErrorText>}
-          </Field.Root>
+            <Field.Root required invalid={Boolean(errors.price)}>
+              <Field.Label>Price (&euro;)</Field.Label>
+              <Input type="number" step="0.01" min="0" placeholder="0.00" {...register('price')} />
+              {errors.price && <Field.ErrorText>{errors.price.message}</Field.ErrorText>}
+            </Field.Root>
 
-          <Field.Root invalid={Boolean(errors.location)}>
-            <Field.Label>Location</Field.Label>
-            <Input placeholder="e.g. 41B" {...register('location')} />
-            {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
-          </Field.Root>
+            <Field.Root invalid={Boolean(errors.quantity)}>
+              <Field.Label>Quantity</Field.Label>
+              <Input type="number" min="0" placeholder="0" {...register('quantity')} />
+              {errors.quantity && <Field.ErrorText>{errors.quantity.message}</Field.ErrorText>}
+            </Field.Root>
 
-          <Button variant="outline" onClick={() => setDrawerOpen(true)}>
-            Manage Options ({optionGroups.length} groups)
-          </Button>
+            <Field.Root invalid={Boolean(errors.location)}>
+              <Field.Label>Location</Field.Label>
+              <Input placeholder="e.g. 41B" {...register('location')} />
+              {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
+            </Field.Root>
 
-          <Button type="submit" colorPalette="purple" loading={mutation.isPending} loadingText="Saving...">
-            Save Changes
-          </Button>
-        </VStack>
-      </Box>
+            <Button type="submit" colorPalette="purple" loading={mutation.isPending} loadingText="Saving...">
+              Save Changes
+            </Button>
+          </VStack>
+        </Box>
 
-      <OptionGroupDrawer
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        optionGroups={optionGroups}
-        onChange={setOptionGroups}
-      />
+        <Box
+          position={{ lg: 'sticky' }}
+          top={{ lg: '1rem' }}
+          borderWidth={{ lg: '1px' }}
+          borderRadius={{ lg: 'xl' }}
+          p={{ lg: '1.25rem' }}
+          bg={{ lg: 'gray.50' }}
+        >
+          <OptionGroupPanel optionGroups={optionGroups} onChange={setOptionGroups} />
+        </Box>
+      </Grid>
     </VStack>
   );
 }
