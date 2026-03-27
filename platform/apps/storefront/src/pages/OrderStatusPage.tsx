@@ -1,6 +1,7 @@
 import { Badge, Box, Button, HStack, Separator, Spinner, Steps, Text, useBreakpointValue, VStack } from '@chakra-ui/react';
 import { OrderStatus } from '@mercashop/shared';
 import { getPaymentApi } from '@mercashop/shared/api-client';
+import { environment } from '@mercashop/shared/config/environment';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
@@ -51,7 +52,7 @@ export function OrderStatusPage() {
   useEffect(() => {
     if (!orderId) return;
 
-    const socket = io(import.meta.env.VITE_API_URL, {
+    const socket = io(environment.API_URL, {
       transports: ['websocket'],
     });
 

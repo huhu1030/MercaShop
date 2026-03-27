@@ -1,6 +1,7 @@
 import { Box, Button, Card, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react';
 import { Minus, Plus } from 'lucide-react';
 import type { IPublicProduct } from '@mercashop/shared';
+import { environment } from '@mercashop/shared/config/environment';
 import { useState } from 'react';
 import { useCart } from '../hooks/useCart';
 import { ProductOptionsDialog } from './ProductOptionsDialog';
@@ -16,7 +17,7 @@ function getProductImageUrl(photo?: string) {
     return photo;
   }
 
-  const basePath = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
+  const basePath = environment.API_URL.replace(/\/$/, '');
   const assetPath = photo.startsWith('/') ? photo : `/${photo}`;
   return `${basePath}${assetPath}`;
 }

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import { initApiClient } from '@mercashop/shared/api-client';
+import { environment } from '@mercashop/shared/config/environment';
 import { getFirebaseAuth } from './lib/firebase';
 import App from './App';
 
@@ -18,7 +19,7 @@ initApiClient({
     return token ?? null;
   },
   signOut: () => auth.signOut(),
-  basePath: import.meta.env.VITE_API_URL,
+  basePath: environment.API_URL,
 });
 
 const queryClient = new QueryClient({

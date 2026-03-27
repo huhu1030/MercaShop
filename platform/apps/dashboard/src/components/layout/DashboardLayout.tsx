@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowLeftRight, BarChart3, LogOut, Package, PackagePlus,
 import { useAtom } from 'jotai';
 import { useAuth } from '../../hooks/useAuth';
 import { isNotificationsEnabledAtom } from '../../store/atoms';
+import { environment } from '@mercashop/shared/config/environment';
 import { useOrderNotifications } from '../../hooks/useOrderNotifications';
 import { useEstablishmentId } from '../../hooks/useEstablishmentId';
 import { useEstablishmentStatus } from '../../hooks/useEstablishmentStatus';
@@ -37,7 +38,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { logout } = useAuth();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useAtom(isNotificationsEnabledAtom);
 
-  useOrderNotifications(import.meta.env.VITE_API_URL);
+  useOrderNotifications(environment.API_URL);
 
   const result = useEstablishmentId();
   if (!result) return <Navigate to="/establishments" replace />;

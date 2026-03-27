@@ -4,6 +4,7 @@ import { Badge, Box, Button, Card, Collapsible, HStack, Input, Separator, Tabs, 
 import { ShoppingCart } from 'lucide-react';
 import { OrderStatus } from '@mercashop/shared';
 import type { ISelectedOptionGroup } from '@mercashop/shared';
+import { environment } from '@mercashop/shared/config/environment';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -348,7 +349,7 @@ export function OrdersPage() {
     queryFn: () => getOrderApi().getOrdersByEstablishment(establishmentId),
   });
 
-  const { onNewOrders } = useWebSocket(import.meta.env.VITE_API_URL);
+  const { onNewOrders } = useWebSocket(environment.API_URL);
 
   useEffect(() => {
     const cleanup = onNewOrders(() => {

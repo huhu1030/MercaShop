@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Badge, Box, Button, CloseButton, Dialog, HStack, IconButton, Image, Portal, Text, VStack, Wrap } from '@chakra-ui/react';
 import { Minus, Plus } from 'lucide-react';
 import type { IOptionChoice, IOptionGroup, IPublicProduct } from '@mercashop/shared';
+import { environment } from '@mercashop/shared/config/environment';
 import { useCart } from '../hooks/useCart';
 import type { CartItemSelectedOption } from '../lib/cart-store';
 
@@ -25,7 +26,7 @@ function getProductImageUrl(photo?: string) {
     return photo;
   }
 
-  const basePath = import.meta.env.VITE_API_URL?.replace(/\/$/, '') ?? '';
+  const basePath = environment.API_URL.replace(/\/$/, '');
   const assetPath = photo.startsWith('/') ? photo : `/${photo}`;
   return `${basePath}${assetPath}`;
 }
