@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Box, Button, Field, FileUpload, Grid, Input, Text, VStack } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { getProductApi, getUploadApi } from '@mercashop/shared/api-client';
@@ -18,21 +18,22 @@ const productSchema = z.object({
   price: z.coerce.number().min(0, 'Price must be 0 or greater'),
   quantity: z.coerce.number().int().min(0).optional(),
   location: z.string().optional(),
-  picture: z.instanceof(File, { message: 'Picture is required' }),
+  picture: z
+    .custom<File | undefined>((value) => value === undefined || value instanceof File)
+    .refine((value) => value instanceof File, { message: 'Picture is required' }),
 });
 
-type ProductFormValues = z.infer<typeof productSchema>;
+type ProductFormValues = z.input<typeof productSchema>;
 
 export function CreatePage() {
   const { establishmentId } = useEstablishmentId()!;
   const [optionGroups, setOptionGroups] = useState<IOptionGroup[]>([]);
   const {
+    control,
     register,
     handleSubmit,
     reset,
     resetField,
-    setValue,
-    watch,
     formState: { errors },
   } = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -42,14 +43,17 @@ export function CreatePage() {
       price: 0,
       quantity: undefined,
       location: '',
+      picture: undefined,
     },
   });
-
-  const picture = watch('picture');
 
   const mutation = useMutation({
     mutationFn: async (values: ProductFormValues) => {
       const { picture, ...productValues } = values;
+      if (!picture) {
+        throw new Error('Picture is required');
+      }
+
       const createResponse = await getProductApi().createProduct({
         ...productValues,
         establishmentId,
@@ -144,93 +148,96 @@ export function CreatePage() {
               {errors.location && <Field.ErrorText>{errors.location.message}</Field.ErrorText>}
             </Field.Root>
 
-            <Field.Root required invalid={Boolean(errors.picture)}>
-              <Field.Label>Picture</Field.Label>
-              <FileUpload.Root
-                maxFiles={1}
-                accept={['image/*']}
-                invalid={Boolean(errors.picture)}
-                acceptedFiles={picture ? [picture] : []}
-                onFileChange={({ acceptedFiles }) => {
-                  const file = acceptedFiles[0];
-                  if (file) {
-                    setValue('picture', file, { shouldValidate: true });
-                    return;
-                  }
+            <Controller
+              name="picture"
+              control={control}
+              render={({ field }) => (
+                <Field.Root required invalid={Boolean(errors.picture)}>
+                  <Field.Label>Picture</Field.Label>
+                  <FileUpload.Root
+                    maxFiles={1}
+                    accept={['image/*']}
+                    invalid={Boolean(errors.picture)}
+                    acceptedFiles={field.value ? [field.value] : []}
+                    onFileChange={({ acceptedFiles }) => {
+                      const file = acceptedFiles[0];
+                      if (file) {
+                        field.onChange(file);
+                        return;
+                      }
 
-                  resetField('picture');
-                }}
-              >
-                <FileUpload.HiddenInput />
-                <FileUpload.Dropzone
-                  w="full"
-                  minH="11rem"
-                  borderWidth="2px"
-                  borderStyle="dashed"
-                  borderColor={errors.picture ? Colors.feedback.errorBorder : 'gray.300'}
-                  borderRadius="xl"
-                  bg="gray.50"
-                >
-                  <FileUpload.DropzoneContent>
-                    <VStack gap="0.75rem" py="1.5rem" px="1rem" textAlign="center">
-                      <Box
-                        display="inline-flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        boxSize="3rem"
-                        borderRadius="full"
-                        bg="white"
-                        borderWidth="1px"
-                        borderColor="gray.200"
-                      >
-                        <Upload size="1.25rem" />
-                      </Box>
-                      <VStack gap="0.25rem">
-                        <Text fontWeight="semibold">Drop product picture here</Text>
-                        <Text fontSize="sm" color={Colors.text.muted}>
-                          Drag and drop an image, or click to browse.
-                        </Text>
-                      </VStack>
-                    </VStack>
-                  </FileUpload.DropzoneContent>
-                </FileUpload.Dropzone>
-
-                {picture && (
-                  <FileUpload.ItemGroup
-                    mt="0.75rem"
-                    w="full"
-                    gap="0.75rem"
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="stretch"
-                    listStyleType="none"
-                    p="0"
-                    m="0"
+                      resetField('picture', { defaultValue: undefined });
+                    }}
                   >
-                    <FileUpload.Item
-                      file={picture}
-                      p="0.75rem"
-                      borderWidth="1px"
-                      borderRadius="lg"
-                      alignItems="center"
-                      gap="0.75rem"
+                    <FileUpload.HiddenInput />
+                    <FileUpload.Dropzone
+                      w="full"
+                      minH="11rem"
+                      borderWidth="2px"
+                      borderStyle="dashed"
+                      borderColor={errors.picture ? Colors.feedback.errorBorder : 'gray.300'}
+                      borderRadius="xl"
+                      bg="gray.50"
                     >
-                      <FileUpload.ItemPreview boxSize="4rem" overflow="hidden" borderRadius="md" bg="gray.100">
-                        <FileUpload.ItemPreviewImage w="100%" h="100%" objectFit="cover" />
-                      </FileUpload.ItemPreview>
-                      <FileUpload.ItemContent>
-                        <FileUpload.ItemName fontWeight="medium" />
-                        <FileUpload.ItemSizeText color={Colors.text.muted} fontSize="sm" />
-                      </FileUpload.ItemContent>
-                      <FileUpload.ItemDeleteTrigger aria-label={`Remove ${picture.name}`} onClick={() => resetField('picture')}>
-                        <X size="1rem" />
-                      </FileUpload.ItemDeleteTrigger>
-                    </FileUpload.Item>
-                  </FileUpload.ItemGroup>
-                )}
-              </FileUpload.Root>
-              {errors.picture && <Field.ErrorText>{errors.picture.message}</Field.ErrorText>}
-            </Field.Root>
+                      <FileUpload.DropzoneContent>
+                        <VStack gap="0.75rem" py="1.5rem" px="1rem" textAlign="center">
+                          <Box
+                            display="inline-flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            boxSize="3rem"
+                            borderRadius="full"
+                            bg="white"
+                            borderWidth="1px"
+                            borderColor="gray.200"
+                          >
+                            <Upload size="1.25rem" />
+                          </Box>
+                          <VStack gap="0.25rem">
+                            <Text fontWeight="semibold">Drop product picture here</Text>
+                            <Text fontSize="sm" color={Colors.text.muted}>
+                              Drag and drop an image, or click to browse.
+                            </Text>
+                          </VStack>
+                        </VStack>
+                      </FileUpload.DropzoneContent>
+                    </FileUpload.Dropzone>
+
+                    {field.value && (
+                      <FileUpload.ItemGroup
+                        mt="0.75rem"
+                        w="full"
+                        gap="0.75rem"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="stretch"
+                        listStyleType="none"
+                        p="0"
+                        m="0"
+                      >
+                        <FileUpload.Item file={field.value} p="0.75rem" borderWidth="1px" borderRadius="lg" alignItems="center" gap="0.75rem">
+                          <FileUpload.ItemPreview boxSize="4rem" overflow="hidden" borderRadius="md" bg="gray.100">
+                            <FileUpload.ItemPreviewImage w="100%" h="100%" objectFit="cover" />
+                          </FileUpload.ItemPreview>
+                          <FileUpload.ItemContent>
+                            <FileUpload.ItemName fontWeight="medium" />
+                            <FileUpload.ItemSizeText color={Colors.text.muted} fontSize="sm" />
+                          </FileUpload.ItemContent>
+                          <FileUpload.ItemDeleteTrigger
+                            type="button"
+                            aria-label={`Remove ${field.value.name}`}
+                            onClick={() => resetField('picture', { defaultValue: undefined })}
+                          >
+                            <X size="1rem" />
+                          </FileUpload.ItemDeleteTrigger>
+                        </FileUpload.Item>
+                      </FileUpload.ItemGroup>
+                    )}
+                  </FileUpload.Root>
+                  {errors.picture && <Field.ErrorText>{errors.picture.message}</Field.ErrorText>}
+                </Field.Root>
+              )}
+            />
 
             <Button type="submit" colorPalette="purple" loading={mutation.isPending} loadingText="Creating...">
               Add Product
