@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { ProductResponse } from './product-response';
 
 /**
  * 
@@ -22,9 +25,9 @@
 export interface CreateProduct200Response {
     /**
      * 
-     * @type {any}
+     * @type {ProductResponse}
      * @memberof CreateProduct200Response
      */
-    'product': any;
+    'product': ProductResponse;
 }
 

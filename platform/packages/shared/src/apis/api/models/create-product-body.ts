@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import { OptionGroupBody } from './option-group-body';
 
 /**
  * 
@@ -68,5 +71,11 @@ export interface CreateProductBody {
      * @memberof CreateProductBody
      */
     'serialNumber'?: string;
+    /**
+     * 
+     * @type {Array<OptionGroupBody>}
+     * @memberof CreateProductBody
+     */
+    'optionGroups'?: Array<OptionGroupBody>;
 }
 

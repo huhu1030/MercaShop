@@ -136,6 +136,33 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SelectionMode": {
+        "dataType": "refAlias",
+        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["exactlyOne"]},{"dataType":"enum","enums":["upToN"]},{"dataType":"enum","enums":["anyNumber"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IOptionChoice": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "extraPrice": {"dataType":"double","required":true},
+            "maxQuantity": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IOptionGroup": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "required": {"dataType":"boolean","required":true},
+            "selectionMode": {"ref":"SelectionMode","required":true},
+            "maxSelections": {"dataType":"double"},
+            "choices": {"dataType":"array","array":{"dataType":"refObject","ref":"IOptionChoice"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IPublicProduct": {
         "dataType": "refObject",
         "properties": {
@@ -145,6 +172,29 @@ const models: TsoaRoute.Models = {
             "price": {"dataType":"double","required":true},
             "photo": {"dataType":"string"},
             "category": {"dataType":"string","required":true},
+            "optionGroups": {"dataType":"array","array":{"dataType":"refObject","ref":"IOptionGroup"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OptionChoiceBody": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "extraPrice": {"dataType":"double","required":true,"validators":{"minimum":{"value":0}}},
+            "maxQuantity": {"dataType":"integer","required":true,"validators":{"minimum":{"value":1}}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "OptionGroupBody": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "required": {"dataType":"boolean","required":true},
+            "selectionMode": {"ref":"SelectionMode","required":true},
+            "maxSelections": {"dataType":"integer","validators":{"minimum":{"value":1}}},
+            "choices": {"dataType":"array","array":{"dataType":"refObject","ref":"OptionChoiceBody"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -153,13 +203,29 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "name": {"dataType":"string","required":true,"validators":{"minLength":{"value":1},"maxLength":{"value":200}}},
-            "establishmentId": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
+            "establishmentId": {"dataType":"string","required":true},
             "description": {"dataType":"string","validators":{"maxLength":{"value":2000}}},
             "category": {"dataType":"string","required":true,"validators":{"minLength":{"value":1}}},
             "price": {"dataType":"double","required":true,"validators":{"minimum":{"value":0}}},
             "location": {"dataType":"string"},
             "quantity": {"dataType":"integer","validators":{"minimum":{"value":0}}},
             "serialNumber": {"dataType":"string"},
+            "optionGroups": {"dataType":"array","array":{"dataType":"refObject","ref":"OptionGroupBody"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateProductBody": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","validators":{"minLength":{"value":1},"maxLength":{"value":200}}},
+            "description": {"dataType":"string","validators":{"maxLength":{"value":2000}}},
+            "category": {"dataType":"string","validators":{"minLength":{"value":1}}},
+            "price": {"dataType":"double","validators":{"minimum":{"value":0}}},
+            "location": {"dataType":"string"},
+            "quantity": {"dataType":"integer","validators":{"minimum":{"value":0}}},
+            "serialNumber": {"dataType":"string"},
+            "optionGroups": {"dataType":"array","array":{"dataType":"refObject","ref":"OptionGroupBody"}},
         },
         "additionalProperties": false,
     },
@@ -189,10 +255,29 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISelectedChoice": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "quantity": {"dataType":"double","required":true},
+            "extraPrice": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISelectedOptionGroup": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "choices": {"dataType":"array","array":{"dataType":"refObject","ref":"ISelectedChoice"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IOrderLine": {
         "dataType": "refObject",
         "properties": {
-            "item": {"dataType":"nestedObjectLiteral","nestedProperties":{"price":{"dataType":"double"},"quantity":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"_id":{"dataType":"string","required":true}},"required":true},
+            "item": {"dataType":"nestedObjectLiteral","nestedProperties":{"optionsTotalPrice":{"dataType":"double"},"selectedOptions":{"dataType":"array","array":{"dataType":"refObject","ref":"ISelectedOptionGroup"}},"price":{"dataType":"double"},"quantity":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"_id":{"dataType":"string","required":true}},"required":true},
         },
         "additionalProperties": false,
     },
@@ -814,6 +899,39 @@ export function RegisterRoutes(app: Router,opts?:{multer?:ReturnType<typeof mult
 
               await templateService.apiHandler({
                 methodName: 'deleteProduct',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsProductController_updateProduct: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"ref":"UpdateProductBody"},
+        };
+        app.patch('/api/products/:id',
+            authenticateMiddleware([{"BearerAuth":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductController.prototype.updateProduct)),
+
+            async function ProductController_updateProduct(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsProductController_updateProduct, request, response });
+
+                const controller = new ProductController();
+
+              await templateService.apiHandler({
+                methodName: 'updateProduct',
                 controller,
                 response,
                 next,

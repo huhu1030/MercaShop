@@ -41,6 +41,8 @@ export interface IOrderLine {
     name: string;
     quantity: number;
     price?: number;
+    selectedOptions?: ISelectedOptionGroup[];
+    optionsTotalPrice?: number;
   };
 }
 
@@ -83,6 +85,33 @@ export interface IPublicEstablishment {
   description?: string;
 }
 
+export interface IOptionChoice {
+  name: string;
+  extraPrice: number;
+  maxQuantity: number;
+}
+
+export type SelectionMode = 'exactlyOne' | 'upToN' | 'anyNumber';
+
+export interface IOptionGroup {
+  name: string;
+  required: boolean;
+  selectionMode: SelectionMode;
+  maxSelections?: number;
+  choices: IOptionChoice[];
+}
+
+export interface ISelectedChoice {
+  name: string;
+  quantity: number;
+  extraPrice: number;
+}
+
+export interface ISelectedOptionGroup {
+  name: string;
+  choices: ISelectedChoice[];
+}
+
 export interface IPublicProduct {
   _id: string;
   name: string;
@@ -90,6 +119,7 @@ export interface IPublicProduct {
   price: number;
   photo?: string;
   category: string;
+  optionGroups: IOptionGroup[];
 }
 
 export interface IMonthlyMetric {

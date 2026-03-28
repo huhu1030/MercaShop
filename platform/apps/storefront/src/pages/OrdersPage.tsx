@@ -1,22 +1,12 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Center,
-  Collapsible,
-  HStack,
-  Separator,
-  Spinner,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Badge, Box, Button, Card, Center, Collapsible, HStack, Separator, Spinner, Text, VStack } from '@chakra-ui/react';
+import type { IOrderLine } from '@mercashop/shared';
 import { OrderStatus } from '@mercashop/shared';
 import { getOrderApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { requestNotificationPermission } from '../lib/notifications';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-BE', {
@@ -51,20 +41,11 @@ function statusColor(status: string) {
   }
 }
 
-interface OrderLine {
-  item?: {
-    _id?: string;
-    name?: string;
-    quantity?: number;
-    price?: number;
-  };
-}
-
 interface Order {
   _id: string;
   status: string;
   total: number;
-  orderLines: OrderLine[];
+  orderLines: IOrderLine[];
   deliveryMethod?: string;
   deliveryAddress?: {
     street?: string;
@@ -90,8 +71,7 @@ function OrderCard({ order }: { order: Order }) {
             <VStack align="start" gap={1}>
               <Text fontWeight="bold">Order #{order._id.slice(-8)}</Text>
               <Text color="fg.muted" fontSize="sm">
-                {order.orderLines.length} item{order.orderLines.length !== 1 ? 's' : ''} &middot;{' '}
-                {formatCurrency(order.total)}
+                {order.orderLines.length} item{order.orderLines.length !== 1 ? 's' : ''} &middot; {formatCurrency(order.total)}
               </Text>
               {order.createdAt && (
                 <Text color="fg.muted" fontSize="xs">
@@ -105,11 +85,7 @@ function OrderCard({ order }: { order: Order }) {
           </HStack>
 
           <HStack gap={2}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setExpanded(!expanded)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => setExpanded(!expanded)}>
               {expanded ? 'Hide details' : 'View details'}
             </Button>
             <Button asChild variant="outline" size="sm">
@@ -119,22 +95,47 @@ function OrderCard({ order }: { order: Order }) {
 
           <Collapsible.Root open={expanded}>
             <Collapsible.Content>
-              <Box
-                p={4}
-                borderWidth="1px"
-                borderColor="border.muted"
-                borderRadius="xl"
-                bg="bg.subtle"
-              >
+              <Box p={4} borderWidth="1px" borderColor="border.muted" borderRadius="xl" bg="bg.subtle">
                 <VStack align="stretch" gap={3}>
                   <Text fontWeight="semibold">Order lines</Text>
-                  {order.orderLines.map((line, index) => (
-                    <HStack key={line.item?._id ?? index} justify="space-between">
-                      <Text>{line.item?.name ?? 'Unknown item'}</Text>
-                      <Text fontWeight="medium" whiteSpace="nowrap">
-                        {line.item?.quantity ?? 0} x {formatCurrency(line.item?.price ?? 0)}
-                      </Text>
-                    </HStack>
+                  {order.orderLines.map((line) => (
+                    <VStack key={line.item._id} align="stretch" gap={1}>
+                      <HStack justify="space-between">
+                        <Text>{line.item.name}</Text>
+                        <Text fontWeight="medium" whiteSpace="nowrap">
+                          {line.item.quantity} x {formatCurrency(line.item.price ?? 0)}
+                        </Text>
+                      </HStack>
+                      {line.item.selectedOptions && line.item.selectedOptions.length > 0 && (
+                        <VStack align="stretch" gap={0.5} pl={4}>
+                          {line.item.selectedOptions.map((group) => (
+                            <VStack key={group.name} align="stretch" gap={0}>
+                              <Text fontSize="xs" color="fg.muted" fontWeight="semibold">
+                                {group.name}
+                              </Text>
+                              {group.choices.map((choice) => {
+                                const qty = Number.isFinite(choice.quantity) && choice.quantity >= 1
+                                  ? Math.floor(choice.quantity)
+                                  : 1;
+                                return (
+                                <HStack key={choice.name} justify="space-between">
+                                  <Text fontSize="xs" color="fg.muted">
+                                    {qty > 1 ? `${qty}x ` : ''}
+                                    {choice.name}
+                                  </Text>
+                                  {choice.extraPrice > 0 && (
+                                    <Text fontSize="xs" color="fg.muted">
+                                      +{formatCurrency(choice.extraPrice * qty)}
+                                    </Text>
+                                  )}
+                                </HStack>
+                                );
+                              })}
+                            </VStack>
+                          ))}
+                        </VStack>
+                      )}
+                    </VStack>
                   ))}
 
                   <Separator />
@@ -178,11 +179,7 @@ function OrderCard({ order }: { order: Order }) {
                         <Text fontWeight="semibold">Payment</Text>
                         <HStack>
                           <Text>{order.paymentMethod}</Text>
-                          <Badge
-                            colorPalette={order.isPaid ? 'green' : 'orange'}
-                            borderRadius="full"
-                            size="sm"
-                          >
+                          <Badge colorPalette={order.isPaid ? 'green' : 'orange'} borderRadius="full" size="sm">
                             {order.isPaid ? 'Paid' : 'Unpaid'}
                           </Badge>
                         </HStack>
@@ -203,7 +200,6 @@ function OrderCard({ order }: { order: Order }) {
                   )}
                 </VStack>
               </Box>
-
             </Collapsible.Content>
           </Collapsible.Root>
         </VStack>
@@ -214,7 +210,6 @@ function OrderCard({ order }: { order: Order }) {
 
 export function OrdersPage() {
   const { user } = useAuth();
-
   const { data, isLoading } = useQuery({
     queryKey: ['orders', user?.uid],
     queryFn: async () => {
@@ -225,6 +220,10 @@ export function OrdersPage() {
   });
 
   const orders = data ?? [];
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   if (isLoading) {
     return (

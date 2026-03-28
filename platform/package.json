@@ -9,6 +9,7 @@
     "lint": "pnpm -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "onboard-tenant": "pnpm --filter @mercashop/api onboard-tenant",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "generate:api-spec": "pnpm --filter @mercashop/api generate:spec",

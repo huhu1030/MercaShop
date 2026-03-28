@@ -6,6 +6,7 @@ import type { Order, OrderLine } from '../types/order';
 import type { OrderDocument } from '../models/Order';
 import { EstablishmentStatus } from '@mercashop/shared';
 import type { CreateOrderBody } from '../dtos/order.dto';
+import { validateAndSnapshotOptions } from '../utils/validateOrderOptions';
 
 export async function createOrder(tenantId: string, userId: string, body: CreateOrderBody): Promise<OrderDocument> {
   const establishment = await EstablishmentModel.findOne({
@@ -21,8 +22,52 @@ export async function createOrder(tenantId: string, userId: string, body: Create
     throw new Error('Establishment is currently closed');
   }
 
+  // Validate and snapshot options for each order line
+  const processedOrderLines = await Promise.all(
+    body.orderLines.map(async (line) => {
+      const product = await ProductModel.findOne({ _id: line.item._id, tenantId });
+      if (!product) {
+        throw new Error(`Product "${line.item.name}" not found`);
+      }
+
+      const clientSelections = line.item.selectedOptions ?? [];
+      const { selectedOptions, optionsTotalPrice } = validateAndSnapshotOptions(
+        product.optionGroups ?? [],
+        clientSelections,
+      );
+
+      const lineTotal = (product.price + optionsTotalPrice) * line.item.quantity;
+
+      return {
+        item: {
+          _id: line.item._id,
+          name: line.item.name,
+          quantity: line.item.quantity,
+          price: product.price,
+          ...(selectedOptions.length > 0 && { selectedOptions }),
+          ...(optionsTotalPrice > 0 && { optionsTotalPrice }),
+        },
+        lineTotal,
+      };
+    }),
+  );
+
+  const total = processedOrderLines.reduce((sum, line) => sum + line.lineTotal, 0);
+  const orderLines = processedOrderLines.map(({ lineTotal: _, ...rest }) => rest);
+
   const trimmedRemark = body.remark?.trim() || undefined;
-  return OrderModel.create({ tenantId, userId, ...body, remark: trimmedRemark });
+  return OrderModel.create({
+    tenantId,
+    userId,
+    establishmentId: body.establishmentId,
+    orderLines,
+    total: Math.round(total * 100) / 100,
+    deliveryAddress: body.deliveryAddress,
+    billingInformation: body.billingInformation,
+    paymentMethod: body.paymentMethod,
+    deliveryMethod: body.deliveryMethod,
+    remark: trimmedRemark,
+  });
 }
 
 export async function findOrderById(id: string, tenantId: string): Promise<OrderDocument | null> {
@@ -77,8 +122,9 @@ export async function notifyEstablishment(tenantId: string, establishmentId: str
   const establishment = await EstablishmentModel.findOne({ tenantId, _id: establishmentId });
   if (establishment) {
     try {
-      SocketServer.getInstance().sendOrders(order);
-      SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+      const socket = SocketServer.getInstance();
+      socket.sendNewOrder(tenantId, establishmentId, order);
+      socket.sendOrderUpdate(tenantId, order.userId, order);
     } catch (err) {
       console.error('Socket notification to establishment failed:', err);
     }
@@ -87,8 +133,9 @@ export async function notifyEstablishment(tenantId: string, establishmentId: str
 
 export function notifyRealtime(order: Order): void {
   try {
-    SocketServer.getInstance().sendOrders(order);
-    SocketServer.getInstance().sendOrderUpdate(order._id, order as unknown as Record<string, unknown>);
+    const socket = SocketServer.getInstance();
+    socket.sendNewOrder(order.tenantId, order.establishmentId, order);
+    socket.sendOrderUpdate(order.tenantId, order.userId, order);
   } catch (err) {
     console.error('Realtime socket notification failed:', err);
   }

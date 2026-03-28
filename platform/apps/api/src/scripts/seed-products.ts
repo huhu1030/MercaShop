@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { env } from '../config/env';
 import { EstablishmentModel, ProductModel, TenantModel } from '../models';
+import type { IOptionGroup } from '@mercashop/shared';
 
 type SeedProduct = {
   name: string;
@@ -9,6 +10,7 @@ type SeedProduct = {
   price: number;
   quantity: number;
   location: string;
+  optionGroups?: IOptionGroup[];
 };
 
 const seedProducts: SeedProduct[] = [
@@ -19,6 +21,17 @@ const seedProducts: SeedProduct[] = [
     price: 2.5,
     quantity: 48,
     location: 'Cooler A1',
+    optionGroups: [
+      {
+        name: 'Temperature',
+        required: true,
+        selectionMode: 'exactlyOne',
+        choices: [
+          { name: 'Chilled', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Room Temperature', extraPrice: 0, maxQuantity: 1 },
+        ],
+      },
+    ],
   },
   {
     name: 'Coca-Cola Zero 330ml',
@@ -83,6 +96,17 @@ const seedProducts: SeedProduct[] = [
     price: 2.2,
     quantity: 28,
     location: 'Shelf B1',
+    optionGroups: [
+      {
+        name: 'Size',
+        required: true,
+        selectionMode: 'exactlyOne',
+        choices: [
+          { name: 'Regular (100g)', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Large (200g)', extraPrice: 1.5, maxQuantity: 1 },
+        ],
+      },
+    ],
   },
   {
     name: 'Trail Mix',
@@ -115,6 +139,29 @@ const seedProducts: SeedProduct[] = [
     price: 2.7,
     quantity: 26,
     location: 'Shelf C1',
+    optionGroups: [
+      {
+        name: 'Size',
+        required: true,
+        selectionMode: 'exactlyOne',
+        choices: [
+          { name: 'Small (45g)', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Medium (120g)', extraPrice: 1.0, maxQuantity: 1 },
+          { name: 'Party (300g)', extraPrice: 2.5, maxQuantity: 1 },
+        ],
+      },
+      {
+        name: 'Dip',
+        required: false,
+        selectionMode: 'upToN',
+        maxSelections: 2,
+        choices: [
+          { name: 'Sour Cream', extraPrice: 0.8, maxQuantity: 1 },
+          { name: 'Salsa', extraPrice: 0.8, maxQuantity: 1 },
+          { name: 'Guacamole', extraPrice: 1.2, maxQuantity: 1 },
+        ],
+      },
+    ],
   },
   {
     name: 'Doritos Nacho Cheese',
@@ -163,6 +210,18 @@ const seedProducts: SeedProduct[] = [
     price: 2.6,
     quantity: 24,
     location: 'Shelf D2',
+    optionGroups: [
+      {
+        name: 'Size',
+        required: true,
+        selectionMode: 'exactlyOne',
+        choices: [
+          { name: 'Single (45g)', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Sharing (150g)', extraPrice: 1.8, maxQuantity: 1 },
+          { name: 'Party (300g)', extraPrice: 3.5, maxQuantity: 1 },
+        ],
+      },
+    ],
   },
   {
     name: 'Haribo Goldbears',
@@ -195,6 +254,30 @@ const seedProducts: SeedProduct[] = [
     price: 3.4,
     quantity: 16,
     location: 'Shelf F1',
+    optionGroups: [
+      {
+        name: 'Spice Level',
+        required: true,
+        selectionMode: 'exactlyOne',
+        choices: [
+          { name: 'Mild', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Medium', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Hot', extraPrice: 0, maxQuantity: 1 },
+          { name: 'Extra Hot', extraPrice: 0.3, maxQuantity: 1 },
+        ],
+      },
+      {
+        name: 'Toppings',
+        required: false,
+        selectionMode: 'anyNumber',
+        choices: [
+          { name: 'Extra Egg', extraPrice: 0.6, maxQuantity: 2 },
+          { name: 'Spring Onion', extraPrice: 0.3, maxQuantity: 1 },
+          { name: 'Sesame Seeds', extraPrice: 0.2, maxQuantity: 1 },
+          { name: 'Chili Flakes', extraPrice: 0.2, maxQuantity: 1 },
+        ],
+      },
+    ],
   },
   {
     name: 'Microwave Popcorn Butter',
@@ -227,7 +310,7 @@ async function seedProductsForEstablishment(): Promise<void> {
     process.exit(1);
   }
 
-  const operations = seedProducts.map((product) => ({
+  const operations = seedProducts.map(({ optionGroups, ...product }) => ({
     updateOne: {
       filter: {
         tenantId: tenant._id.toString(),
@@ -241,6 +324,7 @@ async function seedProductsForEstablishment(): Promise<void> {
           establishmentId: establishment._id.toString(),
           serialNumber: '',
           photo: '',
+          optionGroups: optionGroups ?? [],
         },
       },
       upsert: true,

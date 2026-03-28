@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Badge, Box, Button, Card, CloseButton, HStack, Image, Input, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { Inbox, LayoutGrid, Rows3 } from 'lucide-react';
+import { Inbox, LayoutGrid, Pencil, Rows3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { LoadingScreen } from '../../components/ui/LoadingScreen.tsx';
 import { DataTable } from '../../components/ui/DataTable.tsx';
 import { EmptyState } from '../../components/ui/EmptyState.tsx';
@@ -18,10 +19,12 @@ interface Product {
   price: number;
   quantity: number;
   photo?: string;
+  optionGroups?: Array<{ name: string }>;
 }
 
 export function ListPage() {
   const { establishmentId } = useEstablishmentId()!;
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [view, setView] = useState<'table' | 'grid'>('table');
@@ -97,8 +100,37 @@ export function ListPage() {
       meta: { align: 'right' },
     },
     {
+      id: 'options',
+      header: 'Options',
+      cell: ({ row }) => {
+        const count = row.original.optionGroups?.length ?? 0;
+        return count > 0 ? (
+          <Badge colorPalette="purple" size="sm">
+            {count} {count === 1 ? 'group' : 'groups'}
+          </Badge>
+        ) : (
+          <Text color="fg.muted" fontSize="sm">—</Text>
+        );
+      },
+    },
+    {
       accessorKey: 'location',
       header: 'Location',
+    },
+    {
+      id: 'actions',
+      header: '',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => navigate(`/establishments/${establishmentId}/products/${row.original._id}/edit`)}
+          aria-label={`Edit ${row.original.name}`}
+        >
+          <Pencil size="1rem" />
+        </Button>
+      ),
     },
   ];
 
@@ -199,6 +231,24 @@ export function ListPage() {
                     <Text color={Colors.text.secondary}>Quantity</Text>
                     <Text fontWeight="medium">{product.quantity}</Text>
                   </HStack>
+                  <HStack justify="space-between">
+                    <Text color={Colors.text.secondary}>Options</Text>
+                    {(product.optionGroups?.length ?? 0) > 0 ? (
+                      <Badge colorPalette="purple" size="sm">
+                        {product.optionGroups!.length} {product.optionGroups!.length === 1 ? 'group' : 'groups'}
+                      </Badge>
+                    ) : (
+                      <Text color="fg.muted" fontSize="sm">—</Text>
+                    )}
+                  </HStack>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate(`/establishments/${establishmentId}/products/${product._id}/edit`)}
+                  >
+                    <Pencil size="1rem" />
+                    Edit
+                  </Button>
                 </VStack>
               </Card.Body>
             </Card.Root>

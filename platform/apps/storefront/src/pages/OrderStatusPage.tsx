@@ -2,10 +2,10 @@ import { Badge, Box, Button, HStack, Separator, Spinner, Steps, Text, useBreakpo
 import { OrderStatus } from '@mercashop/shared';
 import { getPaymentApi } from '@mercashop/shared/api-client';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import humanizeString from 'humanize-string';
+import { requestNotificationPermission } from '../lib/notifications';
 
 const orderSteps = [OrderStatus.PENDING, OrderStatus.ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERED];
 
@@ -37,7 +37,6 @@ function statusColor(status: OrderStatus) {
 export function OrderStatusPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const stepsOrientation = useBreakpointValue({ base: 'vertical', md: 'horizontal' }) ?? 'vertical';
-  const [liveStatus, setLiveStatus] = useState<OrderStatus | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['order-status', orderId],
@@ -49,26 +48,11 @@ export function OrderStatusPage() {
   });
 
   useEffect(() => {
-    if (!orderId) return;
-
-    const socket = io(import.meta.env.VITE_API_URL, {
-      transports: ['websocket'],
-    });
-
-    socket.emit('join-order', orderId);
-    socket.on('order-updated', (payload: { status?: string }) => {
-      if (payload.status) {
-        setLiveStatus(normalizeStatus(payload.status));
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [orderId]);
+    requestNotificationPermission();
+  }, []);
 
   const order = data;
-  const status = liveStatus ?? normalizeStatus(order?.status);
+  const status = normalizeStatus(order?.status);
   const currentStep = useMemo(() => {
     if (status === OrderStatus.CANCELLED) {
       return 0;

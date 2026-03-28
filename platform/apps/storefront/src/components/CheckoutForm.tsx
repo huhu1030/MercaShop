@@ -1,4 +1,4 @@
-import { Box, Button, Card, Field, HStack, Grid, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
+import { Box, Button, Card, Field, Grid, HStack, RadioGroup, Spinner, Text, Textarea, VStack } from '@chakra-ui/react';
 import type { ICustomerProfile, IPublicEstablishment } from '@mercashop/shared';
 import { DeliveryMethod, PaymentMethod } from '@mercashop/shared';
 import { CreditCard, MapPin, MessageSquareText } from 'lucide-react';
@@ -6,8 +6,10 @@ import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { type BillingInfoCardRef, BillingInfoCard } from './BillingInfoCard';
-import { type DeliveryAddressCardRef, DeliveryAddressCard } from './DeliveryAddressCard';
+import type { BillingInfoCardRef } from './BillingInfoCard';
+import { BillingInfoCard } from './BillingInfoCard';
+import type { DeliveryAddressCardRef } from './DeliveryAddressCard';
+import { DeliveryAddressCard } from './DeliveryAddressCard';
 import { PaymentMethodSelector } from './PaymentMethodSelector';
 import humanizeString from 'humanize-string';
 
@@ -161,9 +163,7 @@ export function CheckoutForm({ establishment, onSubmit, isSubmitting, profile }:
             </RadioGroup.Root>
           </Field.Root>
 
-          {deliveryMethod === DeliveryMethod.DELIVERY && (
-            <DeliveryAddressCard ref={deliveryRef} defaultValues={profile?.deliveryAddress} required />
-          )}
+          {deliveryMethod === DeliveryMethod.DELIVERY && <DeliveryAddressCard ref={deliveryRef} defaultValues={profile?.deliveryAddress} required />}
         </SectionCard>
 
         <BillingInfoCard ref={billingRef} defaultValues={billingDefaults} required />

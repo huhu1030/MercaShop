@@ -4,16 +4,146 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-MercaShop SaaS — a multi-tenant e-commerce platform. pnpm monorepo under `platform/`.
+MercaShop SaaS — a multi-tenant e-commerce platform for food ordering and delivery. Each tenant gets their own branded storefront and dashboard. The goal is to provide a turnkey online ordering solution with real-time order tracking, payment processing, and analytics.
 
-## Monorepo Structure
+## Tech Stack
+
+- **Backend**: TypeScript, Node.js, Express, TSOA (OpenAPI-based routes/schema generation), Mongoose (MongoDB), Firebase Admin
+- **Frontend**: TypeScript, React 19, Vite, Chakra UI v3, TanStack Query, react-hook-form, Jotai
+- **Database**: MongoDB via Mongoose
+- **Package Manager**: PNPM (mandatory)
+- **Testing**: Jest (API), Vitest (dashboard, storefront)
+
+## Repository Structure
+
+This is a **PNPM workspace monorepo** under `platform/`:
 
 ```
 platform/
-├── apps/api/        — Express + Tsoa REST API (Node 20+)
-├── apps/web/        — React + Vite admin dashboard
-└── packages/shared/ — Shared types, enums, and generated API client (TypeScript + Axios)
+├── apps/
+│   ├── api/                  # Express + Tsoa REST API (Node 20+)
+│   │   └── src/
+│   │       ├── controllers/  # TSOA controllers (route definitions)
+│   │       ├── services/     # Business logic (Mongoose queries)
+│   │       ├── models/       # Mongoose schemas/models
+│   │       ├── dtos/         # Request/response DTOs
+│   │       ├── auth/         # Firebase Admin auth module
+│   │       ├── config/       # Database, Firebase, GCP config
+│   │       ├── middleware/    # Tenant resolver, error handler
+│   │       ├── utils/        # Date, distance, string, validation utilities
+│   │       └── generated/    # TSOA-generated routes (do not edit)
+│   ├── dashboard/            # Admin dashboard (React + Vite)
+│   │   └── src/
+│   │       ├── pages/        # Page components
+│   │       ├── components/   # Reusable UI components
+│   │       ├── hooks/        # Custom hooks
+│   │       ├── store/        # Jotai atoms
+│   │       └── services/     # API service helpers
+│   └── storefront/           # Customer-facing storefront (React + Vite)
+│       └── src/
+│           ├── pages/        # Customer pages (menu, checkout, orders, etc.)
+│           ├── components/   # Storefront UI components
+│           ├── hooks/        # Custom hooks (useAuth, useProducts, useBranding, etc.)
+│           └── lib/          # Utility library
+├── packages/
+│   └── shared/               # @mercashop/shared - Shared types, enums, API client
+│       └── src/
+│           ├── types.ts      # Shared TypeScript interfaces (DTOs)
+│           ├── enums.ts      # OrderStatus, PaymentMethod, UserRole, etc.
+│           ├── api/          # API client factory and singleton instances
+│           └── apis/api/     # Generated OpenAPI client (do not edit)
+├── docker/                   # Docker configuration
+├── eslint.config.mjs         # Flat ESLint config for all apps
+├── tsconfig.base.json        # Shared base TypeScript config
+├── prettier.config.mjs       # Prettier config
+└── pnpm-workspace.yaml       # Workspace definition
 ```
+
+## Frontend Architecture
+
+Two independent frontend apps sharing a common package:
+
+| Package | Name | Purpose |
+|---------|------|---------|
+| `apps/dashboard` | `@mercashop/dashboard` | Admin panel for managing products, orders, analytics |
+| `apps/storefront` | `@mercashop/storefront` | Customer-facing ordering experience |
+| `packages/shared` | `@mercashop/shared` | Shared types, enums, and generated API clients |
+
+### Import Conventions
+
+```typescript
+// ============================================
+// FROM SHARED PACKAGE - Use @mercashop/shared
+// ============================================
+// Main exports (types, enums)
+import { OrderStatus, type IOrderLine, type IPublicProduct } from '@mercashop/shared';
+
+// API client singletons
+import { getOrderApi, getProductApi } from '@mercashop/shared/api-client';
+
+// ============================================
+// TYPES - Always use `import type` for type-only imports
+// ============================================
+import type { ISelectedOptionGroup, IAnalyticsResponse } from '@mercashop/shared';
+```
+
+### API Clients (MANDATORY)
+
+- **NEVER use raw `fetch()` or `axios` to call the backend API**
+- Always use singleton API clients from `@mercashop/shared/api-client`
+- Method names match the backend controller's `operationId`
+
+```typescript
+// Correct - use API singleton
+import { getOrderApi } from '@mercashop/shared/api-client';
+const response = await getOrderApi().getOrdersByUser(userId);
+
+// FORBIDDEN - never use fetch/axios directly
+const response = await fetch(`${API_URL}/orders?userId=${userId}`);
+```
+
+### State Management
+
+- **Server state**: TanStack Query (React Query v5) — all API data fetching
+- **Client state**: Jotai atoms — local UI state (cart, modals, etc.)
+- **No Redux** — intentionally replaced with Jotai + React Query
+
+### UI & Forms
+
+- **Components**: Chakra UI v3
+- **Forms**: React Hook Form
+- **Routing**: React Router v7
+
+### Authentication & Authorization
+
+Firebase Auth SDK on the frontend, Firebase Admin SDK on the backend. Each tenant has its own Firebase Identity Platform tenant ID (not standard Firebase Auth).
+
+- Token passed to API via Axios interceptor in the shared API client factory
+- 401 responses trigger automatic token refresh, then graceful sign-out on failure
+- Tenant config loaded via `useTenant` hook
+
+**Role hierarchy:**
+- `ADMIN` — full access
+- `OWNER` — establishment owner
+- `USER` — customer
+
+### Environment Variables (MANDATORY)
+
+**All environment variables MUST be accessed via `@mercashop/shared/config/environment`**. Never use `import.meta.env` directly elsewhere.
+
+```typescript
+// Correct - use environment config
+import { environment } from '@mercashop/shared/config/environment';
+const apiUrl = environment.API_URL;
+
+// Wrong - direct env access
+const apiUrl = import.meta.env.VITE_API_URL;
+```
+
+**Required variables** (in each app's `.env`):
+- `VITE_API_URL` — Backend API URL
+- `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET` — Firebase config
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID` — Firebase (dashboard only)
 
 ## Common Commands
 
@@ -21,81 +151,145 @@ All commands run from `platform/`:
 
 ```bash
 # Development
-pnpm dev:api              # Start API in watch mode
-pnpm dev:web              # Start Vite dev server
+pnpm dev:api                # Start API in watch mode
+pnpm dev:dashboard          # Start dashboard dev server
+pnpm dev:storefront         # Start storefront dev server
 
 # Build, lint, typecheck, test (all packages)
 pnpm build
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm format                 # Format with Prettier
+pnpm format:check           # Check formatting
 
 # Single package
 pnpm --filter @mercashop/api test
 pnpm --filter @mercashop/dashboard lint
+pnpm --filter @mercashop/storefront typecheck
 pnpm --filter @mercashop/shared build
 
-# API client regeneration (run after changing Tsoa controllers)
-pnpm generate:api-client  # Generates OpenAPI spec → TypeScript Axios client
+# Tenant management
+pnpm onboard-tenant         # Run tenant onboarding script
+
+# API client regeneration (run after changing TSOA controllers)
+pnpm generate:api-spec      # Generate OpenAPI spec from TSOA controllers
+pnpm generate:api-client    # Regenerate TypeScript Axios client from spec
 ```
 
-**Testing:**
+## Form Development Pattern
 
-- API: Jest (`platform/apps/api/jest.config.js`)
-- Web: Vitest (`platform/apps/web/vitest.config.ts`)
+1. Define Zod schema (inline or co-located)
+2. Derive TypeScript type with `z.input<typeof schema>`
+3. Use `useForm` with `zodResolver(schema)`
+4. Use `Controller` for complex field types (file uploads, selects)
 
-## Architecture
+```typescript
+const schema = z.object({
+  name: z.string().min(1, 'Required'),
+  price: z.coerce.number().min(0),
+});
+
+type FormValues = z.input<typeof schema>;
+
+const { control, handleSubmit } = useForm<FormValues>({
+  resolver: zodResolver(schema),
+});
+```
+
+## Key Architecture Patterns
 
 ### Multi-Tenancy
 
-Single MongoDB database. Every document (except Tenant) has a `tenantId` field. Tenant resolved via middleware matching `Origin` or `x-tenant-id`
-header.
+Single MongoDB database. Every document (except Tenant) has a `tenantId` field. Tenant resolved via middleware matching `Origin` or `x-tenant-id` header.
 
-### API (Express + Tsoa)
+**The tenant must NEVER be passed from client to server.** Always derive the tenant server-side — from the JWT `firebase.tenant` claim, the `Origin` header, or another server-controlled source. Never trust a client-supplied tenant ID.
 
-- Controllers in `apps/api/src/controllers/` use Tsoa decorators → auto-generate OpenAPI 3.0 spec and Express routes
-- Business logic in `apps/api/src/services/`
-- Mongoose models in `apps/api/src/models/`
-- Auth: Firebase Admin SDK verifies JWT tokens per-tenant (each tenant has its own Firebase Identity Platform tenant ID)
-- Auth module: `apps/api/src/auth/authentication.ts`
-- Swagger UI at `/docs` in dev
+### Backend API Development
 
-### Web (React + Vite + Chakra UI v3)
+1. **Controllers** in `apps/api/src/controllers/` use TSOA decorators → auto-generate OpenAPI 3.0 spec and Express routes
+2. **Services** in `apps/api/src/services/` contain all business logic — controllers should be thin
+3. **Mongoose models** in `apps/api/src/models/` define MongoDB schemas
+4. **DTOs** in `apps/api/src/dtos/` define request/response shapes
+5. **Swagger UI** at `/docs` in dev
 
-- State: React Query for server state, Jotai atoms for client state
-- Forms: React Hook Form
-- Routing: React Router v7
-- Auth: Firebase Auth SDK → token passed to API via Axios interceptor
-- Tenant config loaded via `useTenant` hook
+### OpenAPI Workflow
+
+When modifying backend controllers or DTOs:
+1. Run `pnpm generate:api-spec` to regenerate the OpenAPI spec
+2. Run `pnpm generate:api-client` to regenerate the TypeScript Axios client in shared package
+3. Never manually edit files in `packages/shared/src/apis/api/`
 
 ### Shared Package
 
-- `packages/shared/src/types.ts` — DTOs shared between API and web
-- `packages/shared/src/enums.ts` — OrderStatus, UserRole, etc.
-- `packages/shared/src/api/api-client-factory.ts` — Centralized Axios instance with bearer token injection, 401 auto-refresh, and graceful sign-out
-- `packages/shared/src/api/clients.ts` — Lazy-loaded API client instances
-- `packages/shared/src/apis/api/` — Generated API client (do not edit manually)
+- `types.ts` — Shared interfaces (IOrderLine, IPublicProduct, IOptionGroup, ISelectedOptionGroup, etc.)
+- `enums.ts` — OrderStatus, PaymentMethod, DeliveryMethod, UserRole, EstablishmentStatus, SelectionMode
+- `api/api-client-factory.ts` — Centralized Axios instance with bearer token injection, 401 auto-refresh, and graceful sign-out
+- `api/clients.ts` — Lazy-loaded API client singleton instances
+- `apis/api/` — Generated API client (do not edit manually)
 
-### API Client Flow
+### Adding to Shared Package
 
-Tsoa controller decorators → `pnpm generate:api-spec` → OpenAPI spec (`dist/swagger.json`) → `openapi-generator-cli` → TypeScript Axios client in
-shared package. Always regenerate after controller changes.
+When adding types, enums, or API clients to `@mercashop/shared`:
 
-## Key Technical Decisions
+1. **Add code** to `packages/shared/src/` (types in `types.ts`, enums in `enums.ts`)
+2. **Export** from `packages/shared/src/index.ts`
+3. **Import in apps** using `@mercashop/shared` or `@mercashop/shared/api-client`
 
-- **No Redux** — replaced with Jotai atoms + React Query
-- **Tsoa** for type-safe API routes and automatic OpenAPI generation
-- **Firebase Identity Platform** for per-tenant auth (not standard Firebase Auth)
+```typescript
+// packages/shared/src/index.ts
+export { MyEnum } from './enums';
+export type { IMyType } from './types';
+
+// In app code
+import { MyEnum, type IMyType } from '@mercashop/shared';
+```
+
+### WebSocket (Socket.io)
+
+Socket.io provides real-time order notifications. Connections are authenticated via middleware:
+
+1. Client passes Firebase ID token via `auth: { token }` on connect
+2. Server decodes the token with `firebaseAuth.verifyIdToken(token)`
+3. Tenant is extracted from the JWT claim `decoded.firebase.tenant` (the Identity Platform tenant ID) — **never from origin headers or client-supplied values**
+4. Tenant document is looked up by `identityPlatformTenantId` to resolve the app-level `tenantId`
+5. `socket.data.uid` and `socket.data.tenantId` are set for downstream use
+
+The storefront uses a `WebSocketProvider` context (inside `AuthProvider`) that holds a single connection across page navigations and auto-invalidates TanStack Query cache on `order-updated` events.
+
+### Key Integrations
+
 - **Mollie** for payment processing
 - **Google Cloud Storage** for file uploads
-- **Socket.io** for real-time order notifications
-- **Strict TypeScript** — no `any`/`unknown`/casting; everything must be properly typed
+- **Socket.io** for real-time order notifications (see WebSocket section above)
+- **Email-templates + Nodemailer** for transactional emails
+- **Firebase Identity Platform** for per-tenant auth
 
-## Code style :
+### Deployment
 
-Avoid using `any` or `unknown` types.
-If you have to use any or unknown that means something is wrong.
-Use `never` for exhaustive switch statements.
-Use `never` for exhaustive type guards.
-Use `never` for exhaustive type assertions.
-Use meaningful variable and function names.
+GCP Cloud Run via GitHub Actions. Each frontend app has its own Docker build and Cloud Run service:
+
+- Multi-stage Docker builds (Node 20 Alpine + pnpm 9 + Nginx)
+- Environment variables passed as Docker build args
+- Nginx serves the built SPA on port 8080
+- Auto-deploy on `main` branch CI success
+- Dockerfiles in `platform/docker/` (`dashboard.Dockerfile`, `storefront.Dockerfile`)
+- Workflows in `.github/workflows/` (`deploy-dashboard.yml`, `deploy-storefront.yml`)
+
+## Code Style Rules
+
+- Avoid `any` or `unknown` types — if you need them, something is wrong
+- No type casting — fix the underlying type issue instead
+- Use `import type` for type-only imports
+- Use `never` for exhaustive switch statements, type guards, and type assertions
+- Use meaningful variable and function names
+- Comments only for business logic explanations, not obvious code
+- Clean Architecture principles — clarity and maintainability are priorities
+
+### ESLint Enforcement
+
+- **Generated API imports**: ESLint blocks direct imports from `apis/api/` except:
+  - `api/clients/` folder (allowed to import API classes)
+  - Type imports using `import type { ... }` (allowed everywhere)
+- **Type imports**: Use `import type` for all DTO/type imports
+- Run `pnpm lint --fix` to auto-fix many style issues

@@ -1,22 +1,6 @@
 export { PaymentMethod } from '@mercashop/shared';
+import type { Document } from 'mongoose';
+import type { OrderDocument } from '../models/Order';
 
-export interface OrderLineItem {
-  _id: string;
-  name: string;
-  quantity: number;
-  price?: number;
-}
-
-export interface OrderLine {
-  item: OrderLineItem;
-}
-
-export interface Order {
-  _id: string;
-  userId: string;
-  establishmentId: string;
-  total: number;
-  orderLines: OrderLine[];
-  mollieOrderId?: string;
-  remark?: string;
-}
+export type Order = Omit<OrderDocument, keyof Document> & { _id: string };
+export type OrderLine = Order['orderLines'][number];

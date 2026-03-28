@@ -1,11 +1,18 @@
 import { useAtom, useAtomValue } from 'jotai';
-import { cartAtom, cartItemCountAtom, cartTotalAtom } from '../lib/cart-store';
+import { cartAtom, cartItemCountAtom, cartTotalAtom, type CartItemSelectedOption } from '../lib/cart-store';
 
 interface AddItemInput {
   _id: string;
   name: string;
   price: number;
   photo?: string;
+  selectedOptions?: CartItemSelectedOption[];
+  optionsTotalPrice?: number;
+}
+
+function cartItemKey(productId: string, selectedOptions?: CartItemSelectedOption[]): string {
+  if (!selectedOptions || selectedOptions.length === 0) return productId;
+  return `${productId}:${JSON.stringify(selectedOptions)}`;
 }
 
 export function useCart() {
@@ -18,23 +25,35 @@ export function useCart() {
       return;
     }
 
+    const key = cartItemKey(product._id, product.selectedOptions);
+
     setItems((prev) => {
-      const existing = prev.find((item) => item._id === product._id);
+      const existing = prev.find(
+        (item) => cartItemKey(item._id, item.selectedOptions) === key,
+      );
       if (existing) {
-        return prev.map((item) => (item._id === product._id ? { ...item, quantity: item.quantity + quantity } : item));
+        return prev.map((item) =>
+          cartItemKey(item._id, item.selectedOptions) === key
+            ? { ...item, quantity: item.quantity + quantity }
+            : item,
+        );
       }
 
       return [...prev, { ...product, quantity }];
     });
   };
 
-  const removeItem = (productId: string) => {
-    setItems((prev) => prev.filter((item) => item._id !== productId));
+  const removeItem = (productId: string, selectedOptions?: CartItemSelectedOption[]) => {
+    const key = cartItemKey(productId, selectedOptions);
+    setItems((prev) => prev.filter((item) => cartItemKey(item._id, item.selectedOptions) !== key));
   };
 
-  const decrementItem = (productId: string) => {
+  const decrementItem = (productId: string, selectedOptions?: CartItemSelectedOption[]) => {
+    const key = cartItemKey(productId, selectedOptions);
     setItems((prev) =>
-      prev.map((item) => (item._id === productId ? { ...item, quantity: item.quantity - 1 } : item)).filter((item) => item.quantity > 0),
+      prev
+        .map((item) => (cartItemKey(item._id, item.selectedOptions) === key ? { ...item, quantity: item.quantity - 1 } : item))
+        .filter((item) => item.quantity > 0),
     );
   };
 

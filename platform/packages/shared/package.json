@@ -15,6 +15,10 @@
     "./api-client": {
       "types": "./src/api/index.ts",
       "default": "./src/api/index.ts"
+    },
+    "./config/environment": {
+      "types": "./src/config/environment.ts",
+      "default": "./src/config/environment.ts"
     }
   },
   "scripts": {

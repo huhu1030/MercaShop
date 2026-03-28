@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Badge, Box, Button, Card, Collapsible, HStack, Input, Separator, Tabs, Text, VStack } from '@chakra-ui/react';
 import { ShoppingCart } from 'lucide-react';
 import { OrderStatus } from '@mercashop/shared';
+import type { ISelectedOptionGroup } from '@mercashop/shared';
+import { environment } from '@mercashop/shared/config/environment';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { LoadingScreen } from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -57,6 +59,7 @@ interface OrderLine {
     name?: string;
     quantity?: number;
     price?: number;
+    selectedOptions?: ISelectedOptionGroup[];
   };
 }
 
@@ -170,12 +173,37 @@ function OrderCard({ order }: { order: Order }) {
                 <VStack align="stretch" gap="0.5rem">
                   <Text fontWeight="semibold">Order lines</Text>
                   {order.orderLines.map((line, index) => (
-                    <HStack key={line.item?._id ?? index} justify="space-between">
-                      <Text>{line.item?.name ?? 'Unknown item'}</Text>
-                      <Text fontWeight="medium" whiteSpace="nowrap">
-                        {line.item?.quantity ?? 0} x {formatCurrency(line.item?.price ?? 0)}
-                      </Text>
-                    </HStack>
+                    <VStack key={line.item?._id ?? index} align="stretch" gap="0.25rem">
+                      <HStack justify="space-between">
+                        <Text>{line.item?.name ?? 'Unknown item'}</Text>
+                        <Text fontWeight="medium" whiteSpace="nowrap">
+                          {line.item?.quantity ?? 0} x {formatCurrency(line.item?.price ?? 0)}
+                        </Text>
+                      </HStack>
+                      {line.item?.selectedOptions && line.item.selectedOptions.length > 0 && (
+                        <VStack align="stretch" gap="0.25rem" pl="0.75rem" borderLeftWidth="2px" borderLeftColor="gray.300">
+                          {line.item.selectedOptions.map((group) => (
+                            <Box key={group.name}>
+                              <Text fontSize="xs" color="fg.muted" mb="0.25rem">{group.name}</Text>
+                              <HStack gap="0.375rem" flexWrap="wrap">
+                                {group.choices.map((choice) => (
+                                  <Badge
+                                    key={choice.name}
+                                    size="sm"
+                                    variant="subtle"
+                                    colorPalette={choice.extraPrice > 0 ? 'blue' : 'gray'}
+                                  >
+                                    {choice.name}
+                                    {choice.quantity > 1 && ` ×${choice.quantity}`}
+                                    {choice.extraPrice > 0 && ` +${formatCurrency(choice.extraPrice)}`}
+                                  </Badge>
+                                ))}
+                              </HStack>
+                            </Box>
+                          ))}
+                        </VStack>
+                      )}
+                    </VStack>
                   ))}
 
                   <Separator />
@@ -321,7 +349,7 @@ export function OrdersPage() {
     queryFn: () => getOrderApi().getOrdersByEstablishment(establishmentId),
   });
 
-  const { onNewOrders } = useWebSocket(import.meta.env.VITE_API_URL);
+  const { onNewOrders } = useWebSocket(environment.API_URL, establishmentId);
 
   useEffect(() => {
     const cleanup = onNewOrders(() => {
