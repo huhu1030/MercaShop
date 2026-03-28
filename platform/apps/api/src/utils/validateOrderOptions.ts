@@ -72,6 +72,12 @@ export function validateAndSnapshotOptions(
     const snapshotChoices: Array<{ name: string; quantity: number; extraPrice: number }> = [];
 
     for (const choice of sel.choices) {
+      if (!Number.isInteger(choice.quantity) || choice.quantity < 1) {
+        throw new Error(
+          `Choice "${choice.name}" in "${group.name}" must have a positive integer quantity`,
+        );
+      }
+
       const productChoice = group.choices.find((c) => c.name === choice.name);
       if (!productChoice) {
         throw new Error(`Choice "${choice.name}" not found in option group "${group.name}"`);

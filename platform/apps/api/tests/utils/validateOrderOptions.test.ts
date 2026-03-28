@@ -144,6 +144,42 @@ describe('validateAndSnapshotOptions', () => {
     expect(result.optionsTotalPrice).toBe(0);
   });
 
+  it('should fail when choice quantity is zero', () => {
+    expect(() =>
+      validateAndSnapshotOptions(
+        [sauceGroup],
+        [{ name: 'Sauce', choices: [{ name: 'Ketchup', quantity: 0 }] }],
+      ),
+    ).toThrow('must have a positive integer quantity');
+  });
+
+  it('should fail when choice quantity is negative', () => {
+    expect(() =>
+      validateAndSnapshotOptions(
+        [sauceGroup],
+        [{ name: 'Sauce', choices: [{ name: 'Ketchup', quantity: -1 }] }],
+      ),
+    ).toThrow('must have a positive integer quantity');
+  });
+
+  it('should fail when choice quantity is a decimal', () => {
+    expect(() =>
+      validateAndSnapshotOptions(
+        [sauceGroup],
+        [{ name: 'Sauce', choices: [{ name: 'Ketchup', quantity: 1.5 }] }],
+      ),
+    ).toThrow('must have a positive integer quantity');
+  });
+
+  it('should fail when choice quantity is NaN', () => {
+    expect(() =>
+      validateAndSnapshotOptions(
+        [sauceGroup],
+        [{ name: 'Sauce', choices: [{ name: 'Ketchup', quantity: NaN }] }],
+      ),
+    ).toThrow('must have a positive integer quantity');
+  });
+
   it('should fail when unknown option group is submitted', () => {
     expect(() =>
       validateAndSnapshotOptions(

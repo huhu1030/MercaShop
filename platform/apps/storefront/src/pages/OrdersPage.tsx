@@ -113,19 +113,24 @@ function OrderCard({ order }: { order: Order }) {
                               <Text fontSize="xs" color="fg.muted" fontWeight="semibold">
                                 {group.name}
                               </Text>
-                              {group.choices.map((choice) => (
+                              {group.choices.map((choice) => {
+                                const qty = Number.isFinite(choice.quantity) && choice.quantity >= 1
+                                  ? Math.floor(choice.quantity)
+                                  : 1;
+                                return (
                                 <HStack key={choice.name} justify="space-between">
                                   <Text fontSize="xs" color="fg.muted">
-                                    {choice.quantity > 1 ? `${choice.quantity}x ` : ''}
+                                    {qty > 1 ? `${qty}x ` : ''}
                                     {choice.name}
                                   </Text>
                                   {choice.extraPrice > 0 && (
                                     <Text fontSize="xs" color="fg.muted">
-                                      +{formatCurrency(choice.extraPrice * choice.quantity)}
+                                      +{formatCurrency(choice.extraPrice * qty)}
                                     </Text>
                                   )}
                                 </HStack>
-                              ))}
+                                );
+                              })}
                             </VStack>
                           ))}
                         </VStack>
