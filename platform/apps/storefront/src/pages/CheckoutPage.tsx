@@ -45,7 +45,6 @@ export function CheckoutPage() {
             ...(item.optionsTotalPrice && { optionsTotalPrice: item.optionsTotalPrice }),
           },
         })),
-        total,
         paymentMethod: formData.paymentMethod as unknown as import('@mercashop/shared/api-client').PaymentMethod,
         deliveryMethod: formData.deliveryMethod,
         deliveryAddress: formData.deliveryMethod === DeliveryMethod.DELIVERY ? formData.deliveryAddress : undefined,

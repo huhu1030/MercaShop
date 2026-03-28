@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import {
   Badge,
   Box,
@@ -14,19 +14,11 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Plus, Trash2, X } from 'lucide-react';
-import type { IOptionGroup, IOptionChoice, SelectionMode } from '@mercashop/shared';
-
-interface OptionGroupPanelProps {
-  optionGroups: IOptionGroup[];
-  onChange: (groups: IOptionGroup[]) => void;
-}
-
-interface ValidationErrors {
-  groupName?: string;
-  choices?: string;
-  choiceNames?: Record<number, string>;
-  maxSelections?: string;
-}
+import { z } from 'zod';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import type { IOptionGroup, SelectionMode } from '@mercashop/shared';
 
 const SELECTION_MODE_LABELS: Record<SelectionMode, string> = {
   exactlyOne: 'Exactly One',
@@ -34,98 +26,75 @@ const SELECTION_MODE_LABELS: Record<SelectionMode, string> = {
   anyNumber: 'Any Number',
 };
 
-function createDefaultChoice(): IOptionChoice {
-  return { name: '', extraPrice: 0, maxQuantity: 1 };
-}
+const optionChoiceSchema = z.object({
+  name: z.string().min(1, 'Choice name is required'),
+  extraPrice: z.coerce.number().min(0),
+  maxQuantity: z.coerce.number().int().min(1),
+});
 
-function createDefaultGroup(): IOptionGroup {
-  return {
-    name: '',
-    required: false,
-    selectionMode: 'exactlyOne' as const,
-    choices: [createDefaultChoice()],
-  };
-}
-
-function validateGroup(group: IOptionGroup): ValidationErrors {
-  const errors: ValidationErrors = {};
-
-  if (!group.name.trim()) {
-    errors.groupName = 'Group name is required';
-  }
-
-  if (group.choices.length === 0) {
-    errors.choices = 'At least one choice is required';
-  }
-
-  const choiceNameErrors: Record<number, string> = {};
-  group.choices.forEach((choice, i) => {
-    if (!choice.name.trim()) {
-      choiceNameErrors[i] = 'Choice name is required';
-    }
+const optionGroupSchema = z
+  .object({
+    name: z.string().min(1, 'Group name is required'),
+    required: z.boolean(),
+    selectionMode: z.enum(['exactlyOne', 'upToN', 'anyNumber']),
+    maxSelections: z.coerce.number().int().min(1).optional(),
+    choices: z.array(optionChoiceSchema).min(1, 'At least one choice is required'),
+  })
+  .refine((g) => g.selectionMode !== 'upToN' || (g.maxSelections !== undefined && g.maxSelections >= 1), {
+    message: 'Max selections must be at least 1',
+    path: ['maxSelections'],
   });
-  if (Object.keys(choiceNameErrors).length > 0) {
-    errors.choiceNames = choiceNameErrors;
-  }
 
-  if (group.selectionMode === 'upToN' && (!group.maxSelections || group.maxSelections < 1)) {
-    errors.maxSelections = 'Max selections must be at least 1';
-  }
+const formSchema = z.object({
+  optionGroups: z.array(optionGroupSchema),
+});
 
-  return errors;
+type FormValues = z.input<typeof formSchema>;
+
+interface OptionGroupPanelProps {
+  optionGroups: IOptionGroup[];
+  onChange: (groups: IOptionGroup[]) => void;
 }
 
 export function OptionGroupPanel({ optionGroups, onChange }: OptionGroupPanelProps) {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [validationErrors, setValidationErrors] = useState<Record<number, ValidationErrors>>({});
 
-  function updateGroup(index: number, updater: (group: IOptionGroup) => IOptionGroup) {
-    const updated = optionGroups.map((g, i) => (i === index ? updater(g) : g));
-    const errors = validateGroup(updated[index]);
-    setValidationErrors((prev) => ({ ...prev, [index]: errors }));
-    onChange(updated);
-  }
+  const {
+    control,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { optionGroups },
+    mode: 'onChange',
+  });
+
+  const { fields: groupFields, append: appendGroup, remove: removeGroup } = useFieldArray({ control, name: 'optionGroups' });
+
+  const watchedGroups = watch('optionGroups');
+
+  useEffect(() => {
+    onChange(watchedGroups);
+  }, [watchedGroups, onChange]);
 
   function addGroup() {
-    const newGroups = [...optionGroups, createDefaultGroup()];
-    onChange(newGroups);
-    setExpandedIndex(newGroups.length - 1);
+    appendGroup({
+      name: '',
+      required: false,
+      selectionMode: 'exactlyOne' as const,
+      maxSelections: undefined,
+      choices: [{ name: '', extraPrice: 0, maxQuantity: 1 }],
+    });
+    setExpandedIndex(groupFields.length);
   }
 
   function deleteGroup(index: number) {
-    const updated = optionGroups.filter((_, i) => i !== index);
-    onChange(updated);
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      delete next[index];
-      return next;
-    });
+    removeGroup(index);
     if (expandedIndex === index) {
       setExpandedIndex(null);
     } else if (expandedIndex !== null && expandedIndex > index) {
       setExpandedIndex(expandedIndex - 1);
     }
-  }
-
-  function addChoice(groupIndex: number) {
-    updateGroup(groupIndex, (g) => ({
-      ...g,
-      choices: [...g.choices, createDefaultChoice()],
-    }));
-  }
-
-  function deleteChoice(groupIndex: number, choiceIndex: number) {
-    updateGroup(groupIndex, (g) => ({
-      ...g,
-      choices: g.choices.filter((_, i) => i !== choiceIndex),
-    }));
-  }
-
-  function updateChoice(groupIndex: number, choiceIndex: number, updates: Partial<IOptionChoice>) {
-    updateGroup(groupIndex, (g) => ({
-      ...g,
-      choices: g.choices.map((c, i) => (i === choiceIndex ? { ...c, ...updates } : c)),
-    }));
   }
 
   return (
@@ -137,12 +106,13 @@ export function OptionGroupPanel({ optionGroups, onChange }: OptionGroupPanelPro
         Add customizable options like sizes, toppings, or extras.
       </Text>
 
-      {optionGroups.map((group, groupIndex) => {
+      {groupFields.map((field, groupIndex) => {
         const isExpanded = expandedIndex === groupIndex;
-        const errors = validationErrors[groupIndex] ?? {};
+        const group = watchedGroups[groupIndex];
+        const groupErrors = errors.optionGroups?.[groupIndex];
 
         return (
-          <Card.Root key={groupIndex} variant="outline">
+          <Card.Root key={field.id} variant="outline">
             <Card.Body p="0.75rem">
               <HStack
                 justify="space-between"
@@ -151,17 +121,17 @@ export function OptionGroupPanel({ optionGroups, onChange }: OptionGroupPanelPro
               >
                 <VStack align="start" gap="0.25rem">
                   <Text fontWeight="semibold" fontSize="sm">
-                    {group.name || 'Unnamed group'}
+                    {group?.name || 'Unnamed group'}
                   </Text>
                   <HStack gap="0.5rem">
-                    <Badge colorPalette={group.required ? 'red' : 'gray'} size="sm">
-                      {group.required ? 'Required' : 'Optional'}
+                    <Badge colorPalette={group?.required ? 'red' : 'gray'} size="sm">
+                      {group?.required ? 'Required' : 'Optional'}
                     </Badge>
                     <Text fontSize="xs" color="gray.500">
-                      {SELECTION_MODE_LABELS[group.selectionMode]}
+                      {group ? SELECTION_MODE_LABELS[group.selectionMode] : ''}
                     </Text>
                     <Text fontSize="xs" color="gray.500">
-                      {group.choices.length} {group.choices.length === 1 ? 'choice' : 'choices'}
+                      {group?.choices.length ?? 0} {group?.choices.length === 1 ? 'choice' : 'choices'}
                     </Text>
                   </HStack>
                 </VStack>
@@ -181,173 +151,88 @@ export function OptionGroupPanel({ optionGroups, onChange }: OptionGroupPanelPro
 
               {isExpanded && (
                 <VStack gap="0.75rem" align="stretch" mt="0.75rem" pt="0.75rem" borderTopWidth="1px">
-                  <Field.Root invalid={Boolean(errors.groupName)}>
-                    <Field.Label fontSize="sm">Group Name</Field.Label>
-                    <Input
-                      size="sm"
-                      placeholder="e.g. Size, Toppings"
-                      value={group.name}
-                      onChange={(e) =>
-                        updateGroup(groupIndex, (g) => ({ ...g, name: e.target.value }))
-                      }
-                    />
-                    {errors.groupName && (
-                      <Text color="red.500" fontSize="xs">
-                        {errors.groupName}
-                      </Text>
+                  <Controller
+                    control={control}
+                    name={`optionGroups.${groupIndex}.name`}
+                    render={({ field: f }) => (
+                      <Field.Root invalid={Boolean(groupErrors?.name)}>
+                        <Field.Label fontSize="sm">Group Name</Field.Label>
+                        <Input size="sm" placeholder="e.g. Size, Toppings" {...f} />
+                        {groupErrors?.name && (
+                          <Text color="red.500" fontSize="xs">
+                            {groupErrors.name.message}
+                          </Text>
+                        )}
+                      </Field.Root>
                     )}
-                  </Field.Root>
+                  />
 
                   <HStack justify="space-between">
                     <Text fontSize="sm">Required</Text>
-                    <Switch.Root
-                      checked={group.required}
-                      onCheckedChange={(details) =>
-                        updateGroup(groupIndex, (g) => ({ ...g, required: details.checked }))
-                      }
-                      size="sm"
-                    >
-                      <Switch.HiddenInput />
-                      <Switch.Control>
-                        <Switch.Thumb />
-                      </Switch.Control>
-                    </Switch.Root>
+                    <Controller
+                      control={control}
+                      name={`optionGroups.${groupIndex}.required`}
+                      render={({ field: f }) => (
+                        <Switch.Root
+                          checked={f.value}
+                          onCheckedChange={(details) => f.onChange(details.checked)}
+                          size="sm"
+                        >
+                          <Switch.HiddenInput />
+                          <Switch.Control>
+                            <Switch.Thumb />
+                          </Switch.Control>
+                        </Switch.Root>
+                      )}
+                    />
                   </HStack>
 
-                  <Field.Root>
-                    <Field.Label fontSize="sm">Selection Mode</Field.Label>
-                    <NativeSelect.Root size="sm">
-                      <NativeSelect.Field
-                        value={group.selectionMode}
-                        onChange={(e) =>
-                          updateGroup(groupIndex, (g) => ({
-                            ...g,
-                            selectionMode: e.target.value as SelectionMode,
-                            maxSelections:
-                              e.target.value === 'upToN' ? (g.maxSelections ?? 1) : undefined,
-                          }))
-                        }
-                      >
-                        <option value="exactlyOne">Exactly One</option>
-                        <option value="upToN">Up to N</option>
-                        <option value="anyNumber">Any Number</option>
-                      </NativeSelect.Field>
-                      <NativeSelect.Indicator />
-                    </NativeSelect.Root>
-                  </Field.Root>
-
-                  {group.selectionMode === 'upToN' && (
-                    <Field.Root invalid={Boolean(errors.maxSelections)}>
-                      <Field.Label fontSize="sm">Max Selections</Field.Label>
-                      <Input
-                        size="sm"
-                        type="number"
-                        min={1}
-                        value={group.maxSelections ?? 1}
-                        onChange={(e) =>
-                          updateGroup(groupIndex, (g) => ({
-                            ...g,
-                            maxSelections: parseInt(e.target.value, 10) || 1,
-                          }))
-                        }
-                      />
-                      {errors.maxSelections && (
-                        <Text color="red.500" fontSize="xs">
-                          {errors.maxSelections}
-                        </Text>
-                      )}
-                    </Field.Root>
-                  )}
-
-                  <Box>
-                    <Text fontWeight="semibold" fontSize="sm" mb="0.5rem">
-                      Choices
-                    </Text>
-                    {errors.choices && (
-                      <Text color="red.500" fontSize="xs" mb="0.25rem">
-                        {errors.choices}
-                      </Text>
+                  <Controller
+                    control={control}
+                    name={`optionGroups.${groupIndex}.selectionMode`}
+                    render={({ field: f }) => (
+                      <Field.Root>
+                        <Field.Label fontSize="sm">Selection Mode</Field.Label>
+                        <NativeSelect.Root size="sm">
+                          <NativeSelect.Field
+                            value={f.value}
+                            onChange={(e) => f.onChange(e.target.value)}
+                          >
+                            <option value="exactlyOne">Exactly One</option>
+                            <option value="upToN">Up to N</option>
+                            <option value="anyNumber">Any Number</option>
+                          </NativeSelect.Field>
+                          <NativeSelect.Indicator />
+                        </NativeSelect.Root>
+                      </Field.Root>
                     )}
+                  />
 
-                    <HStack gap="0.5rem" mb="0.25rem">
-                      <Text fontSize="xs" color="gray.500" flex="1">
-                        Choice name
-                      </Text>
-                      <Text fontSize="xs" color="gray.500" w="5rem">
-                        Extra price
-                      </Text>
-                      <Text fontSize="xs" color="gray.500" w="4rem">
-                        Max qty
-                      </Text>
-                      <Box w="2rem" />
-                    </HStack>
-
-                    <VStack gap="0.5rem" align="stretch">
-                      {group.choices.map((choice, choiceIndex) => (
-                        <HStack key={choiceIndex} gap="0.5rem">
-                          <Box flex="1">
-                            <Input
-                              size="sm"
-                              placeholder="Choice name"
-                              value={choice.name}
-                              onChange={(e) =>
-                                updateChoice(groupIndex, choiceIndex, { name: e.target.value })
-                              }
-                            />
-                            {errors.choiceNames?.[choiceIndex] && (
-                              <Text color="red.500" fontSize="xs">
-                                {errors.choiceNames[choiceIndex]}
-                              </Text>
-                            )}
-                          </Box>
-                          <Input
-                            size="sm"
-                            type="number"
-                            step="0.01"
-                            min={0}
-                            w="5rem"
-                            value={choice.extraPrice}
-                            onChange={(e) =>
-                              updateChoice(groupIndex, choiceIndex, {
-                                extraPrice: parseFloat(e.target.value) || 0,
-                              })
-                            }
-                          />
+                  {group?.selectionMode === 'upToN' && (
+                    <Controller
+                      control={control}
+                      name={`optionGroups.${groupIndex}.maxSelections`}
+                      render={({ field: f }) => (
+                        <Field.Root invalid={Boolean(groupErrors?.maxSelections)}>
+                          <Field.Label fontSize="sm">Max Selections</Field.Label>
                           <Input
                             size="sm"
                             type="number"
                             min={1}
-                            w="4rem"
-                            value={choice.maxQuantity}
-                            onChange={(e) =>
-                              updateChoice(groupIndex, choiceIndex, {
-                                maxQuantity: parseInt(e.target.value, 10) || 1,
-                              })
-                            }
+                            value={f.value ?? 1}
+                            onChange={(e) => f.onChange(parseInt(e.target.value, 10) || 1)}
                           />
-                          <IconButton
-                            aria-label="Delete choice"
-                            variant="ghost"
-                            size="sm"
-                            colorPalette="red"
-                            onClick={() => deleteChoice(groupIndex, choiceIndex)}
-                          >
-                            <X size="0.875rem" />
-                          </IconButton>
-                        </HStack>
-                      ))}
-                    </VStack>
+                          {groupErrors?.maxSelections && (
+                            <Text color="red.500" fontSize="xs">
+                              {groupErrors.maxSelections.message}
+                            </Text>
+                          )}
+                        </Field.Root>
+                      )}
+                    />
+                  )}
 
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      mt="0.5rem"
-                      onClick={() => addChoice(groupIndex)}
-                    >
-                      <Plus size="0.875rem" />
-                      Add Choice
-                    </Button>
-                  </Box>
+                  <ChoicesFieldArray control={control} groupIndex={groupIndex} groupErrors={groupErrors} />
                 </VStack>
               )}
             </Card.Body>
@@ -365,5 +250,123 @@ export function OptionGroupPanel({ optionGroups, onChange }: OptionGroupPanelPro
         Add Option Group
       </Button>
     </VStack>
+  );
+}
+
+import type { FieldErrors } from 'react-hook-form';
+
+type GroupErrors = FieldErrors<FormValues['optionGroups'][number]>;
+
+interface ChoicesFieldArrayProps {
+  control: ReturnType<typeof useForm<FormValues>>['control'];
+  groupIndex: number;
+  groupErrors: GroupErrors | undefined;
+}
+
+function ChoicesFieldArray({ control, groupIndex, groupErrors }: ChoicesFieldArrayProps) {
+  const { fields: choiceFields, append, remove } = useFieldArray({
+    control,
+    name: `optionGroups.${groupIndex}.choices`,
+  });
+
+  return (
+    <Box>
+      <Text fontWeight="semibold" fontSize="sm" mb="0.5rem">
+        Choices
+      </Text>
+      {groupErrors?.choices?.message && (
+        <Text color="red.500" fontSize="xs" mb="0.25rem">
+          {groupErrors.choices.message}
+        </Text>
+      )}
+
+      <HStack gap="0.5rem" mb="0.25rem">
+        <Text fontSize="xs" color="gray.500" flex="1">
+          Choice name
+        </Text>
+        <Text fontSize="xs" color="gray.500" w="5rem">
+          Extra price
+        </Text>
+        <Text fontSize="xs" color="gray.500" w="4rem">
+          Max qty
+        </Text>
+        <Box w="2rem" />
+      </HStack>
+
+      <VStack gap="0.5rem" align="stretch">
+        {choiceFields.map((choiceField, choiceIndex) => {
+          const choiceErrors = groupErrors?.choices?.[choiceIndex];
+
+          return (
+            <HStack key={choiceField.id} gap="0.5rem">
+              <Box flex="1">
+                <Controller
+                  control={control}
+                  name={`optionGroups.${groupIndex}.choices.${choiceIndex}.name`}
+                  render={({ field: f }) => (
+                    <>
+                      <Input size="sm" placeholder="Choice name" {...f} />
+                      {choiceErrors?.name && (
+                        <Text color="red.500" fontSize="xs">
+                          {choiceErrors.name.message}
+                        </Text>
+                      )}
+                    </>
+                  )}
+                />
+              </Box>
+              <Controller
+                control={control}
+                name={`optionGroups.${groupIndex}.choices.${choiceIndex}.extraPrice`}
+                render={({ field: f }) => (
+                  <Input
+                    size="sm"
+                    type="number"
+                    step="0.01"
+                    min={0}
+                    w="5rem"
+                    value={f.value}
+                    onChange={(e) => f.onChange(parseFloat(e.target.value) || 0)}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name={`optionGroups.${groupIndex}.choices.${choiceIndex}.maxQuantity`}
+                render={({ field: f }) => (
+                  <Input
+                    size="sm"
+                    type="number"
+                    min={1}
+                    w="4rem"
+                    value={f.value}
+                    onChange={(e) => f.onChange(parseInt(e.target.value, 10) || 1)}
+                  />
+                )}
+              />
+              <IconButton
+                aria-label="Delete choice"
+                variant="ghost"
+                size="sm"
+                colorPalette="red"
+                onClick={() => remove(choiceIndex)}
+              >
+                <X size="0.875rem" />
+              </IconButton>
+            </HStack>
+          );
+        })}
+      </VStack>
+
+      <Button
+        variant="outline"
+        size="sm"
+        mt="0.5rem"
+        onClick={() => append({ name: '', extraPrice: 0, maxQuantity: 1 })}
+      >
+        <Plus size="0.875rem" />
+        Add Choice
+      </Button>
+    </Box>
   );
 }

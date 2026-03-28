@@ -29,7 +29,8 @@ class SocketServer {
 
   private initListeners(): void {
     this.io.on('connection', (socket: Socket) => {
-      const { tenantId, uid } = socket.data as { tenantId: string; uid: string };
+      const tenantId = String(socket.data.tenantId);
+      const uid = String(socket.data.uid);
       console.log(`Connected: ${socket.id} (uid: ${uid}, tenant: ${tenantId})`);
 
       // Auto-join user room for storefront order updates

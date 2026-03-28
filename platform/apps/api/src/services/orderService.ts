@@ -36,6 +36,8 @@ export async function createOrder(tenantId: string, userId: string, body: Create
         clientSelections,
       );
 
+      const lineTotal = (product.price + optionsTotalPrice) * line.item.quantity;
+
       return {
         item: {
           _id: line.item._id,
@@ -45,17 +47,21 @@ export async function createOrder(tenantId: string, userId: string, body: Create
           ...(selectedOptions.length > 0 && { selectedOptions }),
           ...(optionsTotalPrice > 0 && { optionsTotalPrice }),
         },
+        lineTotal,
       };
     }),
   );
+
+  const total = processedOrderLines.reduce((sum, line) => sum + line.lineTotal, 0);
+  const orderLines = processedOrderLines.map(({ lineTotal: _, ...rest }) => rest);
 
   const trimmedRemark = body.remark?.trim() || undefined;
   return OrderModel.create({
     tenantId,
     userId,
     establishmentId: body.establishmentId,
-    orderLines: processedOrderLines,
-    total: body.total,
+    orderLines,
+    total: Math.round(total * 100) / 100,
     deliveryAddress: body.deliveryAddress,
     billingInformation: body.billingInformation,
     paymentMethod: body.paymentMethod,

@@ -5,8 +5,6 @@ export interface CreateOrderBody {
   /** @minLength 1 */
   establishmentId: string;
   orderLines: IOrderLine[];
-  /** @minimum 0 */
-  total: number;
   deliveryAddress?: Record<string, unknown>;
   billingInformation?: Record<string, unknown>;
   paymentMethod: PaymentMethod;

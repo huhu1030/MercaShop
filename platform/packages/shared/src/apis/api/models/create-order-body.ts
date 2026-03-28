@@ -39,12 +39,6 @@ export interface CreateOrderBody {
      */
     'orderLines': Array<IOrderLine>;
     /**
-     * 
-     * @type {number}
-     * @memberof CreateOrderBody
-     */
-    'total': number;
-    /**
      * Construct a type with a set of properties K of type T
      * @type {{ [key: string]: any; }}
      * @memberof CreateOrderBody

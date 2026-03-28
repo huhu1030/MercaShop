@@ -1,5 +1,20 @@
 import type { SelectionMode } from '@mercashop/shared';
 
+export interface ProductResponse {
+  _id: string;
+  tenantId: string;
+  name: string;
+  establishmentId: string;
+  description?: string;
+  category: string;
+  price: number;
+  location?: string;
+  quantity: number;
+  serialNumber?: string;
+  photo?: string;
+  optionGroups: OptionGroupBody[];
+}
+
 export interface OptionChoiceBody {
   /** @minLength 1 */
   name: string;

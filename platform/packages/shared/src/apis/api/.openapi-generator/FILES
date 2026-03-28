@@ -62,6 +62,7 @@ models/partial-create-tenant-body.ts
 models/payment-method.ts
 models/process-payment-body.ts
 models/process-payment200-response.ts
+models/product-response.ts
 models/selection-mode.ts
 models/update-customer-profile-body.ts
 models/update-establishment-status-body.ts

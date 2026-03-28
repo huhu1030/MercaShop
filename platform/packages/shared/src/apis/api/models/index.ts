@@ -42,6 +42,7 @@ export * from './partial-create-tenant-body-contact';
 export * from './payment-method';
 export * from './process-payment200-response';
 export * from './process-payment-body';
+export * from './product-response';
 export * from './selection-mode';
 export * from './update-customer-profile-body';
 export * from './update-establishment-status-body';

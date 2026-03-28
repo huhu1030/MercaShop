@@ -4,12 +4,12 @@ import { TenantModel } from '../models';
 
 export async function socketAuth(socket: Socket, next: (err?: Error) => void): Promise<void> {
   try {
-    const token = socket.handshake.auth?.token as string | undefined;
-    if (!token) return next(new Error('Authentication required'));
+    const token = socket.handshake.auth?.token;
+    if (typeof token !== 'string') return next(new Error('Authentication required'));
 
     const decoded = await firebaseAuth.verifyIdToken(token);
-    const ipTenantId = decoded.firebase?.tenant as string | undefined;
-    if (!ipTenantId) return next(new Error('Token missing tenant claim'));
+    const ipTenantId = decoded.firebase?.tenant;
+    if (typeof ipTenantId !== 'string') return next(new Error('Token missing tenant claim'));
 
     const tenant = await TenantModel.findOne({ identityPlatformTenantId: ipTenantId, isActive: true }).lean();
     if (!tenant) return next(new Error('Tenant not found'));
